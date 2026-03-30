@@ -1,12 +1,7 @@
 import { Suspense } from 'react';
 import { Card } from '@/app/components/ui';
 import { getReports } from '@/app/lib/api/admin-api';
-import dynamic from 'next/dynamic';
-
-const ReportsChart = dynamic(
-  () => import('@/app/components/reports-chart').then((mod) => mod.ReportsChart),
-  { ssr: false }
-);
+import { ReportsChart } from '@/app/components/reports-chart';
 
 export default async function ReportsPage() {
   const data = (await getReports()) as any;
