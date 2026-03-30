@@ -6,7 +6,6 @@ export const GET_PROJECTS = gql`
       id
       name
       status
-      createdAt
     }
   }
 `;
@@ -16,7 +15,6 @@ export const GET_SPRINTS = gql`
     getSprints(projectId: $projectId) {
       id
       name
-      status
       startDate
       endDate
       project {

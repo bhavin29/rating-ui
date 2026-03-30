@@ -1,9 +1,8 @@
 export type Member = { id: string; name: string; email?: string; role: string };
-export type Project = { id: string; name: string; status: string; createdAt: string };
+export type Project = { id: string; name: string; status?: string | null };
 export type Sprint = {
   id: string;
   name: string;
-  status: string;
   startDate: string;
   endDate: string;
   project: { id: string; name: string };

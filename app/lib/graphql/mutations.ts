@@ -5,7 +5,6 @@ export const CREATE_PROJECT = gql`
     createProject(input: $input) {
       id
       name
-      status
     }
   }
 `;
@@ -15,7 +14,6 @@ export const CREATE_SPRINT = gql`
     createSprint(input: $input) {
       id
       name
-      status
     }
   }
 `;

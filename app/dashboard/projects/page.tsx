@@ -15,8 +15,7 @@ export default async function ProjectsPage() {
       <Table
         columns={[
           { key: 'name', title: 'Name' },
-          { key: 'status', title: 'Status' },
-          { key: 'createdAt', title: 'Created' }
+          { key: 'status', title: 'Status' }
         ]}
         rows={projects as any[]}
       />
