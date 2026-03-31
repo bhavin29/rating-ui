@@ -8,7 +8,16 @@ export default async function SprintMembersPage({ params }: { params: Promise<{ 
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold">Sprint Members</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Sprint Members</h1>
+          <p className="text-sm text-slate-500">Live user assignments and rating summaries for this sprint</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs text-slate-600">
+          <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {members.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Users with ratings: {ratings.length}</span>
+        </div>
+      </div>
       {members.length === 0 ? (
         <Card>
           <p className="text-sm text-slate-500">No users are assigned to this sprint yet.</p>

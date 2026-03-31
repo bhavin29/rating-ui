@@ -1,4 +1,5 @@
 import { Card } from '@/app/components/ui';
+import { MemberRatingForm } from '@/app/components/member-rating-form';
 import type { TokenValidationResult } from '@/app/lib/api/types';
 
 export function RatingCard({ payload }: { payload: TokenValidationResult }) {
@@ -13,10 +14,7 @@ export function RatingCard({ payload }: { payload: TokenValidationResult }) {
           API note: {payload.reason}
         </div>
       ) : null}
-      <p className="text-sm text-slate-600">
-        The current API validates tokens successfully, but it does not return the sprint, teammate, or question data
-        needed to render the rating form here.
-      </p>
+      <MemberRatingForm />
     </Card>
   );
 }
