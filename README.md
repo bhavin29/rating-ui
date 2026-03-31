@@ -2,6 +2,8 @@
 
 Production-oriented frontend scaffold for a NestJS + GraphQL Sprint Rating System.
 
+The checked-in database source of truth lives at [db/schema.sql](db/schema.sql). It is intended for fresh environments or full rebuilds, not an in-place production migration.
+
 ## Highlights
 
 - Server-first App Router architecture (Server Components for data pages).
