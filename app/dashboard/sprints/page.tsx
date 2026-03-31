@@ -3,11 +3,25 @@ import { RequestRatingButton } from '@/app/components/request-rating-button';
 import { SprintForm } from '@/app/components/sprint-form';
 import { Card } from '@/app/components/ui';
 import type { Sprint } from '@/app/lib/api/types';
-import { getAllSprints, getProjects } from '@/app/lib/api/admin-api';
+import { getAllSprints, getProjects, getSprintMembers, getSprintRatings } from '@/app/lib/api/admin-api';
 
 export default async function SprintsPage() {
   const [projects, sprints] = await Promise.all([getProjects(), getAllSprints()]);
   const firstProjectId = (projects[0] as any)?.id;
+  const sprintRows = await Promise.all(
+    (sprints as Sprint[]).map(async (sprint) => {
+      const [members, ratings] = await Promise.all([
+        getSprintMembers(sprint.id),
+        getSprintRatings(sprint.id)
+      ]);
+
+      return {
+        sprint,
+        memberCount: members.length,
+        ratedUserCount: ratings.length
+      };
+    })
+  );
 
   return (
     <section className="space-y-4">
@@ -16,11 +30,15 @@ export default async function SprintsPage() {
         <SprintForm projectId={firstProjectId} />
       </Card>
       <div className="space-y-3">
-        {(sprints as Sprint[]).map((sprint) => (
+        {sprintRows.map(({ sprint, memberCount, ratedUserCount }) => (
           <Card key={sprint.id} className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="font-semibold">{sprint.name}</p>
               <p className="text-sm text-slate-500">{formatSprintMeta(sprint)}</p>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
+                <span className="rounded-full bg-slate-100 px-2 py-1">Assigned users: {memberCount}</span>
+                <span className="rounded-full bg-slate-100 px-2 py-1">Users with ratings: {ratedUserCount}</span>
+              </div>
             </div>
             <div className="flex gap-2">
               <Link className="rounded border px-3 py-2 text-sm" href={`/dashboard/sprints/${sprint.id}`}>

@@ -13,6 +13,11 @@ export default async function ReportsPage() {
   return (
     <section className="space-y-4">
       <h1 className="text-2xl font-bold">Ratings Reports</h1>
+      {sprintReports.length === 0 ? (
+        <Card>
+          <p className="text-sm text-slate-500">No sprints are available yet, so there are no user rating reports to show.</p>
+        </Card>
+      ) : null}
       <div className="space-y-4">
         {sprintReports.map(({ sprint, ratings }) => {
           const sprintAverage =
@@ -41,7 +46,7 @@ export default async function ReportsPage() {
                   <table className="min-w-full text-left text-sm">
                     <thead className="bg-slate-50">
                       <tr>
-                        <th className="px-4 py-3 font-medium text-slate-600">Member</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">User</th>
                         <th className="px-4 py-3 font-medium text-slate-600">Average score</th>
                       </tr>
                     </thead>
