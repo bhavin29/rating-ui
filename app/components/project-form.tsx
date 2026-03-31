@@ -13,15 +13,21 @@ export function ProjectForm() {
   const { register, handleSubmit, reset } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
   return (
-    <form
-      className="flex gap-2"
-      onSubmit={handleSubmit(async (values) => {
-        await mutation.mutateAsync(values);
-        reset();
-      })}
-    >
-      <Input placeholder="New project name" {...register('name')} />
-      <Button type="submit" disabled={mutation.isPending}>{mutation.isPending ? 'Creating...' : 'Create'}</Button>
-    </form>
+    <div className="space-y-3">
+      <div>
+        <h2 className="text-base font-semibold text-slate-900">Create project</h2>
+        <p className="text-sm text-slate-500">Add a project before assigning users, creating sprints, and tracking ratings.</p>
+      </div>
+      <form
+        className="flex gap-2"
+        onSubmit={handleSubmit(async (values) => {
+          await mutation.mutateAsync(values);
+          reset();
+        })}
+      >
+        <Input placeholder="New project name" {...register('name')} />
+        <Button type="submit" disabled={mutation.isPending}>{mutation.isPending ? 'Creating...' : 'Create'}</Button>
+      </form>
+    </div>
   );
 }
