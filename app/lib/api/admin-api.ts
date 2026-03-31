@@ -1,39 +1,72 @@
 import { createGraphqlClient } from '@/app/lib/graphql/client';
 import {
   GET_PROJECTS,
-  GET_REPORTS,
   GET_SPRINT_MEMBERS,
+  GET_SPRINT_RATINGS,
   GET_SPRINTS
 } from '@/app/lib/graphql/queries';
 import {
-  ASSIGN_MEMBERS,
+  ADD_SPRINT_MEMBERS,
   CREATE_PROJECT,
   CREATE_SPRINT,
   REQUEST_RATING
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
+import type { Member, Project, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
-  const data = await client.request<{ getProjects: unknown[] }>(GET_PROJECTS);
+  const data = await client.request<{ getProjects: Project[] }>(GET_PROJECTS);
   return data.getProjects;
 }
 
-export async function getSprints(projectId?: string) {
+export async function getSprints(projectId: string) {
   const client = createGraphqlClient(await getAuthHeaders());
-  const data = await client.request<{ getSprints: unknown[] }>(GET_SPRINTS, { projectId });
+  const data = await client.request<{ getSprints: Sprint[] }>(GET_SPRINTS, { projectId });
   return data.getSprints;
+}
+
+export async function getAllSprints() {
+  const projects = await getProjects();
+  const sprintGroups = await Promise.all(
+    projects.map(async (project) => {
+      const sprints = await getSprints(project.id);
+      return sprints.map((sprint) => ({
+        ...sprint,
+        project: { id: project.id, name: project.name }
+      }));
+    })
+  );
+
+  return sprintGroups
+    .flat()
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 }
 
 export async function getSprintMembers(sprintId: string) {
   const client = createGraphqlClient(await getAuthHeaders());
-  const data = await client.request<{ getSprintMembers: unknown[] }>(GET_SPRINT_MEMBERS, { sprintId });
-  return data.getSprintMembers;
+  const data = await client.request<{
+    getSprintMembers: Array<{
+      id: string;
+      user: { id: string; fullName: string; email: string; role: { id: string; name: string } };
+    }>;
+  }>(GET_SPRINT_MEMBERS, { sprintId });
+
+  return data.getSprintMembers.map(
+    (member): Member => ({
+      id: member.user.id,
+      name: member.user.fullName,
+      email: member.user.email,
+      role: member.user.role.name,
+      roleId: member.user.role.id
+    })
+  );
 }
 
-export async function getReports(sprintId?: string) {
+export async function getSprintRatings(sprintId: string) {
   const client = createGraphqlClient(await getAuthHeaders());
-  return client.request(GET_REPORTS, { sprintId });
+  const data = await client.request<{ getSprintRatings: SprintRatingSummary[] }>(GET_SPRINT_RATINGS, { sprintId });
+  return data.getSprintRatings;
 }
 
 export async function createProject(input: { name: string }) {
@@ -51,14 +84,15 @@ export async function createSprint(input: {
   return client.request(CREATE_SPRINT, { input });
 }
 
-export async function assignMembers(sprintId: string, memberIds: string[]) {
+export async function addSprintMembers(sprintId: string, userIds: string[]) {
   const client = createGraphqlClient();
-  return client.request(ASSIGN_MEMBERS, { sprintId, memberIds });
+  return client.request(ADD_SPRINT_MEMBERS, { input: { sprintId, userIds } });
 }
 
 export async function requestRating(sprintId: string) {
   const client = createGraphqlClient();
-  return client.request(REQUEST_RATING, { sprintId });
+  const data = await client.request<{ requestRating: boolean }>(REQUEST_RATING, { sprintId });
+  return data.requestRating;
 }
 
 async function getAuthHeaders() {

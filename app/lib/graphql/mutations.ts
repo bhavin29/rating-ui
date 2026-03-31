@@ -18,28 +18,35 @@ export const CREATE_SPRINT = gql`
   }
 `;
 
-export const ASSIGN_MEMBERS = gql`
-  mutation AssignMembers($sprintId: ID!, $memberIds: [ID!]!) {
-    assignMembers(sprintId: $sprintId, memberIds: $memberIds) {
+export const ADD_SPRINT_MEMBERS = gql`
+  mutation AddSprintMembers($input: AddSprintMembersInput!) {
+    addSprintMembers(input: $input) {
       id
     }
   }
 `;
 
 export const REQUEST_RATING = gql`
-  mutation RequestRating($sprintId: ID!) {
-    requestRating(sprintId: $sprintId) {
-      ok
-      requestedAt
-    }
+  mutation RequestRating($sprintId: String!) {
+    requestRating(sprintId: $sprintId)
   }
 `;
 
 export const SUBMIT_RATING = gql`
-  mutation SubmitRating($token: String!, $input: SubmitRatingInput!) {
-    submitRating(token: $token, input: $input) {
-      ok
-      submittedAt
+  mutation SubmitRating($input: SubmitRatingInput!) {
+    submitRating(input: $input) {
+      id
+      averageScore
+    }
+  }
+`;
+
+export const VALIDATE_TOKEN = gql`
+  mutation ValidateToken($input: ValidateTokenInput!) {
+    validateToken(input: $input) {
+      valid
+      reason
+      userId
     }
   }
 `;

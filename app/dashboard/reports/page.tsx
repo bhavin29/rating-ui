@@ -1,26 +1,70 @@
-import { Suspense } from 'react';
 import { Card } from '@/app/components/ui';
-import { getReports } from '@/app/lib/api/admin-api';
-import { ReportsChart } from '@/app/components/reports-chart';
+import { getAllSprints, getSprintRatings } from '@/app/lib/api/admin-api';
 
 export default async function ReportsPage() {
-  const data = (await getReports()) as any;
-  const report = data.getReports;
+  const sprints = await getAllSprints();
+  const sprintReports = await Promise.all(
+    sprints.map(async (sprint) => ({
+      sprint,
+      ratings: await getSprintRatings(sprint.id)
+    }))
+  );
 
   return (
     <section className="space-y-4">
       <h1 className="text-2xl font-bold">Ratings Reports</h1>
-      <div className="grid gap-4 md:grid-cols-3">
-        {report.roleAverages.map((item: any) => (
-          <Card key={item.role}>
-            <p className="text-sm text-slate-500">{item.role}</p>
-            <p className="text-xl font-semibold">{Number(item.average).toFixed(2)}</p>
-          </Card>
-        ))}
+      <div className="space-y-4">
+        {sprintReports.map(({ sprint, ratings }) => {
+          const sprintAverage =
+            ratings.length > 0
+              ? ratings.reduce((total, rating) => total + rating.averageScore, 0) / ratings.length
+              : null;
+
+          return (
+            <Card key={sprint.id} className="space-y-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold">{sprint.name}</h2>
+                  <p className="text-sm text-slate-500">{sprint.project?.name ?? 'Unknown project'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs uppercase tracking-wide text-slate-500">Sprint average</p>
+                  <p className="text-2xl font-semibold">
+                    {sprintAverage === null ? 'No ratings yet' : sprintAverage.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+              {ratings.length === 0 ? (
+                <p className="text-sm text-slate-500">No submitted ratings for this sprint yet.</p>
+              ) : (
+                <div className="overflow-x-auto rounded-lg border border-slate-200">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        <th className="px-4 py-3 font-medium text-slate-600">Member</th>
+                        <th className="px-4 py-3 font-medium text-slate-600">Average score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ratings
+                        .slice()
+                        .sort((a, b) => b.averageScore - a.averageScore)
+                        .map((rating) => (
+                          <tr key={rating.userId} className="border-t border-slate-100">
+                            <td className="px-4 py-3 text-slate-700">{rating.userName}</td>
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              {rating.averageScore.toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          );
+        })}
       </div>
-      <Suspense fallback={<div>Loading charts...</div>}>
-        <ReportsChart memberAverages={report.memberAverages} trend={report.trend} />
-      </Suspense>
     </section>
   );
 }

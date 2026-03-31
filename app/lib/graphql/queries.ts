@@ -11,87 +11,48 @@ export const GET_PROJECTS = gql`
 `;
 
 export const GET_SPRINTS = gql`
-  query GetSprints($projectId: ID) {
+  query GetSprints($projectId: String!) {
     getSprints(projectId: $projectId) {
       id
       name
       startDate
       endDate
-      project {
-        id
-        name
-      }
     }
   }
 `;
 
 export const GET_SPRINT_MEMBERS = gql`
-  query GetSprintMembers($sprintId: ID!) {
+  query GetSprintMembers($sprintId: String!) {
     getSprintMembers(sprintId: $sprintId) {
       id
-      name
-      email
-      role
+      user {
+        id
+        fullName
+        email
+        role {
+          id
+          name
+        }
+      }
     }
   }
 `;
 
 export const GET_QUESTIONS_BY_ROLE = gql`
-  query GetQuestionsByRole($role: String!) {
-    getQuestionsByRole(role: $role) {
+  query GetQuestionsByRole($roleId: String!) {
+    getQuestionsByRole(roleId: $roleId) {
       id
       text
-      role
     }
   }
 `;
 
-export const VALIDATE_TOKEN = gql`
-  query ValidateToken($token: String!) {
-    validateToken(token: $token) {
-      isValid
-      sprint {
-        id
-        name
-      }
-      rater {
-        id
-        name
-      }
-      members {
-        id
-        name
-        role
-      }
-      questionsByRole {
-        role
-        questions {
-          id
-          text
-        }
-      }
-      hasSubmitted
-    }
-  }
-`;
-
-export const GET_REPORTS = gql`
-  query GetReports($sprintId: ID) {
-    getReports(sprintId: $sprintId) {
-      sprintName
-      memberAverages {
-        memberId
-        memberName
-        average
-      }
-      roleAverages {
-        role
-        average
-      }
-      trend {
-        sprint
-        average
-      }
+export const GET_SPRINT_RATINGS = gql`
+  query GetSprintRatings($sprintId: String!) {
+    getSprintRatings(sprintId: $sprintId) {
+      userId
+      userName
+      averageScore
     }
   }
 `;

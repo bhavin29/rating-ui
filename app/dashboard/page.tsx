@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { DashboardCard } from '@/app/components/dashboard-card';
 import type { Sprint } from '@/app/lib/api/types';
-import { getProjects, getSprints } from '@/app/lib/api/admin-api';
+import { getAllSprints, getProjects } from '@/app/lib/api/admin-api';
 
 export default async function DashboardPage() {
-  const [projects, sprints] = await Promise.all([getProjects(), getSprints()]);
+  const [projects, sprints] = await Promise.all([getProjects(), getAllSprints()]);
   const activeSprintCount = (sprints as Sprint[]).filter(isActiveSprint).length;
 
   return (

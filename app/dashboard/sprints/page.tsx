@@ -3,10 +3,10 @@ import { RequestRatingButton } from '@/app/components/request-rating-button';
 import { SprintForm } from '@/app/components/sprint-form';
 import { Card } from '@/app/components/ui';
 import type { Sprint } from '@/app/lib/api/types';
-import { getProjects, getSprints } from '@/app/lib/api/admin-api';
+import { getAllSprints, getProjects } from '@/app/lib/api/admin-api';
 
 export default async function SprintsPage() {
-  const [projects, sprints] = await Promise.all([getProjects(), getSprints()]);
+  const [projects, sprints] = await Promise.all([getProjects(), getAllSprints()]);
   const firstProjectId = (projects[0] as any)?.id;
 
   return (
