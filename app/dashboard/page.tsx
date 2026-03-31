@@ -26,12 +26,15 @@ export default async function DashboardPage() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+      <div>
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <p className="text-sm text-slate-500">Live overview of projects, sprint coverage, and user rating activity</p>
+      </div>
       <div className="grid gap-4 md:grid-cols-4">
-        <DashboardCard title="Projects" value={projects.length} />
-        <DashboardCard title="Sprints" value={sprints.length} />
-        <DashboardCard title="Active Sprints" value={activeSprintCount} />
-        <DashboardCard title="Assigned Users" value={assignedUserCount} />
+        <DashboardCard title="Projects" value={projects.length} subtitle="Projects returned by GraphQL" />
+        <DashboardCard title="Sprints" value={sprints.length} subtitle="All discovered sprint records" />
+        <DashboardCard title="Active Sprints" value={activeSprintCount} subtitle="Active based on sprint dates" />
+        <DashboardCard title="Assigned Users" value={assignedUserCount} subtitle="Total sprint member assignments" />
       </div>
       <Card className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -75,7 +78,10 @@ export default async function DashboardPage() {
           Manage Projects
         </Link>
         <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/sprints">
-          Manage Sprints
+          Manage Sprints & Users
+        </Link>
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/reports">
+          View User Reports
         </Link>
       </div>
     </section>

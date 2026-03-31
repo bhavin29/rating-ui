@@ -22,10 +22,23 @@ export default async function SprintsPage() {
       };
     })
   );
+  const assignedUserCount = sprintRows.reduce((total, item) => total + item.memberCount, 0);
+  const ratedUserCount = sprintRows.reduce((total, item) => total + item.ratedUserCount, 0);
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold">Sprints</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Sprints</h1>
+          <p className="text-sm text-slate-500">Sprint planning, assigned users, and rating-request activity</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs text-slate-600">
+          <span className="rounded-full bg-slate-100 px-3 py-1">Projects: {projects.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Sprints: {sprintRows.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {assignedUserCount}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Users with ratings: {ratedUserCount}</span>
+        </div>
+      </div>
       <Card>
         <SprintForm projectId={firstProjectId} />
       </Card>
