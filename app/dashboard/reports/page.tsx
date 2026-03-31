@@ -31,7 +31,10 @@ export default async function ReportsPage() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-bold">Ratings Reports</h1>
+      <div>
+        <h1 className="text-2xl font-bold">Ratings Reports</h1>
+        <p className="text-sm text-slate-500">Cross-sprint user score summaries returned by the live GraphQL API</p>
+      </div>
       {sprintReports.length === 0 ? (
         <Card>
           <p className="text-sm text-slate-500">No sprints are available yet, so there are no user rating reports to show.</p>
