@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +10,7 @@ import { useCreateProject } from '@/app/hooks/use-admin-mutations';
 const schema = z.object({ name: z.string().min(2) });
 
 export function ProjectForm() {
+  const router = useRouter();
   const mutation = useCreateProject();
   const { register, handleSubmit, reset } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
@@ -23,6 +25,7 @@ export function ProjectForm() {
         onSubmit={handleSubmit(async (values) => {
           await mutation.mutateAsync(values);
           reset();
+          router.refresh();
         })}
       >
         <Input placeholder="New project name" {...register('name')} />
