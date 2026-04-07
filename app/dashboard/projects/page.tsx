@@ -1,8 +1,10 @@
+import { unstable_noStore as noStore } from 'next/cache';
 import { Card } from '@/app/components/ui';
 import { ProjectForm } from '@/app/components/project-form';
 import { getProjects, getSprintMembers, getSprintRatings, getSprints } from '@/app/lib/api/admin-api';
 
 export default async function ProjectsPage() {
+  noStore();
   const projects = await getProjects();
   const projectRows = await Promise.all(
     projects.map(async (project) => {
