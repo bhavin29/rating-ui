@@ -23,6 +23,7 @@ export function SprintsView({
   projectCount: number;
 }) {
   const [sprintRows, setSprintRows] = useState(initialSprints);
+  const [editingSprintId, setEditingSprintId] = useState<string | null>(null);
 
   const assignedUserCount = sprintRows.reduce((total, item) => total + item.memberCount, 0);
   const ratedUserCount = sprintRows.reduce((total, item) => total + item.ratedUserCount, 0);
@@ -70,21 +71,54 @@ export function SprintsView({
       </Card>
       <div className="space-y-3">
         {sprintRows.map(({ sprint, memberCount, ratedUserCount }) => (
-          <Card key={sprint.id} className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="font-semibold">{sprint.name}</p>
-              <p className="text-sm text-slate-500">{formatSprintMeta(sprint)}</p>
-              <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
-                <span className="rounded-full bg-slate-100 px-2 py-1">Assigned users: {memberCount}</span>
-                <span className="rounded-full bg-slate-100 px-2 py-1">Users with ratings: {ratedUserCount}</span>
+          <Card key={sprint.id} className="space-y-3">
+            {editingSprintId === sprint.id ? (
+              <SprintForm
+                projectId={sprint.project?.id}
+                sprint={sprint}
+                onUpdated={(updatedSprint) => {
+                  setSprintRows((current) =>
+                    current.map((item) =>
+                      item.sprint.id === updatedSprint.id
+                        ? {
+                            ...item,
+                            sprint: {
+                              ...item.sprint,
+                              ...updatedSprint
+                            }
+                          }
+                        : item
+                    )
+                  );
+                  setEditingSprintId(null);
+                }}
+                onCancel={() => setEditingSprintId(null)}
+              />
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="font-semibold">{sprint.name}</p>
+                  <p className="text-sm text-slate-500">{formatSprintMeta(sprint)}</p>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
+                    <span className="rounded-full bg-slate-100 px-2 py-1">Assigned users: {memberCount}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1">Users with ratings: {ratedUserCount}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="rounded border px-3 py-2 text-sm"
+                    onClick={() => setEditingSprintId(sprint.id)}
+                  >
+                    Edit
+                  </button>
+                  <Link className="rounded border px-3 py-2 text-sm" href={`/dashboard/sprints/${sprint.id}`}>
+                    Members
+                  </Link>
+                  <RequestRatingButton sprintId={sprint.id} />
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Link className="rounded border px-3 py-2 text-sm" href={`/dashboard/sprints/${sprint.id}`}>
-                Members
-              </Link>
-              <RequestRatingButton sprintId={sprint.id} />
-            </div>
+            )}
           </Card>
         ))}
       </div>

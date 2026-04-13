@@ -9,7 +9,8 @@ import {
   ADD_SPRINT_MEMBERS,
   CREATE_PROJECT,
   CREATE_SPRINT,
-  REQUEST_RATING
+  REQUEST_RATING,
+  UPDATE_SPRINT
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
 import type { Member, Project, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
@@ -82,6 +83,16 @@ export async function createSprint(input: {
 }) {
   const client = createGraphqlClient();
   return client.request(CREATE_SPRINT, { input });
+}
+
+export async function updateSprint(input: {
+  sprintId: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}) {
+  const client = createGraphqlClient();
+  return client.request(UPDATE_SPRINT, { input });
 }
 
 export async function addSprintMembers(sprintId: string, userIds: string[]) {

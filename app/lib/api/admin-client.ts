@@ -22,6 +22,13 @@ export const createSprintClient = (input: {
   endDate: string;
 }) => post('/api/admin/create-sprint', input);
 
+export const updateSprintClient = (input: {
+  sprintId: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}) => post('/api/admin/update-sprint', input);
+
 export const assignMembersClient = (payload: { sprintId: string; memberIds: string[] }) =>
   post('/api/admin/assign-members', payload);
 

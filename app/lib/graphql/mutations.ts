@@ -14,6 +14,19 @@ export const CREATE_SPRINT = gql`
     createSprint(input: $input) {
       id
       name
+      startDate
+      endDate
+    }
+  }
+`;
+
+export const UPDATE_SPRINT = gql`
+  mutation UpdateSprint($input: UpdateSprintInput!) {
+    updateSprint(input: $input) {
+      id
+      name
+      startDate
+      endDate
     }
   }
 `;
