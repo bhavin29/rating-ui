@@ -14,7 +14,19 @@ const schema = z.object({
   endDate: z.string().min(1)
 });
 
-export function SprintForm({ projectId }: { projectId?: string }) {
+export function SprintForm({
+  projectId,
+  onCreated
+}: {
+  projectId?: string;
+  onCreated?: (sprint: {
+    id: string;
+    name: string;
+    startDate: string;
+    endDate: string;
+    project?: { id: string; name?: string };
+  }) => void;
+}) {
   const mutation = useCreateSprint();
   const [message, setMessage] = useState<string | null>(null);
   const { register, handleSubmit, reset } = useForm<z.infer<typeof schema>>({
@@ -36,9 +48,42 @@ export function SprintForm({ projectId }: { projectId?: string }) {
           setMessage(null);
 
           try {
-            await mutation.mutateAsync(values);
+            const result = await mutation.mutateAsync(values) as {
+              createSprint?: {
+                id: string;
+                name: string;
+                startDate?: string;
+                endDate?: string;
+                project?: { id: string; name?: string };
+              };
+              id?: string;
+              name?: string;
+              startDate?: string;
+              endDate?: string;
+              project?: { id: string; name?: string };
+            };
+
             reset({ projectId: values.projectId, name: '', startDate: '', endDate: '' });
             setMessage('Sprint created successfully.');
+
+            const createdSprint = result.createSprint ?? (result.id && result.name
+              ? {
+                  id: result.id,
+                  name: result.name,
+                  startDate: result.startDate ?? values.startDate,
+                  endDate: result.endDate ?? values.endDate,
+                  project: result.project ?? { id: values.projectId }
+                }
+              : null);
+
+            if (createdSprint) {
+              onCreated?.({
+                ...createdSprint,
+                startDate: createdSprint.startDate ?? values.startDate,
+                endDate: createdSprint.endDate ?? values.endDate,
+                project: createdSprint.project ?? { id: values.projectId }
+              });
+            }
           } catch {
             setMessage('Failed to create sprint. Please check the dates and try again.');
           }

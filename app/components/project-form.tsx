@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,8 +8,11 @@ import { useCreateProject } from '@/app/hooks/use-admin-mutations';
 
 const schema = z.object({ name: z.string().min(2) });
 
-export function ProjectForm() {
-  const router = useRouter();
+export function ProjectForm({
+  onCreated
+}: {
+  onCreated?: (project: { id: string; name: string; status?: string | null }) => void;
+}) {
   const mutation = useCreateProject();
   const { register, handleSubmit, reset } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
@@ -23,9 +25,22 @@ export function ProjectForm() {
       <form
         className="flex gap-2"
         onSubmit={handleSubmit(async (values) => {
-          await mutation.mutateAsync(values);
+          const result = await mutation.mutateAsync(values) as {
+            createProject?: { id: string; name: string; status?: string | null };
+            id?: string;
+            name?: string;
+            status?: string | null;
+          };
+
           reset();
-          router.refresh();
+
+          const createdProject = result.createProject ?? (result.id && result.name
+            ? { id: result.id, name: result.name, status: result.status ?? 'ACTIVE' }
+            : null);
+
+          if (createdProject) {
+            onCreated?.(createdProject);
+          }
         })}
       >
         <Input placeholder="New project name" {...register('name')} />
