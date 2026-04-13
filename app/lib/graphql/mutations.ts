@@ -5,6 +5,17 @@ export const CREATE_PROJECT = gql`
     createProject(input: $input) {
       id
       name
+      status
+    }
+  }
+`;
+
+export const UPDATE_PROJECT = gql`
+  mutation UpdateProject($input: UpdateProjectInput!) {
+    updateProject(input: $input) {
+      id
+      name
+      status
     }
   }
 `;

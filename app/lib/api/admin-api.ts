@@ -10,6 +10,7 @@ import {
   CREATE_PROJECT,
   CREATE_SPRINT,
   REQUEST_RATING,
+  UPDATE_PROJECT,
   UPDATE_SPRINT
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
@@ -73,6 +74,11 @@ export async function getSprintRatings(sprintId: string) {
 export async function createProject(input: { name: string }) {
   const client = createGraphqlClient();
   return client.request(CREATE_PROJECT, { input });
+}
+
+export async function updateProject(input: { projectId: string; name: string; status: string }) {
+  const client = createGraphqlClient();
+  return client.request(UPDATE_PROJECT, { input });
 }
 
 export async function createSprint(input: {

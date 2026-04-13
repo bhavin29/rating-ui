@@ -15,6 +15,7 @@ type ProjectRow = {
 
 export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[] }) {
   const [projectRows, setProjectRows] = useState(initialProjects);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   const totalAssignedUsers = projectRows.reduce((total, project) => total + project.assignedUserCount, 0);
   const totalRatedUsers = projectRows.reduce((total, project) => total + project.ratedUserCount, 0);
@@ -64,21 +65,54 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
               <th className="px-4 py-3 font-medium text-slate-600">Sprints</th>
               <th className="px-4 py-3 font-medium text-slate-600">Assigned users</th>
               <th className="px-4 py-3 font-medium text-slate-600">Users with ratings</th>
+              <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
             </tr>
           </thead>
           <tbody>
             {projectRows.map((project) => (
               <tr key={project.id} className="border-t border-slate-100">
                 <td className="px-4 py-3">
-                  <div>
-                    <p className="font-medium text-slate-900">{project.name}</p>
-                    <p className="text-xs text-slate-500">Live project summary from GraphQL</p>
-                  </div>
+                  {editingProjectId === project.id ? (
+                    <ProjectForm
+                      project={{ id: project.id, name: project.name, status: project.status }}
+                      onUpdated={(updatedProject) => {
+                        setProjectRows((current) =>
+                          current.map((item) =>
+                            item.id === updatedProject.id
+                              ? {
+                                  ...item,
+                                  name: updatedProject.name,
+                                  status: updatedProject.status
+                                }
+                              : item
+                          )
+                        );
+                        setEditingProjectId(null);
+                      }}
+                      onCancel={() => setEditingProjectId(null)}
+                    />
+                  ) : (
+                    <div>
+                      <p className="font-medium text-slate-900">{project.name}</p>
+                      <p className="text-xs text-slate-500">Live project summary from GraphQL</p>
+                    </div>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-slate-700">{project.status ?? 'UNKNOWN'}</td>
                 <td className="px-4 py-3 text-slate-700">{project.sprintCount}</td>
                 <td className="px-4 py-3 text-slate-700">{project.assignedUserCount}</td>
                 <td className="px-4 py-3 text-slate-700">{project.ratedUserCount}</td>
+                <td className="px-4 py-3 text-slate-700">
+                  {editingProjectId === project.id ? null : (
+                    <button
+                      type="button"
+                      className="rounded border px-3 py-2 text-sm"
+                      onClick={() => setEditingProjectId(project.id)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
