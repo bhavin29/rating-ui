@@ -10,6 +10,30 @@ export const CREATE_PROJECT = gql`
   }
 `;
 
+export const CREATE_ROLE = gql`
+  mutation CreateRole($input: CreateRoleInput!) {
+    createRole(input: $input) {
+      id
+      name
+    }
+  }
+`;
+
+export const UPDATE_ROLE = gql`
+  mutation UpdateRole($input: UpdateRoleInput!) {
+    updateRole(input: $input) {
+      id
+      name
+    }
+  }
+`;
+
+export const DELETE_ROLE = gql`
+  mutation DeleteRole($input: DeleteRoleInput!) {
+    deleteRole(input: $input)
+  }
+`;
+
 export const UPDATE_PROJECT = gql`
   mutation UpdateProject($input: UpdateProjectInput!) {
     updateProject(input: $input) {

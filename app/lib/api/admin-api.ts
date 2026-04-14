@@ -1,5 +1,6 @@
 import { createGraphqlClient } from '@/app/lib/graphql/client';
 import {
+  GET_ROLES,
   GET_PROJECT_MEMBERS,
   GET_PROJECTS,
   GET_SPRINT_MEMBERS,
@@ -11,15 +12,24 @@ import {
   ADD_PROJECT_MEMBERS,
   ADD_SPRINT_MEMBERS,
   CREATE_PROJECT,
+  CREATE_ROLE,
   CREATE_SPRINT,
+  DELETE_ROLE,
   REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
   UPDATE_PROJECT_MEMBER_STATUS,
   UPDATE_PROJECT,
+  UPDATE_ROLE,
   UPDATE_SPRINT
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
-import type { Member, Project, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
+import type { Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
+
+export async function getRoles() {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ getRoles: Role[] }>(GET_ROLES);
+  return data.getRoles;
+}
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -126,6 +136,22 @@ export async function getSprintRatings(sprintId: string) {
 export async function createProject(input: { name: string }) {
   const client = createGraphqlClient();
   return client.request(CREATE_PROJECT, { input });
+}
+
+export async function createRole(input: { name: string }) {
+  const client = createGraphqlClient();
+  return client.request(CREATE_ROLE, { input });
+}
+
+export async function updateRole(input: { roleId: string; name: string }) {
+  const client = createGraphqlClient();
+  return client.request(UPDATE_ROLE, { input });
+}
+
+export async function deleteRole(roleId: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ deleteRole: boolean }>(DELETE_ROLE, { input: { roleId } });
+  return data.deleteRole;
 }
 
 export async function updateProject(input: { projectId: string; name: string; status: string }) {

@@ -25,6 +25,15 @@ export const GET_USERS = gql`
   }
 `;
 
+export const GET_ROLES = gql`
+  query GetRoles {
+    getRoles {
+      id
+      name
+    }
+  }
+`;
+
 export const GET_PROJECT_MEMBERS = gql`
   query GetProjectMembers($projectId: String!) {
     getProjectMembers(projectId: $projectId) {
