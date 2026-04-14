@@ -1,6 +1,14 @@
 export type Role = { id: string; name: string };
 
-export type Member = { id: string; name: string; email: string; role: string; roleId: string; isActive?: boolean };
+export type Member = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  roleId: string;
+  isActive?: boolean;
+  membershipIsActive?: boolean;
+};
 export type Project = { id: string; name: string; status?: string | null };
 export type Sprint = {
   id: string;

@@ -14,7 +14,7 @@ import {
   CREATE_SPRINT,
   REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
-  UPDATE_USER_STATUS,
+  UPDATE_PROJECT_MEMBER_STATUS,
   UPDATE_PROJECT,
   UPDATE_SPRINT
 } from '@/app/lib/graphql/mutations';
@@ -56,6 +56,7 @@ export async function getProjectMembers(projectId: string) {
   const data = await client.request<{
     getProjectMembers: Array<{
       id: string;
+      isActive?: boolean;
       user: { id: string; fullName: string; email: string; isActive?: boolean; role: { id: string; name: string } };
     }>;
   }>(GET_PROJECT_MEMBERS, { projectId });
@@ -67,7 +68,8 @@ export async function getProjectMembers(projectId: string) {
       email: member.user.email,
       role: member.user.role.name,
       roleId: member.user.role.id,
-      isActive: member.user.isActive
+      isActive: member.user.isActive,
+      membershipIsActive: member.isActive
     })
   );
 }
@@ -169,12 +171,13 @@ export async function removeProjectMember(projectId: string, userId: string) {
   return data.removeProjectMember;
 }
 
-export async function updateUserStatus(userId: string, isActive: boolean) {
+export async function updateProjectMemberStatus(projectId: string, userId: string, isActive: boolean) {
   const client = createGraphqlClient();
-  const data = await client.request<{ updateUserStatus: { id: string; isActive: boolean } }>(UPDATE_USER_STATUS, {
-    input: { userId, isActive }
-  });
-  return data.updateUserStatus;
+  const data = await client.request<{ updateProjectMemberStatus: { id: string; isActive: boolean } }>(
+    UPDATE_PROJECT_MEMBER_STATUS,
+    { input: { projectId, userId, isActive } }
+  );
+  return data.updateProjectMemberStatus;
 }
 
 export async function requestRating(sprintId: string) {

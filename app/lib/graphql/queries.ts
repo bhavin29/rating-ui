@@ -29,6 +29,7 @@ export const GET_PROJECT_MEMBERS = gql`
   query GetProjectMembers($projectId: String!) {
     getProjectMembers(projectId: $projectId) {
       id
+      isActive
       user {
         id
         fullName

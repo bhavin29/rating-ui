@@ -8,7 +8,7 @@ import {
   createSprintClient,
   removeProjectMemberClient,
   requestRatingClient,
-  updateUserStatusClient,
+  updateProjectMemberStatusClient,
   updateProjectClient,
   updateSprintClient
 } from '@/app/lib/api/admin-client';
@@ -32,10 +32,10 @@ export const useRemoveProjectMember = () =>
     mutationFn: ({ projectId, userId }: { projectId: string; userId: string }) =>
       removeProjectMemberClient({ projectId, userId })
   });
-export const useUpdateUserStatus = () =>
+export const useUpdateProjectMemberStatus = () =>
   useMutation({
-    mutationFn: ({ userId, isActive }: { userId: string; isActive: boolean }) =>
-      updateUserStatusClient({ userId, isActive })
+    mutationFn: ({ projectId, userId, isActive }: { projectId: string; userId: string; isActive: boolean }) =>
+      updateProjectMemberStatusClient({ projectId, userId, isActive })
   });
 export const useRequestRating = () =>
   useMutation({ mutationFn: (sprintId: string) => requestRatingClient({ sprintId }) });

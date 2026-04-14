@@ -64,9 +64,9 @@ export const REMOVE_PROJECT_MEMBER = gql`
   }
 `;
 
-export const UPDATE_USER_STATUS = gql`
-  mutation UpdateUserStatus($input: UpdateUserStatusInput!) {
-    updateUserStatus(input: $input) {
+export const UPDATE_PROJECT_MEMBER_STATUS = gql`
+  mutation UpdateProjectMemberStatus($input: UpdateProjectMemberStatusInput!) {
+    updateProjectMemberStatus(input: $input) {
       id
       isActive
     }

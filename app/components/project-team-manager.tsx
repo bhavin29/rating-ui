@@ -1,7 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useAssignProjectMembers, useRemoveProjectMember, useUpdateUserStatus } from '@/app/hooks/use-admin-mutations';
+import {
+  useAssignProjectMembers,
+  useRemoveProjectMember,
+  useUpdateProjectMemberStatus
+} from '@/app/hooks/use-admin-mutations';
 import { Button, Card, Input } from '@/app/components/ui';
 import type { Member } from '@/app/lib/api/types';
 
@@ -18,7 +22,7 @@ export function ProjectTeamManager({
 }) {
   const addMutation = useAssignProjectMembers();
   const removeMutation = useRemoveProjectMember();
-  const updateStatusMutation = useUpdateUserStatus();
+  const updateStatusMutation = useUpdateProjectMemberStatus();
   const [assignedMembers, setAssignedMembers] = useState(initialMembers);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -64,7 +68,7 @@ export function ProjectTeamManager({
 
   function updateMemberStatus(memberId: string, isActive: boolean) {
     setAssignedMembers((current) =>
-      current.map((member) => (member.id === memberId ? { ...member, isActive } : member))
+      current.map((member) => (member.id === memberId ? { ...member, membershipIsActive: isActive } : member))
     );
   }
 
@@ -79,10 +83,10 @@ export function ProjectTeamManager({
           <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {assignedMembers.length}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Available users: {availableUsers.length}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">
-            Active: {assignedMembers.filter((member) => member.isActive !== false).length}
+            Active: {assignedMembers.filter((member) => member.membershipIsActive !== false).length}
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1">
-            Inactive: {assignedMembers.filter((member) => member.isActive === false).length}
+            Inactive: {assignedMembers.filter((member) => member.membershipIsActive === false).length}
           </span>
         </div>
       </div>
@@ -231,8 +235,8 @@ export function ProjectTeamManager({
           assignedMembers
             .filter((member) => {
               if (statusFilter === 'ALL') return true;
-              if (statusFilter === 'ACTIVE') return member.isActive !== false;
-              return member.isActive === false;
+              if (statusFilter === 'ACTIVE') return member.membershipIsActive !== false;
+              return member.membershipIsActive === false;
             })
             .map((member) => (
             <Card key={member.id} className="space-y-2">
@@ -247,10 +251,10 @@ export function ProjectTeamManager({
                   </span>
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide ${
-                      member.isActive === false ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                      member.membershipIsActive === false ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
                     }`}
                   >
-                    {member.isActive === false ? 'Inactive' : 'Active'}
+                    {member.membershipIsActive === false ? 'Inactive' : 'Active'}
                   </span>
                   <button
                     type="button"
@@ -258,10 +262,10 @@ export function ProjectTeamManager({
                     disabled={updateStatusMutation.isPending}
                     onClick={async () => {
                       setMessage(null);
-                      const nextIsActive = member.isActive === false;
+                      const nextIsActive = member.membershipIsActive === false;
 
                       try {
-                        await updateStatusMutation.mutateAsync({ userId: member.id, isActive: nextIsActive });
+                        await updateStatusMutation.mutateAsync({ projectId, userId: member.id, isActive: nextIsActive });
                         updateMemberStatus(member.id, nextIsActive);
                         setMessage(`User marked as ${nextIsActive ? 'active' : 'inactive'}.`);
                       } catch {
@@ -271,7 +275,7 @@ export function ProjectTeamManager({
                   >
                     {updateStatusMutation.isPending
                       ? 'Saving...'
-                      : member.isActive === false
+                      : member.membershipIsActive === false
                         ? 'Set active'
                         : 'Set inactive'}
                   </button>
