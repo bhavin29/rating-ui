@@ -35,5 +35,11 @@ export const updateSprintClient = (input: {
 export const assignMembersClient = (payload: { sprintId: string; memberIds: string[] }) =>
   post('/api/admin/assign-members', payload);
 
+export const assignProjectMembersClient = (payload: { projectId: string; memberIds: string[] }) =>
+  post('/api/admin/assign-project-members', payload);
+
+export const removeProjectMemberClient = (payload: { projectId: string; userId: string }) =>
+  post('/api/admin/remove-project-member', payload);
+
 export const requestRatingClient = (payload: { sprintId: string }) =>
   post('/api/admin/request-rating', payload);

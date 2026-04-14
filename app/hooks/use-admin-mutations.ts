@@ -3,8 +3,10 @@
 import { useMutation } from '@tanstack/react-query';
 import {
   assignMembersClient,
+  assignProjectMembersClient,
   createProjectClient,
   createSprintClient,
+  removeProjectMemberClient,
   requestRatingClient,
   updateProjectClient,
   updateSprintClient
@@ -18,6 +20,16 @@ export const useAssignMembers = () =>
   useMutation({
     mutationFn: ({ sprintId, memberIds }: { sprintId: string; memberIds: string[] }) =>
       assignMembersClient({ sprintId, memberIds })
+  });
+export const useAssignProjectMembers = () =>
+  useMutation({
+    mutationFn: ({ projectId, memberIds }: { projectId: string; memberIds: string[] }) =>
+      assignProjectMembersClient({ projectId, memberIds })
+  });
+export const useRemoveProjectMember = () =>
+  useMutation({
+    mutationFn: ({ projectId, userId }: { projectId: string; userId: string }) =>
+      removeProjectMemberClient({ projectId, userId })
   });
 export const useRequestRating = () =>
   useMutation({ mutationFn: (sprintId: string) => requestRatingClient({ sprintId }) });

@@ -1,14 +1,18 @@
 import { createGraphqlClient } from '@/app/lib/graphql/client';
 import {
+  GET_PROJECT_MEMBERS,
   GET_PROJECTS,
   GET_SPRINT_MEMBERS,
   GET_SPRINT_RATINGS,
-  GET_SPRINTS
+  GET_SPRINTS,
+  GET_USERS
 } from '@/app/lib/graphql/queries';
 import {
+  ADD_PROJECT_MEMBERS,
   ADD_SPRINT_MEMBERS,
   CREATE_PROJECT,
   CREATE_SPRINT,
+  REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
   UPDATE_PROJECT,
   UPDATE_SPRINT
@@ -20,6 +24,48 @@ export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
   const data = await client.request<{ getProjects: Project[] }>(GET_PROJECTS);
   return data.getProjects;
+}
+
+export async function getUsers() {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{
+    getUsers: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      role: { id: string; name: string };
+    }>;
+  }>(GET_USERS);
+
+  return data.getUsers.map(
+    (user): Member => ({
+      id: user.id,
+      name: user.fullName,
+      email: user.email,
+      role: user.role.name,
+      roleId: user.role.id
+    })
+  );
+}
+
+export async function getProjectMembers(projectId: string) {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{
+    getProjectMembers: Array<{
+      id: string;
+      user: { id: string; fullName: string; email: string; role: { id: string; name: string } };
+    }>;
+  }>(GET_PROJECT_MEMBERS, { projectId });
+
+  return data.getProjectMembers.map(
+    (member): Member => ({
+      id: member.user.id,
+      name: member.user.fullName,
+      email: member.user.email,
+      role: member.user.role.name,
+      roleId: member.user.role.id
+    })
+  );
 }
 
 export async function getSprints(projectId: string) {
@@ -104,6 +150,19 @@ export async function updateSprint(input: {
 export async function addSprintMembers(sprintId: string, userIds: string[]) {
   const client = createGraphqlClient();
   return client.request(ADD_SPRINT_MEMBERS, { input: { sprintId, userIds } });
+}
+
+export async function addProjectMembers(projectId: string, userIds: string[]) {
+  const client = createGraphqlClient();
+  return client.request(ADD_PROJECT_MEMBERS, { input: { projectId, userIds } });
+}
+
+export async function removeProjectMember(projectId: string, userId: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ removeProjectMember: boolean }>(REMOVE_PROJECT_MEMBER, {
+    input: { projectId, userId }
+  });
+  return data.removeProjectMember;
 }
 
 export async function requestRating(sprintId: string) {

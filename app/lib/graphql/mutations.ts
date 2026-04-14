@@ -50,6 +50,20 @@ export const ADD_SPRINT_MEMBERS = gql`
   }
 `;
 
+export const ADD_PROJECT_MEMBERS = gql`
+  mutation AddProjectMembers($input: AddProjectMembersInput!) {
+    addProjectMembers(input: $input) {
+      id
+    }
+  }
+`;
+
+export const REMOVE_PROJECT_MEMBER = gql`
+  mutation RemoveProjectMember($input: RemoveProjectMemberInput!) {
+    removeProjectMember(input: $input)
+  }
+`;
+
 export const REQUEST_RATING = gql`
   mutation RequestRating($sprintId: String!) {
     requestRating(sprintId: $sprintId)

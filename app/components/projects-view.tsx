@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { Card } from '@/app/components/ui';
 import { ProjectForm } from '@/app/components/project-form';
@@ -104,13 +105,18 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
                 <td className="px-4 py-3 text-slate-700">{project.ratedUserCount}</td>
                 <td className="px-4 py-3 text-slate-700">
                   {editingProjectId === project.id ? null : (
-                    <button
-                      type="button"
-                      className="rounded border px-3 py-2 text-sm"
-                      onClick={() => setEditingProjectId(project.id)}
-                    >
-                      Edit
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="rounded border px-3 py-2 text-sm"
+                        onClick={() => setEditingProjectId(project.id)}
+                      >
+                        Edit
+                      </button>
+                      <Link className="rounded border px-3 py-2 text-sm" href={`/dashboard/projects/${project.id}`}>
+                        Team
+                      </Link>
+                    </div>
                   )}
                 </td>
               </tr>

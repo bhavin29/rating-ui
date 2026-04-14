@@ -10,6 +10,37 @@ export const GET_PROJECTS = gql`
   }
 `;
 
+export const GET_USERS = gql`
+  query GetUsers {
+    getUsers {
+      id
+      fullName
+      email
+      role {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_PROJECT_MEMBERS = gql`
+  query GetProjectMembers($projectId: String!) {
+    getProjectMembers(projectId: $projectId) {
+      id
+      user {
+        id
+        fullName
+        email
+        role {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 export const GET_SPRINTS = gql`
   query GetSprints($projectId: String!) {
     getSprints(projectId: $projectId) {
