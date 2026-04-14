@@ -18,6 +18,16 @@ export const createProjectClient = (input: { name: string }) =>
 export const updateProjectClient = (input: { projectId: string; name: string; status: string }) =>
   post('/api/admin/update-project', input);
 
+
+export const createRoleClient = (input: { name: string }) =>
+  post('/api/admin/create-role', input);
+
+export const updateRoleClient = (input: { roleId: string; name: string }) =>
+  post('/api/admin/update-role', input);
+
+export const deleteRoleClient = (payload: { roleId: string }) =>
+  post('/api/admin/delete-role', payload);
+
 export const createSprintClient = (input: {
   projectId: string;
   name: string;
