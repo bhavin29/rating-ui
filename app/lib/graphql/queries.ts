@@ -16,6 +16,7 @@ export const GET_USERS = gql`
       id
       fullName
       email
+      isActive
       role {
         id
         name
@@ -32,6 +33,7 @@ export const GET_PROJECT_MEMBERS = gql`
         id
         fullName
         email
+        isActive
         role {
           id
           name

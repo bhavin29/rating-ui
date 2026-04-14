@@ -41,5 +41,8 @@ export const assignProjectMembersClient = (payload: { projectId: string; memberI
 export const removeProjectMemberClient = (payload: { projectId: string; userId: string }) =>
   post('/api/admin/remove-project-member', payload);
 
+export const updateUserStatusClient = (payload: { userId: string; isActive: boolean }) =>
+  post('/api/admin/update-user-status', payload);
+
 export const requestRatingClient = (payload: { sprintId: string }) =>
   post('/api/admin/request-rating', payload);

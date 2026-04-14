@@ -64,6 +64,15 @@ export const REMOVE_PROJECT_MEMBER = gql`
   }
 `;
 
+export const UPDATE_USER_STATUS = gql`
+  mutation UpdateUserStatus($input: UpdateUserStatusInput!) {
+    updateUserStatus(input: $input) {
+      id
+      isActive
+    }
+  }
+`;
+
 export const REQUEST_RATING = gql`
   mutation RequestRating($sprintId: String!) {
     requestRating(sprintId: $sprintId)
