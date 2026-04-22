@@ -4,30 +4,29 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input, Select } from '@/app/components/ui';
-import type { AdminUser, Role } from '@/app/lib/api/types';
+import { Button, Select, Textarea } from '@/app/components/ui';
+import type { AdminQuestion, Role } from '@/app/lib/api/types';
 
 const schema = z.object({
-  name: z.string().trim().min(2, 'Name must be at least 2 characters'),
-  email: z.string().trim().email('Enter a valid email address'),
+  text: z.string().trim().min(5, 'Question text must be at least 5 characters'),
   roleId: z.string().min(1, 'Role is required'),
   isActive: z.boolean()
 });
 
-export type UserFormValues = z.infer<typeof schema>;
+export type QuestionFormValues = z.infer<typeof schema>;
 
-type UserFormProps = {
+type QuestionFormProps = {
   roles: Role[];
-  initialValues?: UserFormValues;
+  initialValues?: QuestionFormValues;
   submitLabel: string;
   submittingLabel: string;
-  onSubmit: (values: UserFormValues) => Promise<void>;
+  onSubmit: (values: QuestionFormValues) => Promise<void>;
   onCancel?: () => void;
   isSubmitting?: boolean;
   resetOnSuccess?: boolean;
 };
 
-export function UserForm({
+export function QuestionForm({
   roles,
   initialValues,
   submitLabel,
@@ -36,12 +35,11 @@ export function UserForm({
   onCancel,
   isSubmitting = false,
   resetOnSuccess = false
-}: UserFormProps) {
+}: QuestionFormProps) {
   const emptyValues = useMemo(
     () =>
       initialValues ?? {
-        name: '',
-        email: '',
+        text: '',
         roleId: roles[0]?.id ?? '',
         isActive: true
       },
@@ -53,7 +51,7 @@ export function UserForm({
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<UserFormValues>({
+  } = useForm<QuestionFormValues>({
     resolver: zodResolver(schema),
     defaultValues: emptyValues
   });
@@ -70,27 +68,20 @@ export function UserForm({
 
         if (resetOnSuccess) {
           reset({
-            name: '',
-            email: '',
+            text: '',
             roleId: roles[0]?.id ?? '',
             isActive: true
           });
         }
       })}
     >
+      <label className="space-y-1">
+        <span className="text-sm font-medium text-slate-700">Question</span>
+        <Textarea rows={4} placeholder="Enter the question text" {...register('text')} />
+        {errors.text ? <p className="text-xs text-red-600">{errors.text.message}</p> : null}
+      </label>
+
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-1">
-          <span className="text-sm font-medium text-slate-700">Name</span>
-          <Input placeholder="Full name" {...register('name')} />
-          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
-        </label>
-
-        <label className="space-y-1">
-          <span className="text-sm font-medium text-slate-700">Email</span>
-          <Input type="email" placeholder="name@company.com" {...register('email')} />
-          {errors.email ? <p className="text-xs text-red-600">{errors.email.message}</p> : null}
-        </label>
-
         <label className="space-y-1">
           <span className="text-sm font-medium text-slate-700">Role</span>
           <Select {...register('roleId')}>
@@ -108,7 +99,7 @@ export function UserForm({
           <input type="checkbox" className="h-4 w-4 rounded border-slate-300" {...register('isActive')} />
           <span>
             <span className="block text-sm font-medium text-slate-700">Active</span>
-            <span className="block text-xs text-slate-500">Inactive users stay visible but can be filtered easily.</span>
+            <span className="block text-xs text-slate-500">Inactive questions stay available for history and review.</span>
           </span>
         </label>
       </div>
@@ -131,11 +122,10 @@ export function UserForm({
   );
 }
 
-export function userToFormValues(user: AdminUser): UserFormValues {
+export function questionToFormValues(question: AdminQuestion): QuestionFormValues {
   return {
-    name: user.name,
-    email: user.email,
-    roleId: user.roleId,
-    isActive: user.isActive
+    text: question.text,
+    roleId: question.roleId,
+    isActive: question.isActive
   };
 }

@@ -1,5 +1,6 @@
 import { createGraphqlClient } from '@/app/lib/graphql/client';
 import {
+  GET_ALL_QUESTIONS,
   GET_PROJECT_MEMBERS,
   GET_PROJECTS,
   GET_ROLES,
@@ -11,22 +12,26 @@ import {
 import {
   ADD_PROJECT_MEMBERS,
   ADD_SPRINT_MEMBERS,
+  CREATE_QUESTION,
   CREATE_PROJECT,
   CREATE_ROLE,
   CREATE_SPRINT,
   CREATE_USER,
+  DELETE_QUESTION,
   DELETE_ROLE,
   DELETE_USER,
   REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
+  TOGGLE_QUESTION_STATUS,
   UPDATE_PROJECT_MEMBER_STATUS,
   UPDATE_PROJECT,
+  UPDATE_QUESTION,
   UPDATE_ROLE,
   UPDATE_SPRINT,
   UPDATE_USER
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
-import type { AdminUser, Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
+import type { AdminQuestion, AdminUser, Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -62,6 +67,17 @@ export async function getRoles() {
   const client = createGraphqlClient(await getAuthHeaders());
   const data = await client.request<{ getRoles: Role[] }>(GET_ROLES);
   return data.getRoles;
+}
+
+export async function getQuestions() {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ questions: AdminQuestion[] }>(GET_ALL_QUESTIONS);
+  return data.questions.map((question) => ({
+    id: question.id,
+    text: question.text,
+    roleId: question.roleId,
+    isActive: Boolean(question.isActive)
+  }));
 }
 
 export async function getProjectMembers(projectId: string) {
@@ -221,6 +237,32 @@ export async function deleteUser(userId: string) {
   return data.deleteUser;
 }
 
+export async function createQuestion(input: { text: string; roleId: string; isActive: boolean }) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ createQuestion: AdminQuestion }>(CREATE_QUESTION, { input });
+  return mapGraphqlQuestion(data.createQuestion);
+}
+
+export async function updateQuestion(input: { id: string; text: string; roleId: string; isActive: boolean }) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ updateQuestion: AdminQuestion }>(UPDATE_QUESTION, { input });
+  return mapGraphqlQuestion(data.updateQuestion);
+}
+
+export async function deleteQuestion(id: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ deleteQuestion: boolean }>(DELETE_QUESTION, { id });
+  return data.deleteQuestion;
+}
+
+export async function toggleQuestionStatus(id: string, isActive: boolean) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ toggleQuestionStatus: AdminQuestion }>(TOGGLE_QUESTION_STATUS, {
+    input: { id, isActive }
+  });
+  return mapGraphqlQuestion(data.toggleQuestionStatus);
+}
+
 export async function createSprint(input: {
   projectId: string;
   name: string;
@@ -295,5 +337,14 @@ function mapGraphqlUser(user: {
     role: user.role.name,
     roleId: user.role.id,
     isActive: Boolean(user.isActive)
+  };
+}
+
+function mapGraphqlQuestion(question: AdminQuestion): AdminQuestion {
+  return {
+    id: question.id,
+    text: question.text,
+    roleId: question.roleId,
+    isActive: Boolean(question.isActive)
   };
 }

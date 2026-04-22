@@ -17,6 +17,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             <Link href="/dashboard">Overview</Link>
             <Link href="/dashboard/projects">Projects</Link>
             <Link href="/dashboard/users">Users</Link>
+            <Link href="/dashboard/questions">Questions</Link>
             <Link href="/dashboard/sprints">Sprints</Link>
             <Link href="/dashboard/roles">Roles</Link>
             <Link href="/dashboard/reports">User Reports</Link>

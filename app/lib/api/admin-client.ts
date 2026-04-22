@@ -42,6 +42,18 @@ export const updateUserClient = (input: {
 export const deleteUserClient = (payload: { userId: string }) =>
   post('/api/admin/delete-user', payload);
 
+export const createQuestionClient = (input: { text: string; roleId: string; isActive: boolean }) =>
+  post('/api/admin/create-question', input);
+
+export const updateQuestionClient = (input: { id: string; text: string; roleId: string; isActive: boolean }) =>
+  post('/api/admin/update-question', input);
+
+export const deleteQuestionClient = (payload: { id: string }) =>
+  post('/api/admin/delete-question', payload);
+
+export const toggleQuestionStatusClient = (payload: { id: string; isActive: boolean }) =>
+  post('/api/admin/toggle-question-status', payload);
+
 export const createSprintClient = (input: {
   projectId: string;
   name: string;

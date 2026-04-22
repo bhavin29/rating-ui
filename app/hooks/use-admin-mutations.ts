@@ -4,15 +4,19 @@ import { useMutation } from '@tanstack/react-query';
 import {
   assignMembersClient,
   assignProjectMembersClient,
+  createQuestionClient,
   createProjectClient,
   createRoleClient,
   createSprintClient,
   createUserClient,
+  deleteQuestionClient,
   deleteUserClient,
   removeProjectMemberClient,
   requestRatingClient,
+  toggleQuestionStatusClient,
   updateProjectMemberStatusClient,
   updateProjectClient,
+  updateQuestionClient,
   updateRoleClient,
   updateSprintClient,
   updateUserClient,
@@ -53,3 +57,7 @@ export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient })
 export const useCreateUser = () => useMutation({ mutationFn: createUserClient });
 export const useUpdateUser = () => useMutation({ mutationFn: updateUserClient });
 export const useDeleteUser = () => useMutation({ mutationFn: deleteUserClient });
+export const useCreateQuestion = () => useMutation({ mutationFn: createQuestionClient });
+export const useUpdateQuestion = () => useMutation({ mutationFn: updateQuestionClient });
+export const useDeleteQuestion = () => useMutation({ mutationFn: deleteQuestionClient });
+export const useToggleQuestionStatus = () => useMutation({ mutationFn: toggleQuestionStatusClient });

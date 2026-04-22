@@ -90,6 +90,17 @@ export const GET_QUESTIONS_BY_ROLE = gql`
   }
 `;
 
+export const GET_ALL_QUESTIONS = gql`
+  query GetAllQuestions {
+    questions {
+      id
+      text
+      roleId
+      isActive
+    }
+  }
+`;
+
 export const GET_SPRINT_RATINGS = gql`
   query GetSprintRatings($sprintId: String!) {
     getSprintRatings(sprintId: $sprintId) {

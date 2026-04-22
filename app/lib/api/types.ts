@@ -9,6 +9,13 @@ export type AdminUser = {
   isActive: boolean;
 };
 
+export type AdminQuestion = {
+  id: string;
+  text: string;
+  roleId: string;
+  isActive: boolean;
+};
+
 export type Member = {
   id: string;
   name: string;

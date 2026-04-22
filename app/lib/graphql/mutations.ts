@@ -80,6 +80,45 @@ export const DELETE_USER = gql`
   }
 `;
 
+export const CREATE_QUESTION = gql`
+  mutation CreateQuestion($input: CreateQuestionInput!) {
+    createQuestion(input: $input) {
+      id
+      text
+      roleId
+      isActive
+    }
+  }
+`;
+
+export const UPDATE_QUESTION = gql`
+  mutation UpdateQuestion($input: UpdateQuestionInput!) {
+    updateQuestion(input: $input) {
+      id
+      text
+      roleId
+      isActive
+    }
+  }
+`;
+
+export const DELETE_QUESTION = gql`
+  mutation DeleteQuestion($id: String!) {
+    deleteQuestion(id: $id)
+  }
+`;
+
+export const TOGGLE_QUESTION_STATUS = gql`
+  mutation ToggleQuestionStatus($input: ToggleQuestionStatusInput!) {
+    toggleQuestionStatus(input: $input) {
+      id
+      text
+      roleId
+      isActive
+    }
+  }
+`;
+
 export const CREATE_SPRINT = gql`
   mutation CreateSprint($input: CreateSprintInput!) {
     createSprint(input: $input) {

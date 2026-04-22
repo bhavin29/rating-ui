@@ -2,9 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Card, Input, Select } from '@/app/components/ui';
-import { UserForm, type UserFormValues, userToFormValues } from '@/app/components/user-form';
-import { useCreateUser, useDeleteUser, useUpdateUser } from '@/app/hooks/use-admin-mutations';
-import type { AdminUser, Role } from '@/app/lib/api/types';
+import { QuestionForm, type QuestionFormValues, questionToFormValues } from '@/app/components/question-form';
+import {
+  useCreateQuestion,
+  useDeleteQuestion,
+  useToggleQuestionStatus,
+  useUpdateQuestion
+} from '@/app/hooks/use-admin-mutations';
+import type { AdminQuestion, Role } from '@/app/lib/api/types';
 
 const PAGE_SIZE = 10;
 
@@ -13,91 +18,87 @@ type Notification = {
   message: string;
 };
 
-export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; roles: Role[] }) {
-  const [users, setUsers] = useState(initialUsers);
+export function QuestionsView({ initialQuestions, roles }: { initialQuestions: AdminQuestion[]; roles: Role[] }) {
+  const [questions, setQuestions] = useState(initialQuestions);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminQuestion | null>(null);
   const [notification, setNotification] = useState<Notification | null>(null);
 
-  const createUserMutation = useCreateUser();
-  const updateUserMutation = useUpdateUser();
-  const deleteUserMutation = useDeleteUser();
+  const createQuestionMutation = useCreateQuestion();
+  const updateQuestionMutation = useUpdateQuestion();
+  const deleteQuestionMutation = useDeleteQuestion();
+  const toggleQuestionStatusMutation = useToggleQuestionStatus();
 
   useEffect(() => {
     setCurrentPage(1);
   }, [search, roleFilter, activeFilter]);
 
-  const filteredUsers = useMemo(() => {
+  const roleNameById = useMemo(() => Object.fromEntries(roles.map((role) => [role.id, role.name])), [roles]);
+
+  const filteredQuestions = useMemo(() => {
     const term = search.trim().toLowerCase();
 
-    return users.filter((user) => {
-      const matchesSearch =
-        !term ||
-        user.name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term) ||
-        user.role.toLowerCase().includes(term);
-      const matchesRole = roleFilter === 'all' || user.roleId === roleFilter;
+    return questions.filter((question) => {
+      const matchesSearch = !term || question.text.toLowerCase().includes(term);
+      const matchesRole = roleFilter === 'all' || question.roleId === roleFilter;
       const matchesActive =
         activeFilter === 'all' ||
-        (activeFilter === 'active' && user.isActive) ||
-        (activeFilter === 'inactive' && !user.isActive);
+        (activeFilter === 'active' && question.isActive) ||
+        (activeFilter === 'inactive' && !question.isActive);
 
       return matchesSearch && matchesRole && matchesActive;
     });
-  }, [activeFilter, roleFilter, search, users]);
+  }, [activeFilter, questions, roleFilter, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginatedUsers = filteredUsers.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
-  const activeUserCount = users.filter((user) => user.isActive).length;
+  const paginatedQuestions = filteredQuestions.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
+  const activeQuestionCount = questions.filter((question) => question.isActive).length;
 
-  async function handleCreate(values: UserFormValues) {
+  async function handleCreate(values: QuestionFormValues) {
     setNotification(null);
 
     try {
-      const created = await createUserMutation.mutateAsync(values);
-      setUsers((current) => [created as AdminUser, ...current]);
-      setNotification({ tone: 'success', message: 'User created successfully.' });
+      const created = (await createQuestionMutation.mutateAsync(values)) as AdminQuestion;
+      setQuestions((current) => [created, ...current]);
+      setNotification({ tone: 'success', message: 'Question created successfully.' });
     } catch {
-      setNotification({ tone: 'error', message: 'Failed to create user.' });
+      setNotification({ tone: 'error', message: 'Failed to create question.' });
     }
   }
 
-  async function handleUpdate(userId: string, values: UserFormValues) {
+  async function handleUpdate(questionId: string, values: QuestionFormValues) {
     setNotification(null);
 
     try {
-      const updated = (await updateUserMutation.mutateAsync({ userId, ...values })) as AdminUser;
-      setUsers((current) => current.map((user) => (user.id === userId ? updated : user)));
-      setEditingUserId(null);
-      setNotification({ tone: 'success', message: 'User updated successfully.' });
+      const updated = (await updateQuestionMutation.mutateAsync({ id: questionId, ...values })) as AdminQuestion;
+      setQuestions((current) => current.map((question) => (question.id === questionId ? updated : question)));
+      setEditingQuestionId(null);
+      setNotification({ tone: 'success', message: 'Question updated successfully.' });
     } catch {
-      setNotification({ tone: 'error', message: 'Failed to update user.' });
+      setNotification({ tone: 'error', message: 'Failed to update question.' });
     }
   }
 
-  async function handleToggleStatus(user: AdminUser) {
+  async function handleToggleStatus(question: AdminQuestion) {
     setNotification(null);
 
     try {
-      const updated = (await updateUserMutation.mutateAsync({
-        userId: user.id,
-        name: user.name,
-        email: user.email,
-        roleId: user.roleId,
-        isActive: !user.isActive
-      })) as AdminUser;
-      setUsers((current) => current.map((item) => (item.id === user.id ? updated : item)));
+      const updated = (await toggleQuestionStatusMutation.mutateAsync({
+        id: question.id,
+        isActive: !question.isActive
+      })) as AdminQuestion;
+      setQuestions((current) => current.map((item) => (item.id === question.id ? updated : item)));
       setNotification({
         tone: 'success',
-        message: `${updated.name} is now ${updated.isActive ? 'active' : 'inactive'}.`
+        message: `Question marked as ${updated.isActive ? 'active' : 'inactive'}.`
       });
     } catch {
-      setNotification({ tone: 'error', message: 'Failed to update user status.' });
+      setNotification({ tone: 'error', message: 'Failed to update question status.' });
     }
   }
 
@@ -109,12 +110,12 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
     setNotification(null);
 
     try {
-      await deleteUserMutation.mutateAsync({ userId: deleteTarget.id });
-      setUsers((current) => current.filter((user) => user.id !== deleteTarget.id));
+      await deleteQuestionMutation.mutateAsync({ id: deleteTarget.id });
+      setQuestions((current) => current.filter((question) => question.id !== deleteTarget.id));
       setDeleteTarget(null);
-      setNotification({ tone: 'success', message: 'User deleted successfully.' });
+      setNotification({ tone: 'success', message: 'Question deleted successfully.' });
     } catch {
-      setNotification({ tone: 'error', message: 'Failed to delete user.' });
+      setNotification({ tone: 'error', message: 'Failed to delete question.' });
     }
   }
 
@@ -122,12 +123,12 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">User Management</h1>
-          <p className="text-sm text-slate-500">Create, update, filter, and manage user access from one place.</p>
+          <h1 className="text-2xl font-bold">Questions</h1>
+          <p className="text-sm text-slate-500">Manage role-based questions with filters, status control, and CRUD actions.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-          <span className="rounded-full bg-slate-100 px-3 py-1">Users: {users.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Active: {activeUserCount}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Questions: {questions.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Active: {activeQuestionCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Roles: {roles.length}</span>
         </div>
       </div>
@@ -146,15 +147,15 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
 
       <Card className="space-y-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Add user</h2>
-          <p className="text-sm text-slate-500">New users need a valid email, role, and active status.</p>
+          <h2 className="text-base font-semibold text-slate-900">Add question</h2>
+          <p className="text-sm text-slate-500">Assign each question to a role and control whether it is currently active.</p>
         </div>
-        <UserForm
+        <QuestionForm
           roles={roles}
-          submitLabel="Create user"
+          submitLabel="Create question"
           submittingLabel="Creating..."
           onSubmit={handleCreate}
-          isSubmitting={createUserMutation.isPending}
+          isSubmitting={createQuestionMutation.isPending}
           resetOnSuccess
         />
       </Card>
@@ -164,7 +165,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by name, email, or role"
+            placeholder="Search questions by text"
             className="md:col-span-2"
           />
           <Select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
@@ -186,58 +187,56 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
           <table className="min-w-full text-left text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 font-medium text-slate-600">Name</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Email</th>
+                <th className="px-4 py-3 font-medium text-slate-600">Text</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Role</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Active</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedUsers.length === 0 ? (
+              {paginatedQuestions.length === 0 ? (
                 <tr className="border-t border-slate-100">
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                    No users match the current search and filter settings.
+                  <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                    No questions match the current search and filter settings.
                   </td>
                 </tr>
               ) : (
-                paginatedUsers.map((user) => (
-                  <tr key={user.id} className="border-t border-slate-100 align-top">
-                    <td className="px-4 py-3" colSpan={editingUserId === user.id ? 5 : 1}>
-                      {editingUserId === user.id ? (
+                paginatedQuestions.map((question) => (
+                  <tr key={question.id} className="border-t border-slate-100 align-top">
+                    <td className="px-4 py-3" colSpan={editingQuestionId === question.id ? 4 : 1}>
+                      {editingQuestionId === question.id ? (
                         <div className="min-w-[32rem]">
                           <div className="mb-3">
-                            <p className="font-medium text-slate-900">Edit user</p>
-                            <p className="text-xs text-slate-500">Update profile details, role, or active status.</p>
+                            <p className="font-medium text-slate-900">Edit question</p>
+                            <p className="text-xs text-slate-500">Refine the wording, role assignment, or active status.</p>
                           </div>
-                          <UserForm
+                          <QuestionForm
                             roles={roles}
-                            initialValues={userToFormValues(user)}
+                            initialValues={questionToFormValues(question)}
                             submitLabel="Save changes"
                             submittingLabel="Saving..."
-                            onSubmit={(values) => handleUpdate(user.id, values)}
-                            onCancel={() => setEditingUserId(null)}
-                            isSubmitting={updateUserMutation.isPending}
+                            onSubmit={(values) => handleUpdate(question.id, values)}
+                            onCancel={() => setEditingQuestionId(null)}
+                            isSubmitting={updateQuestionMutation.isPending}
                           />
                         </div>
                       ) : (
-                        <p className="font-medium text-slate-900">{user.name}</p>
+                        <p className="max-w-3xl leading-6 text-slate-900">{question.text}</p>
                       )}
                     </td>
-                    {editingUserId === user.id ? null : (
+                    {editingQuestionId === question.id ? null : (
                       <>
-                        <td className="px-4 py-3 text-slate-700">{user.email}</td>
-                        <td className="px-4 py-3 text-slate-700">{user.role}</td>
+                        <td className="px-4 py-3 text-slate-700">{roleNameById[question.roleId] ?? 'Unknown role'}</td>
                         <td className="px-4 py-3">
                           <button
                             type="button"
                             className={`rounded-full px-3 py-1 text-xs font-medium ${
-                              user.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                              question.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
                             }`}
-                            onClick={() => handleToggleStatus(user)}
-                            disabled={updateUserMutation.isPending}
+                            onClick={() => handleToggleStatus(question)}
+                            disabled={toggleQuestionStatusMutation.isPending}
                           >
-                            {user.isActive ? 'Active' : 'Inactive'}
+                            {question.isActive ? 'Active' : 'Inactive'}
                           </button>
                         </td>
                         <td className="px-4 py-3">
@@ -245,14 +244,14 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                             <button
                               type="button"
                               className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"
-                              onClick={() => setEditingUserId(user.id)}
+                              onClick={() => setEditingQuestionId(question.id)}
                             >
                               Edit
                             </button>
                             <button
                               type="button"
                               className="rounded border border-red-300 px-3 py-2 text-sm text-red-700"
-                              onClick={() => setDeleteTarget(user)}
+                              onClick={() => setDeleteTarget(question)}
                             >
                               Delete
                             </button>
@@ -269,8 +268,8 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
 
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
           <p>
-            Showing {filteredUsers.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1}-
-            {Math.min(safeCurrentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length} users
+            Showing {filteredQuestions.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1}-
+            {Math.min(safeCurrentPage * PAGE_SIZE, filteredQuestions.length)} of {filteredQuestions.length} questions
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -299,10 +298,8 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
       {deleteTarget ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-slate-900">Delete user?</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              This will permanently remove <span className="font-medium text-slate-900">{deleteTarget.name}</span>.
-            </p>
+            <h2 className="text-lg font-semibold text-slate-900">Delete question?</h2>
+            <p className="mt-2 text-sm text-slate-600">This will permanently remove the selected question.</p>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 type="button"
@@ -315,9 +312,9 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                 type="button"
                 className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={handleDelete}
-                disabled={deleteUserMutation.isPending}
+                disabled={deleteQuestionMutation.isPending}
               >
-                {deleteUserMutation.isPending ? 'Deleting...' : 'Delete'}
+                {deleteQuestionMutation.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
