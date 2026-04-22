@@ -1,8 +1,6 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
-import { RequestRatingButton } from '@/app/components/request-rating-button';
 import { SprintForm } from '@/app/components/sprint-form';
 import { Card } from '@/app/components/ui';
 import type { Sprint } from '@/app/lib/api/types';
@@ -112,10 +110,6 @@ export function SprintsView({
                   >
                     Edit
                   </button>
-                  <Link className="rounded border px-3 py-2 text-sm" href={`/dashboard/sprints/${sprint.id}`}>
-                    Members
-                  </Link>
-                  <RequestRatingButton sprintId={sprint.id} />
                 </div>
               </div>
             )}
