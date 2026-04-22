@@ -14,16 +14,19 @@ import {
   CREATE_PROJECT,
   CREATE_ROLE,
   CREATE_SPRINT,
+  CREATE_USER,
   DELETE_ROLE,
+  DELETE_USER,
   REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
   UPDATE_PROJECT_MEMBER_STATUS,
   UPDATE_PROJECT,
   UPDATE_ROLE,
-  UPDATE_SPRINT
+  UPDATE_SPRINT,
+  UPDATE_USER
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
-import type { Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
+import type { AdminUser, Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -44,13 +47,13 @@ export async function getUsers() {
   }>(GET_USERS);
 
   return data.getUsers.map(
-    (user): Member => ({
+    (user): AdminUser => ({
       id: user.id,
       name: user.fullName,
       email: user.email,
       role: user.role.name,
       roleId: user.role.id,
-      isActive: user.isActive
+      isActive: Boolean(user.isActive)
     })
   );
 }
@@ -159,6 +162,65 @@ export async function deleteRole(roleId: string) {
   return data.deleteRole;
 }
 
+export async function createUser(input: { name: string; email: string; roleId: string; isActive: boolean }) {
+  const client = createGraphqlClient();
+  const data = await client.request<{
+    createUser: {
+      id: string;
+      fullName: string;
+      email: string;
+      isActive: boolean;
+      role: { id: string; name: string };
+    };
+  }>(CREATE_USER, {
+    input: {
+      name: input.name,
+      fullName: input.name,
+      email: input.email,
+      roleId: input.roleId,
+      isActive: input.isActive
+    }
+  });
+
+  return mapGraphqlUser(data.createUser);
+}
+
+export async function updateUser(input: {
+  userId: string;
+  name: string;
+  email: string;
+  roleId: string;
+  isActive: boolean;
+}) {
+  const client = createGraphqlClient();
+  const data = await client.request<{
+    updateUser: {
+      id: string;
+      fullName: string;
+      email: string;
+      isActive: boolean;
+      role: { id: string; name: string };
+    };
+  }>(UPDATE_USER, {
+    input: {
+      userId: input.userId,
+      name: input.name,
+      fullName: input.name,
+      email: input.email,
+      roleId: input.roleId,
+      isActive: input.isActive
+    }
+  });
+
+  return mapGraphqlUser(data.updateUser);
+}
+
+export async function deleteUser(userId: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ deleteUser: boolean }>(DELETE_USER, { input: { userId } });
+  return data.deleteUser;
+}
+
 export async function createSprint(input: {
   projectId: string;
   name: string;
@@ -216,5 +278,22 @@ async function getAuthHeaders() {
   const h = await headers();
   return {
     authorization: h.get('authorization') ?? `Bearer ${process.env.ADMIN_API_TOKEN ?? 'mock-admin-token'}`
+  };
+}
+
+function mapGraphqlUser(user: {
+  id: string;
+  fullName: string;
+  email: string;
+  isActive: boolean;
+  role: { id: string; name: string };
+}): AdminUser {
+  return {
+    id: user.id,
+    name: user.fullName,
+    email: user.email,
+    role: user.role.name,
+    roleId: user.role.id,
+    isActive: Boolean(user.isActive)
   };
 }

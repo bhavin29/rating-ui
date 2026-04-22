@@ -1,5 +1,14 @@
 export type Role = { id: string; name: string };
 
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  roleId: string;
+  isActive: boolean;
+};
+
 export type Member = {
   id: string;
   name: string;

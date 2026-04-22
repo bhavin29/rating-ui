@@ -16,7 +16,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           <nav className="flex flex-wrap gap-4 text-sm font-medium text-slate-700">
             <Link href="/dashboard">Overview</Link>
             <Link href="/dashboard/projects">Projects</Link>
-            <Link href="/dashboard/sprints">Sprints & Users</Link>
+            <Link href="/dashboard/users">Users</Link>
+            <Link href="/dashboard/sprints">Sprints</Link>
             <Link href="/dashboard/roles">Roles</Link>
             <Link href="/dashboard/reports">User Reports</Link>
           </nav>

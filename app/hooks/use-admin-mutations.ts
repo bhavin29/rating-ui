@@ -7,12 +7,15 @@ import {
   createProjectClient,
   createRoleClient,
   createSprintClient,
+  createUserClient,
+  deleteUserClient,
   removeProjectMemberClient,
   requestRatingClient,
   updateProjectMemberStatusClient,
   updateProjectClient,
   updateRoleClient,
   updateSprintClient,
+  updateUserClient,
   deleteRoleClient
 } from '@/app/lib/api/admin-client';
 
@@ -47,3 +50,6 @@ export const useRequestRating = () =>
 export const useCreateRole = () => useMutation({ mutationFn: createRoleClient });
 export const useUpdateRole = () => useMutation({ mutationFn: updateRoleClient });
 export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient });
+export const useCreateUser = () => useMutation({ mutationFn: createUserClient });
+export const useUpdateUser = () => useMutation({ mutationFn: updateUserClient });
+export const useDeleteUser = () => useMutation({ mutationFn: deleteUserClient });

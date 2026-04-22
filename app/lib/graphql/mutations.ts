@@ -44,6 +44,42 @@ export const DELETE_ROLE = gql`
   }
 `;
 
+export const CREATE_USER = gql`
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      id
+      fullName
+      email
+      isActive
+      role {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      id
+      fullName
+      email
+      isActive
+      role {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($input: DeleteUserInput!) {
+    deleteUser(input: $input)
+  }
+`;
+
 export const CREATE_SPRINT = gql`
   mutation CreateSprint($input: CreateSprintInput!) {
     createSprint(input: $input) {

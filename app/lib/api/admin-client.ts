@@ -28,6 +28,20 @@ export const updateRoleClient = (input: { roleId: string; name: string }) =>
 export const deleteRoleClient = (payload: { roleId: string }) =>
   post('/api/admin/delete-role', payload);
 
+export const createUserClient = (input: { name: string; email: string; roleId: string; isActive: boolean }) =>
+  post('/api/admin/create-user', input);
+
+export const updateUserClient = (input: {
+  userId: string;
+  name: string;
+  email: string;
+  roleId: string;
+  isActive: boolean;
+}) => post('/api/admin/update-user', input);
+
+export const deleteUserClient = (payload: { userId: string }) =>
+  post('/api/admin/delete-user', payload);
+
 export const createSprintClient = (input: {
   projectId: string;
   name: string;

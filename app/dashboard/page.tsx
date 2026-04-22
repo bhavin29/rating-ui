@@ -77,8 +77,11 @@ export default async function DashboardPage() {
         <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/projects">
           Manage Projects
         </Link>
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/users">
+          Manage Users
+        </Link>
         <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/sprints">
-          Manage Sprints & Users
+          Manage Sprints
         </Link>
         <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/roles">
           Manage Roles
