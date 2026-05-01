@@ -153,6 +153,22 @@ export const ADD_PROJECT_MEMBERS = gql`
   mutation AddProjectMembers($input: AddProjectMembersInput!) {
     addProjectMembers(input: $input) {
       id
+      isActive
+      roleId
+      role {
+        id
+        name
+      }
+      user {
+        id
+        fullName
+        email
+        isActive
+        role {
+          id
+          name
+        }
+      }
     }
   }
 `;
@@ -168,6 +184,11 @@ export const UPDATE_PROJECT_MEMBER_STATUS = gql`
     updateProjectMemberStatus(input: $input) {
       id
       isActive
+      roleId
+      role {
+        id
+        name
+      }
     }
   }
 `;

@@ -34,8 +34,8 @@ export const useAssignMembers = () =>
   });
 export const useAssignProjectMembers = () =>
   useMutation({
-    mutationFn: ({ projectId, memberIds }: { projectId: string; memberIds: string[] }) =>
-      assignProjectMembersClient({ projectId, memberIds })
+    mutationFn: ({ projectId, memberIds, roleId }: { projectId: string; memberIds: string[]; roleId: string }) =>
+      assignProjectMembersClient({ projectId, memberIds, roleId })
   });
 export const useRemoveProjectMember = () =>
   useMutation({
@@ -44,8 +44,17 @@ export const useRemoveProjectMember = () =>
   });
 export const useUpdateProjectMemberStatus = () =>
   useMutation({
-    mutationFn: ({ projectId, userId, isActive }: { projectId: string; userId: string; isActive: boolean }) =>
-      updateProjectMemberStatusClient({ projectId, userId, isActive })
+    mutationFn: ({
+      projectId,
+      userId,
+      isActive,
+      roleId
+    }: {
+      projectId: string;
+      userId: string;
+      isActive?: boolean;
+      roleId?: string;
+    }) => updateProjectMemberStatusClient({ projectId, userId, isActive, roleId })
   });
 export const useRequestRating = () =>
   useMutation({ mutationFn: (sprintId: string) => requestRatingClient({ sprintId }) });

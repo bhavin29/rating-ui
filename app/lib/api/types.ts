@@ -22,6 +22,8 @@ export type Member = {
   email: string;
   role: string;
   roleId: string;
+  membershipRole?: string | null;
+  membershipRoleId?: string | null;
   isActive?: boolean;
   membershipIsActive?: boolean;
 };

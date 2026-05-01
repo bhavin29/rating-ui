@@ -86,6 +86,8 @@ export async function getProjectMembers(projectId: string) {
     getProjectMembers: Array<{
       id: string;
       isActive?: boolean;
+      roleId?: string | null;
+      role?: { id: string; name: string } | null;
       user: { id: string; fullName: string; email: string; isActive?: boolean; role: { id: string; name: string } };
     }>;
   }>(GET_PROJECT_MEMBERS, { projectId });
@@ -97,6 +99,8 @@ export async function getProjectMembers(projectId: string) {
       email: member.user.email,
       role: member.user.role.name,
       roleId: member.user.role.id,
+      membershipRole: member.role?.name ?? null,
+      membershipRoleId: member.roleId ?? member.role?.id ?? null,
       isActive: member.user.isActive,
       membershipIsActive: member.isActive
     })
@@ -288,9 +292,9 @@ export async function addSprintMembers(sprintId: string, userIds: string[]) {
   return client.request(ADD_SPRINT_MEMBERS, { input: { sprintId, userIds } });
 }
 
-export async function addProjectMembers(projectId: string, userIds: string[]) {
+export async function addProjectMembers(projectId: string, userIds: string[], roleId?: string) {
   const client = createGraphqlClient();
-  return client.request(ADD_PROJECT_MEMBERS, { input: { projectId, userIds } });
+  return client.request(ADD_PROJECT_MEMBERS, { input: { projectId, userIds, roleId } });
 }
 
 export async function removeProjectMember(projectId: string, userId: string) {
@@ -301,11 +305,19 @@ export async function removeProjectMember(projectId: string, userId: string) {
   return data.removeProjectMember;
 }
 
-export async function updateProjectMemberStatus(projectId: string, userId: string, isActive: boolean) {
+export async function updateProjectMemberStatus(projectId: string, userId: string, isActive?: boolean, roleId?: string) {
   const client = createGraphqlClient();
-  const data = await client.request<{ updateProjectMemberStatus: { id: string; isActive: boolean } }>(
+  const input = {
+    projectId,
+    userId,
+    ...(typeof isActive === 'boolean' ? { isActive } : {}),
+    ...(roleId ? { roleId } : {})
+  };
+  const data = await client.request<{
+    updateProjectMemberStatus: { id: string; isActive: boolean; roleId?: string | null; role?: Role | null };
+  }>(
     UPDATE_PROJECT_MEMBER_STATUS,
-    { input: { projectId, userId, isActive } }
+    { input }
   );
   return data.updateProjectMemberStatus;
 }

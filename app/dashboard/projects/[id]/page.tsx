@@ -1,10 +1,15 @@
 import Link from 'next/link';
 import { ProjectTeamManager } from '@/app/components/project-team-manager';
-import { getProjectMembers, getProjects, getUsers } from '@/app/lib/api/admin-api';
+import { getProjectMembers, getProjects, getRoles, getUsers } from '@/app/lib/api/admin-api';
 
 export default async function ProjectTeamPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [projects, allUsers, initialMembers] = await Promise.all([getProjects(), getUsers(), getProjectMembers(id)]);
+  const [projects, allUsers, initialMembers, roles] = await Promise.all([
+    getProjects(),
+    getUsers(),
+    getProjectMembers(id),
+    getRoles()
+  ]);
   const project = projects.find((entry) => entry.id === id);
 
   if (!project) {
@@ -31,6 +36,7 @@ export default async function ProjectTeamPage({ params }: { params: Promise<{ id
         projectName={project.name}
         allUsers={allUsers}
         initialMembers={initialMembers}
+        roles={roles}
       />
     </div>
   );

@@ -31,7 +31,7 @@ export function SprintsView({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Sprints</h1>
-          <p className="text-sm text-slate-500">Sprint planning, assigned users, and rating-request activity</p>
+          <p className="text-sm text-slate-500">Sprint planning, assigned users, and rating progress at a glance</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
           <span className="rounded-full bg-slate-100 px-3 py-1">Projects: {projectCount}</span>

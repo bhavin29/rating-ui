@@ -39,6 +39,11 @@ export const GET_PROJECT_MEMBERS = gql`
     getProjectMembers(projectId: $projectId) {
       id
       isActive
+      roleId
+      role {
+        id
+        name
+      }
       user {
         id
         fullName

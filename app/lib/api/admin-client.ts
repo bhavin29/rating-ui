@@ -6,7 +6,8 @@ async function post<T>(url: string, body: unknown): Promise<T> {
   });
 
   if (!res.ok) {
-    throw new Error(`Request failed: ${res.status}`);
+    const payload = await res.json().catch(() => null);
+    throw new Error(payload?.message ?? `Request failed: ${res.status}`);
   }
 
   return res.json();
@@ -71,13 +72,18 @@ export const updateSprintClient = (input: {
 export const assignMembersClient = (payload: { sprintId: string; memberIds: string[] }) =>
   post('/api/admin/assign-members', payload);
 
-export const assignProjectMembersClient = (payload: { projectId: string; memberIds: string[] }) =>
+export const assignProjectMembersClient = (payload: { projectId: string; memberIds: string[]; roleId: string }) =>
   post('/api/admin/assign-project-members', payload);
 
 export const removeProjectMemberClient = (payload: { projectId: string; userId: string }) =>
   post('/api/admin/remove-project-member', payload);
 
-export const updateProjectMemberStatusClient = (payload: { projectId: string; userId: string; isActive: boolean }) =>
+export const updateProjectMemberStatusClient = (payload: {
+  projectId: string;
+  userId: string;
+  isActive?: boolean;
+  roleId?: string;
+}) =>
   post('/api/admin/update-project-member-status', payload);
 
 export const requestRatingClient = (payload: { sprintId: string }) =>
