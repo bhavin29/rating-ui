@@ -86,6 +86,16 @@ export const CREATE_QUESTION = gql`
       id
       text
       roleId
+      projectId
+      project {
+        id
+        name
+      }
+      sprintId
+      sprint {
+        id
+        name
+      }
       isActive
     }
   }
@@ -97,6 +107,16 @@ export const UPDATE_QUESTION = gql`
       id
       text
       roleId
+      projectId
+      project {
+        id
+        name
+      }
+      sprintId
+      sprint {
+        id
+        name
+      }
       isActive
     }
   }

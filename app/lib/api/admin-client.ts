@@ -43,11 +43,24 @@ export const updateUserClient = (input: {
 export const deleteUserClient = (payload: { userId: string }) =>
   post('/api/admin/delete-user', payload);
 
-export const createQuestionClient = (input: { text: string; roleId: string; isActive: boolean }) =>
-  post('/api/admin/create-question', input);
+export const createQuestionClient = (input: {
+  text: string;
+  roleId: string;
+  projectId?: string | null;
+  sprintId?: string | null;
+  isActive: boolean;
+}) =>
+  post('/api/admin/create-question', normalizeQuestionPayload(input, false));
 
-export const updateQuestionClient = (input: { id: string; text: string; roleId: string; isActive: boolean }) =>
-  post('/api/admin/update-question', input);
+export const updateQuestionClient = (input: {
+  id: string;
+  text: string;
+  roleId: string;
+  projectId?: string | null;
+  sprintId?: string | null;
+  isActive: boolean;
+}) =>
+  post('/api/admin/update-question', normalizeQuestionPayload(input, true));
 
 export const deleteQuestionClient = (payload: { id: string }) =>
   post('/api/admin/delete-question', payload);
@@ -88,3 +101,18 @@ export const updateProjectMemberStatusClient = (payload: {
 
 export const requestRatingClient = (payload: { sprintId: string }) =>
   post('/api/admin/request-rating', payload);
+
+function normalizeQuestionPayload<T extends { projectId?: string | null; sprintId?: string | null }>(
+  input: T,
+  includeNulls: boolean
+) {
+  const { projectId, sprintId, ...rest } = input;
+  const normalizedProjectId = projectId || null;
+  const normalizedSprintId = sprintId || null;
+
+  return {
+    ...rest,
+    ...(includeNulls || normalizedProjectId ? { projectId: normalizedProjectId } : {}),
+    ...(includeNulls || normalizedSprintId ? { sprintId: normalizedSprintId } : {})
+  };
+}

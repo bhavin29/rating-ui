@@ -5,6 +5,10 @@ import { requireAdmin } from '@/app/lib/utils/auth';
 export async function POST(req: Request) {
   await requireAdmin();
   const body = await req.json();
-  const data = await updateQuestion(body);
+  const data = await updateQuestion({
+    ...body,
+    projectId: body.projectId || null,
+    sprintId: body.sprintId || null
+  });
   return NextResponse.json(data);
 }

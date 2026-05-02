@@ -76,6 +76,10 @@ export async function getQuestions() {
     id: question.id,
     text: question.text,
     roleId: question.roleId,
+    projectId: question.projectId ?? null,
+    project: question.project ?? null,
+    sprintId: question.sprintId ?? null,
+    sprint: question.sprint ?? null,
     isActive: Boolean(question.isActive)
   }));
 }
@@ -241,15 +245,32 @@ export async function deleteUser(userId: string) {
   return data.deleteUser;
 }
 
-export async function createQuestion(input: { text: string; roleId: string; isActive: boolean }) {
+export async function createQuestion(input: {
+  text: string;
+  roleId: string;
+  projectId?: string | null;
+  sprintId?: string | null;
+  isActive: boolean;
+}) {
   const client = createGraphqlClient();
-  const data = await client.request<{ createQuestion: AdminQuestion }>(CREATE_QUESTION, { input });
+  const data = await client.request<{ createQuestion: AdminQuestion }>(CREATE_QUESTION, {
+    input: normalizeQuestionInput(input, false)
+  });
   return mapGraphqlQuestion(data.createQuestion);
 }
 
-export async function updateQuestion(input: { id: string; text: string; roleId: string; isActive: boolean }) {
+export async function updateQuestion(input: {
+  id: string;
+  text: string;
+  roleId: string;
+  projectId?: string | null;
+  sprintId?: string | null;
+  isActive: boolean;
+}) {
   const client = createGraphqlClient();
-  const data = await client.request<{ updateQuestion: AdminQuestion }>(UPDATE_QUESTION, { input });
+  const data = await client.request<{ updateQuestion: AdminQuestion }>(UPDATE_QUESTION, {
+    input: normalizeQuestionInput(input, true)
+  });
   return mapGraphqlQuestion(data.updateQuestion);
 }
 
@@ -357,6 +378,39 @@ function mapGraphqlQuestion(question: AdminQuestion): AdminQuestion {
     id: question.id,
     text: question.text,
     roleId: question.roleId,
+    projectId: question.projectId ?? null,
+    project: question.project ?? null,
+    sprintId: question.sprintId ?? null,
+    sprint: question.sprint ?? null,
     isActive: Boolean(question.isActive)
+  };
+}
+
+function normalizeQuestionInput(
+  input: {
+    id?: string;
+    text: string;
+    roleId: string;
+    projectId?: string | null;
+    sprintId?: string | null;
+    isActive: boolean;
+  },
+  includeNulls: boolean
+) {
+  const { projectId, sprintId, ...baseInput } = input;
+  const normalized = {
+    ...baseInput,
+    projectId: projectId || null,
+    sprintId: sprintId || null
+  };
+
+  if (includeNulls) {
+    return normalized;
+  }
+
+  return {
+    ...baseInput,
+    ...(normalized.projectId ? { projectId: normalized.projectId } : {}),
+    ...(normalized.sprintId ? { sprintId: normalized.sprintId } : {})
   };
 }

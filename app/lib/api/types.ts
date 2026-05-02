@@ -13,6 +13,10 @@ export type AdminQuestion = {
   id: string;
   text: string;
   roleId: string;
+  projectId?: string | null;
+  project?: Project | null;
+  sprintId?: string | null;
+  sprint?: Sprint | null;
   isActive: boolean;
 };
 

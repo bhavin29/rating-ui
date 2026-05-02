@@ -101,6 +101,16 @@ export const GET_ALL_QUESTIONS = gql`
       id
       text
       roleId
+      projectId
+      project {
+        id
+        name
+      }
+      sprintId
+      sprint {
+        id
+        name
+      }
       isActive
     }
   }

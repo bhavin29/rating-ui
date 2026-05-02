@@ -5,11 +5,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Select, Textarea } from '@/app/components/ui';
-import type { AdminQuestion, Role } from '@/app/lib/api/types';
+import type { AdminQuestion, Project, Role, Sprint } from '@/app/lib/api/types';
 
 const schema = z.object({
   text: z.string().trim().min(5, 'Question text must be at least 5 characters'),
   roleId: z.string().min(1, 'Role is required'),
+  projectId: z.string().optional(),
+  sprintId: z.string().optional(),
   isActive: z.boolean()
 });
 
@@ -17,6 +19,8 @@ export type QuestionFormValues = z.infer<typeof schema>;
 
 type QuestionFormProps = {
   roles: Role[];
+  projects: Project[];
+  sprints: Sprint[];
   initialValues?: QuestionFormValues;
   submitLabel: string;
   submittingLabel: string;
@@ -28,6 +32,8 @@ type QuestionFormProps = {
 
 export function QuestionForm({
   roles,
+  projects,
+  sprints,
   initialValues,
   submitLabel,
   submittingLabel,
@@ -41,6 +47,8 @@ export function QuestionForm({
       initialValues ?? {
         text: '',
         roleId: roles[0]?.id ?? '',
+        projectId: '',
+        sprintId: '',
         isActive: true
       },
     [initialValues, roles]
@@ -70,6 +78,8 @@ export function QuestionForm({
           reset({
             text: '',
             roleId: roles[0]?.id ?? '',
+            projectId: '',
+            sprintId: '',
             isActive: true
           });
         }
@@ -93,6 +103,30 @@ export function QuestionForm({
             ))}
           </Select>
           {errors.roleId ? <p className="text-xs text-red-600">{errors.roleId.message}</p> : null}
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-slate-700">Project</span>
+          <Select {...register('projectId')}>
+            <option value="">Not assigned</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </Select>
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-slate-700">Sprint</span>
+          <Select {...register('sprintId')}>
+            <option value="">Not assigned</option>
+            {sprints.map((sprint) => (
+              <option key={sprint.id} value={sprint.id}>
+                {sprint.project?.name ? `${sprint.name} (${sprint.project.name})` : sprint.name}
+              </option>
+            ))}
+          </Select>
         </label>
 
         <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
@@ -126,6 +160,8 @@ export function questionToFormValues(question: AdminQuestion): QuestionFormValue
   return {
     text: question.text,
     roleId: question.roleId,
+    projectId: question.projectId ?? '',
+    sprintId: question.sprintId ?? '',
     isActive: question.isActive
   };
 }

@@ -9,7 +9,7 @@ import {
   useToggleQuestionStatus,
   useUpdateQuestion
 } from '@/app/hooks/use-admin-mutations';
-import type { AdminQuestion, Role } from '@/app/lib/api/types';
+import type { AdminQuestion, Project, Role, Sprint } from '@/app/lib/api/types';
 
 const PAGE_SIZE = 10;
 
@@ -18,7 +18,22 @@ type Notification = {
   message: string;
 };
 
-export function QuestionsView({ initialQuestions, roles }: { initialQuestions: AdminQuestion[]; roles: Role[] }) {
+type QuestionPayload = Omit<QuestionFormValues, 'projectId' | 'sprintId'> & {
+  projectId: string | null;
+  sprintId: string | null;
+};
+
+export function QuestionsView({
+  initialQuestions,
+  roles,
+  projects,
+  sprints
+}: {
+  initialQuestions: AdminQuestion[];
+  roles: Role[];
+  projects: Project[];
+  sprints: Sprint[];
+}) {
   const [questions, setQuestions] = useState(initialQuestions);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
@@ -34,10 +49,22 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
   const toggleQuestionStatusMutation = useToggleQuestionStatus();
 
   useEffect(() => {
+    setQuestions(initialQuestions);
+  }, [initialQuestions]);
+
+  useEffect(() => {
     setCurrentPage(1);
   }, [search, roleFilter, activeFilter]);
 
   const roleNameById = useMemo(() => Object.fromEntries(roles.map((role) => [role.id, role.name])), [roles]);
+  const projectNameById = useMemo(
+    () => Object.fromEntries(projects.map((project) => [project.id, project.name])),
+    [projects]
+  );
+  const sprintNameById = useMemo(
+    () => Object.fromEntries(sprints.map((sprint) => [sprint.id, sprint.name])),
+    [sprints]
+  );
 
   const filteredQuestions = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -63,8 +90,10 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
     setNotification(null);
 
     try {
-      const created = (await createQuestionMutation.mutateAsync(values)) as AdminQuestion;
+      const payload = toQuestionPayload(values);
+      const created = hydrateQuestion((await createQuestionMutation.mutateAsync(payload)) as AdminQuestion, payload);
       setQuestions((current) => [created, ...current]);
+      setCurrentPage(1);
       setNotification({ tone: 'success', message: 'Question created successfully.' });
     } catch {
       setNotification({ tone: 'error', message: 'Failed to create question.' });
@@ -75,7 +104,8 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
     setNotification(null);
 
     try {
-      const updated = (await updateQuestionMutation.mutateAsync({ id: questionId, ...values })) as AdminQuestion;
+      const payload = toQuestionPayload(values);
+      const updated = hydrateQuestion((await updateQuestionMutation.mutateAsync({ id: questionId, ...payload })) as AdminQuestion, payload);
       setQuestions((current) => current.map((question) => (question.id === questionId ? updated : question)));
       setEditingQuestionId(null);
       setNotification({ tone: 'success', message: 'Question updated successfully.' });
@@ -119,6 +149,29 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
     }
   }
 
+  function toQuestionPayload(values: QuestionFormValues): QuestionPayload {
+    return {
+      ...values,
+      projectId: values.projectId || null,
+      sprintId: values.sprintId || null
+    };
+  }
+
+  function hydrateQuestion(question: AdminQuestion, values: QuestionPayload): AdminQuestion {
+    const projectId = values.projectId;
+    const sprintId = values.sprintId;
+    const project = projectId ? projects.find((entry) => entry.id === projectId) ?? null : null;
+    const sprint = sprintId ? sprints.find((entry) => entry.id === sprintId) ?? null : null;
+
+    return {
+      ...question,
+      projectId,
+      project,
+      sprintId,
+      sprint
+    };
+  }
+
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -152,6 +205,8 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
         </div>
         <QuestionForm
           roles={roles}
+          projects={projects}
+          sprints={sprints}
           submitLabel="Create question"
           submittingLabel="Creating..."
           onSubmit={handleCreate}
@@ -189,6 +244,8 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
               <tr>
                 <th className="px-4 py-3 font-medium text-slate-600">Text</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Role</th>
+                <th className="px-4 py-3 font-medium text-slate-600">Project</th>
+                <th className="px-4 py-3 font-medium text-slate-600">Sprint</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Active</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
               </tr>
@@ -196,14 +253,14 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
             <tbody>
               {paginatedQuestions.length === 0 ? (
                 <tr className="border-t border-slate-100">
-                  <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                  <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                     No questions match the current search and filter settings.
                   </td>
                 </tr>
               ) : (
                 paginatedQuestions.map((question) => (
                   <tr key={question.id} className="border-t border-slate-100 align-top">
-                    <td className="px-4 py-3" colSpan={editingQuestionId === question.id ? 4 : 1}>
+                    <td className="px-4 py-3" colSpan={editingQuestionId === question.id ? 6 : 1}>
                       {editingQuestionId === question.id ? (
                         <div className="min-w-[32rem]">
                           <div className="mb-3">
@@ -212,6 +269,8 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
                           </div>
                           <QuestionForm
                             roles={roles}
+                            projects={projects}
+                            sprints={sprints}
                             initialValues={questionToFormValues(question)}
                             submitLabel="Save changes"
                             submittingLabel="Saving..."
@@ -227,6 +286,12 @@ export function QuestionsView({ initialQuestions, roles }: { initialQuestions: A
                     {editingQuestionId === question.id ? null : (
                       <>
                         <td className="px-4 py-3 text-slate-700">{roleNameById[question.roleId] ?? 'Unknown role'}</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          {question.project?.name ?? (question.projectId ? projectNameById[question.projectId] : null) ?? 'Not Assigned'}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">
+                          {question.sprint?.name ?? (question.sprintId ? sprintNameById[question.sprintId] : null) ?? 'Not Assigned'}
+                        </td>
                         <td className="px-4 py-3">
                           <button
                             type="button"
