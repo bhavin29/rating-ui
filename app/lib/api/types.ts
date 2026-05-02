@@ -48,3 +48,29 @@ export type TokenValidationResult = {
   reason?: string | null;
   userId?: string | null;
 };
+
+export type SprintRatingQuestion = {
+  id: string;
+  text: string;
+  questionId?: string;
+  ratingByUserId: string;
+  ratingByUserName: string;
+  ratingByUserRole: string;
+  rating?: number;
+  answer?: string;
+};
+
+export type SprintRatingData = {
+  projectName: string;
+  sprintName: string;
+  ratedUserName: string;
+  ratedUserRole: string;
+  spmId: string;
+  questions: Array<{
+    id: string;
+    text: string;
+    ratingByUserId: string;
+    ratingByUserName: string;
+    ratingByUserRole: string;
+  }>;
+};

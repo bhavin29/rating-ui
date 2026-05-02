@@ -99,6 +99,25 @@ export const GET_ALL_QUESTIONS = gql`
   }
 `;
 
+export const GENERATE_SPRINT_RATING_REQUEST = gql`
+  query GenerateSprintRatingRequest($spmId: String!) {
+    generateSprintRatingRequest(spmId: $spmId) {
+      spmId
+      projectName
+      sprintName
+      ratedUserName
+      ratedUserRole
+      questions {
+        id
+        text
+        ratingByUserId
+        ratingByUserName
+        ratingByUserRole
+      }
+    }
+  }
+`;
+
 export const GET_SPRINT_RATINGS = gql`
   query GetSprintRatings($sprintId: String!) {
     getSprintRatings(sprintId: $sprintId) {
