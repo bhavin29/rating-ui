@@ -82,9 +82,6 @@ export const updateSprintClient = (input: {
   endDate: string;
 }) => post('/api/admin/update-sprint', input);
 
-export const assignMembersClient = (payload: { sprintId: string; memberIds: string[] }) =>
-  post('/api/admin/assign-members', payload);
-
 export const assignProjectMembersClient = (payload: { projectId: string; memberIds: string[]; roleId: string }) =>
   post('/api/admin/assign-project-members', payload);
 

@@ -4,14 +4,12 @@ import {
   GET_PROJECT_MEMBERS,
   GET_PROJECTS,
   GET_ROLES,
-  GET_SPRINT_MEMBERS,
   GET_SPRINT_RATINGS,
   GET_SPRINTS,
   GET_USERS
 } from '@/app/lib/graphql/queries';
 import {
   ADD_PROJECT_MEMBERS,
-  ADD_SPRINT_MEMBERS,
   CREATE_QUESTION,
   CREATE_PROJECT,
   CREATE_ROLE,
@@ -132,26 +130,6 @@ export async function getAllSprints() {
   return sprintGroups
     .flat()
     .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
-}
-
-export async function getSprintMembers(sprintId: string) {
-  const client = createGraphqlClient(await getAuthHeaders());
-  const data = await client.request<{
-    getSprintMembers: Array<{
-      id: string;
-      user: { id: string; fullName: string; email: string; role: { id: string; name: string } };
-    }>;
-  }>(GET_SPRINT_MEMBERS, { sprintId });
-
-  return data.getSprintMembers.map(
-    (member): Member => ({
-      id: member.user.id,
-      name: member.user.fullName,
-      email: member.user.email,
-      role: member.user.role.name,
-      roleId: member.user.role.id
-    })
-  );
 }
 
 export async function getSprintRatings(sprintId: string) {
@@ -306,11 +284,6 @@ export async function updateSprint(input: {
 }) {
   const client = createGraphqlClient();
   return client.request(UPDATE_SPRINT, { input });
-}
-
-export async function addSprintMembers(sprintId: string, userIds: string[]) {
-  const client = createGraphqlClient();
-  return client.request(ADD_SPRINT_MEMBERS, { input: { sprintId, userIds } });
 }
 
 export async function addProjectMembers(projectId: string, userIds: string[], roleId?: string) {

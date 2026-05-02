@@ -69,23 +69,6 @@ export const GET_SPRINTS = gql`
   }
 `;
 
-export const GET_SPRINT_MEMBERS = gql`
-  query GetSprintMembers($sprintId: String!) {
-    getSprintMembers(sprintId: $sprintId) {
-      id
-      user {
-        id
-        fullName
-        email
-        role {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
 export const GET_QUESTIONS_BY_ROLE = gql`
   query GetQuestionsByRole($roleId: String!) {
     getQuestionsByRole(roleId: $roleId) {

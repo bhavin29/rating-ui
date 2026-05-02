@@ -31,12 +31,12 @@ export function SprintsView({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Sprints</h1>
-          <p className="text-sm text-slate-500">Sprint planning, assigned users, and rating progress at a glance</p>
+          <p className="text-sm text-slate-500">Sprint planning, project members, and rating progress at a glance</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
           <span className="rounded-full bg-slate-100 px-3 py-1">Projects: {projectCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Sprints: {sprintRows.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {assignedUserCount}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Project members: {assignedUserCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Users with ratings: {ratedUserCount}</span>
         </div>
       </div>
@@ -98,7 +98,7 @@ export function SprintsView({
                   <p className="font-semibold">{sprint.name}</p>
                   <p className="text-sm text-slate-500">{formatSprintMeta(sprint)}</p>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
-                    <span className="rounded-full bg-slate-100 px-2 py-1">Assigned users: {memberCount}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1">Project members: {memberCount}</span>
                     <span className="rounded-full bg-slate-100 px-2 py-1">Users with ratings: {ratedUserCount}</span>
                   </div>
                 </div>

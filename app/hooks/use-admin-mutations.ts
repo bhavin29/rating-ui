@@ -2,7 +2,6 @@
 
 import { useMutation } from '@tanstack/react-query';
 import {
-  assignMembersClient,
   assignProjectMembersClient,
   createQuestionClient,
   createProjectClient,
@@ -27,11 +26,6 @@ export const useCreateProject = () => useMutation({ mutationFn: createProjectCli
 export const useUpdateProject = () => useMutation({ mutationFn: updateProjectClient });
 export const useCreateSprint = () => useMutation({ mutationFn: createSprintClient });
 export const useUpdateSprint = () => useMutation({ mutationFn: updateSprintClient });
-export const useAssignMembers = () =>
-  useMutation({
-    mutationFn: ({ sprintId, memberIds }: { sprintId: string; memberIds: string[] }) =>
-      assignMembersClient({ sprintId, memberIds })
-  });
 export const useAssignProjectMembers = () =>
   useMutation({
     mutationFn: ({ projectId, memberIds, roleId }: { projectId: string; memberIds: string[]; roleId: string }) =>

@@ -2,21 +2,21 @@ import Link from 'next/link';
 import { Card } from '@/app/components/ui';
 import { DashboardCard } from '@/app/components/dashboard-card';
 import type { Sprint } from '@/app/lib/api/types';
-import { getAllSprints, getProjects, getSprintMembers, getSprintRatings } from '@/app/lib/api/admin-api';
+import { getAllSprints, getProjectMembers, getProjects, getSprintRatings } from '@/app/lib/api/admin-api';
 
 export default async function DashboardPage() {
   const [projects, sprints] = await Promise.all([getProjects(), getAllSprints()]);
   const activeSprintCount = (sprints as Sprint[]).filter(isActiveSprint).length;
+  const projectMemberCounts = new Map(
+    await Promise.all(projects.map(async (project) => [project.id, (await getProjectMembers(project.id)).length] as const))
+  );
   const sprintUserStats = await Promise.all(
     (sprints as Sprint[]).map(async (sprint) => {
-      const [members, ratings] = await Promise.all([
-        getSprintMembers(sprint.id),
-        getSprintRatings(sprint.id)
-      ]);
+      const ratings = await getSprintRatings(sprint.id);
 
       return {
         sprint,
-        memberCount: members.length,
+        memberCount: sprint.project?.id ? projectMemberCounts.get(sprint.project.id) ?? 0 : 0,
         ratedUserCount: ratings.length
       };
     })
@@ -34,13 +34,13 @@ export default async function DashboardPage() {
         <DashboardCard title="Projects" value={projects.length} subtitle="Projects returned by GraphQL" />
         <DashboardCard title="Sprints" value={sprints.length} subtitle="All discovered sprint records" />
         <DashboardCard title="Active Sprints" value={activeSprintCount} subtitle="Active based on sprint dates" />
-        <DashboardCard title="Assigned Users" value={assignedUserCount} subtitle="Total sprint member assignments" />
+        <DashboardCard title="Assigned Users" value={assignedUserCount} subtitle="Project members across sprint projects" />
       </div>
       <Card className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">User Activity Snapshot</h2>
-            <p className="text-sm text-slate-500">Live counts from sprint membership and rating summaries</p>
+            <p className="text-sm text-slate-500">Live counts from project membership and rating summaries</p>
           </div>
           <p className="text-sm text-slate-600">
             Rated users: <span className="font-semibold text-slate-900">{ratedUserCount}</span>
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
                 <tr>
                   <th className="px-4 py-3 font-medium text-slate-600">Sprint</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Project</th>
-                  <th className="px-4 py-3 font-medium text-slate-600">Assigned users</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Project members</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Users with ratings</th>
                 </tr>
               </thead>

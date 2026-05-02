@@ -26,11 +26,11 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Projects</h1>
-          <p className="text-sm text-slate-500">Project-level view of sprint volume, assigned users, and rating coverage</p>
+          <p className="text-sm text-slate-500">Project-level view of sprint volume, members, and rating coverage</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
           <span className="rounded-full bg-slate-100 px-3 py-1">Projects: {projectRows.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {totalAssignedUsers}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Project members: {totalAssignedUsers}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Users with ratings: {totalRatedUsers}</span>
         </div>
       </div>
@@ -64,7 +64,7 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
               <th className="px-4 py-3 font-medium text-slate-600">Project</th>
               <th className="px-4 py-3 font-medium text-slate-600">Status</th>
               <th className="px-4 py-3 font-medium text-slate-600">Sprints</th>
-              <th className="px-4 py-3 font-medium text-slate-600">Assigned users</th>
+              <th className="px-4 py-3 font-medium text-slate-600">Project members</th>
               <th className="px-4 py-3 font-medium text-slate-600">Users with ratings</th>
               <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
             </tr>

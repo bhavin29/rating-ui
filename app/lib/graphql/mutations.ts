@@ -161,14 +161,6 @@ export const UPDATE_SPRINT = gql`
   }
 `;
 
-export const ADD_SPRINT_MEMBERS = gql`
-  mutation AddSprintMembers($input: AddSprintMembersInput!) {
-    addSprintMembers(input: $input) {
-      id
-    }
-  }
-`;
-
 export const ADD_PROJECT_MEMBERS = gql`
   mutation AddProjectMembers($input: AddProjectMembersInput!) {
     addProjectMembers(input: $input) {

@@ -72,8 +72,8 @@ export function SprintForm({
         <h2 className="text-base font-semibold text-slate-900">{isEditMode ? 'Edit sprint' : 'Create sprint'}</h2>
         <p className="text-sm text-slate-500">
           {isEditMode
-            ? 'Update the sprint details while keeping assignments, rating requests, and summaries intact.'
-            : 'New sprints become the container for assigned users, rating requests, and score summaries.'}
+            ? 'Update the sprint details while keeping rating requests and summaries intact.'
+            : 'New sprints use their project team for rating requests and score summaries.'}
         </p>
       </div>
       <form
