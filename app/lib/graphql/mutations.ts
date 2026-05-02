@@ -229,3 +229,15 @@ export const VALIDATE_TOKEN = gql`
     }
   }
 `;
+
+export const ASSIGN_PROJECT_MEMBERS_TO_SPRINT = gql`
+  mutation AssignProjectMembersToSprint($sprintId: String!) {
+    assignProjectMembersToSprint(sprintId: $sprintId)
+  }
+`;
+
+export const GENERATE_PEER_RATINGS = gql`
+  mutation GeneratePeerRatings($sprintId: String!) {
+    generatePeerRatings(sprintId: $sprintId)
+  }
+`;

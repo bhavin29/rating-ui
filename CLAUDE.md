@@ -12,6 +12,7 @@ This is a Next.js App Router frontend for a Sprint Rating System backed by a Nes
 - Client mutations: TanStack Query hooks in `app/hooks/use-admin-mutations.ts`.
 - Backend access: `graphql-request` clients and GraphQL documents under `app/lib`.
 - Database reference: `db/schema.sql` is the checked-in source of truth for fresh environments.
+- Membership model: users are assigned to projects through `project_members`; there is no `sprint_members` table or sprint-member GraphQL API.
 
 ## Project Structure
 
@@ -37,6 +38,7 @@ Important files:
 - `app/lib/api/admin-client.ts`: browser-facing fetch helpers for `app/api/admin/*` routes.
 - `app/lib/graphql/queries.ts` and `app/lib/graphql/mutations.ts`: GraphQL documents.
 - `app/components/ui.tsx`: local UI primitives; prefer extending these before adding one-off component styles.
+- `app/components/project-team-manager.tsx`: project membership management; this is the only assignment flow for users.
 
 ## Commands
 
@@ -54,6 +56,7 @@ Notes:
 - `npm run dev` starts the Next.js development server.
 - `npm run build` is the best available full verification command.
 - There is no dedicated test script in `package.json` at the moment.
+- The frontend usually runs on `http://localhost:3000`; the GraphQL backend is expected at `http://localhost:3001/graphql` unless `NEXT_PUBLIC_GRAPHQL_ENDPOINT` overrides it.
 - Environment variables commonly needed for local work:
 
 ```bash
@@ -72,13 +75,15 @@ MOCK_ADMIN_AUTH=true
 - Keep browser mutation calls in `app/lib/api/admin-client.ts`, routed through `app/api/admin/*/route.ts`.
 - API route handlers should authenticate with `requireAdmin()` before admin mutations.
 - Normalize optional IDs consistently: UI forms use empty strings for unassigned values; API/server layers should convert them to `null` when sending GraphQL input.
+- Do not add `getSprintMembers`, `addSprintMembers`, `/api/admin/assign-members`, or references to `sprint_members`. Sprint-level screens should derive member counts from the sprint's project membership when needed.
+- Manage user assignment through project membership APIs only: `getProjectMembers`, `addProjectMembers`, `removeProjectMember`, and `updateProjectMemberStatus`.
 - When adding or changing GraphQL fields, update all relevant layers together: GraphQL document, API mapping, shared type, client helper, hook, and UI.
 - Prefer small mapper functions for translating GraphQL payloads into UI/domain types.
 - Keep validation schemas close to the form that owns them unless they are reused.
 - Use existing UI primitives (`Button`, `Input`, `Select`, `Textarea`, `Card`) and Tailwind conventions before introducing new component patterns.
 - Keep dashboard views practical and data-focused; avoid marketing-style layouts for admin workflows.
 - Do not edit generated or cache-like files such as `.next/` or `tsconfig.tsbuildinfo`.
-- Do not modify `db/schema.sql` unless the task explicitly includes schema changes.
+- Do not modify `db/schema.sql` unless the task explicitly includes schema changes. If schema work is requested, keep it aligned with the current backend shape and do not reintroduce removed tables such as `sprint_members`.
 
 ## Verification
 

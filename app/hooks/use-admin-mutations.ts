@@ -10,6 +10,7 @@ import {
   createUserClient,
   deleteQuestionClient,
   deleteUserClient,
+  processSprintClient,
   removeProjectMemberClient,
   requestRatingClient,
   toggleQuestionStatusClient,
@@ -52,6 +53,8 @@ export const useUpdateProjectMemberStatus = () =>
   });
 export const useRequestRating = () =>
   useMutation({ mutationFn: (sprintId: string) => requestRatingClient({ sprintId }) });
+export const useProcessSprint = () =>
+  useMutation({ mutationFn: (sprintId: string) => processSprintClient({ sprintId }) });
 
 
 export const useCreateRole = () => useMutation({ mutationFn: createRoleClient });

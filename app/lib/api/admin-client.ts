@@ -99,6 +99,9 @@ export const updateProjectMemberStatusClient = (payload: {
 export const requestRatingClient = (payload: { sprintId: string }) =>
   post('/api/admin/request-rating', payload);
 
+export const processSprintClient = (payload: { sprintId: string }) =>
+  post('/api/admin/process-sprint', payload);
+
 function normalizeQuestionPayload<T extends { projectId?: string | null; sprintId?: string | null }>(
   input: T,
   includeNulls: boolean

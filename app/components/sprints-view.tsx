@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { SprintForm } from '@/app/components/sprint-form';
-import { Card } from '@/app/components/ui';
+import { Card, ConfirmationDialog, AlertDialog } from '@/app/components/ui';
 import type { Sprint } from '@/app/lib/api/types';
+import { useProcessSprint } from '@/app/hooks/use-admin-mutations';
 
 type SprintRow = {
   sprint: Sprint;
@@ -22,9 +23,46 @@ export function SprintsView({
 }) {
   const [sprintRows, setSprintRows] = useState(initialSprints);
   const [editingSprintId, setEditingSprintId] = useState<string | null>(null);
+  const [processingSprintId, setProcessingSprintId] = useState<string | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingSprintId, setPendingSprintId] = useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error' | 'info'>('info');
+  const processSprintMutation = useProcessSprint();
 
   const assignedUserCount = sprintRows.reduce((total, item) => total + item.memberCount, 0);
   const ratedUserCount = sprintRows.reduce((total, item) => total + item.ratedUserCount, 0);
+
+  const handleProcessSprint = async (sprintId: string) => {
+    setPendingSprintId(sprintId);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmProcess = async () => {
+    if (!pendingSprintId) return;
+
+    setConfirmDialogOpen(false);
+    setProcessingSprintId(pendingSprintId);
+
+    try {
+      await processSprintMutation.mutateAsync(pendingSprintId);
+      setAlertTitle('Success');
+      setAlertMessage('Sprint processed successfully');
+      setAlertType('success');
+      setAlertOpen(true);
+    } catch (error) {
+      console.error('Error processing sprint:', error);
+      setAlertTitle('Error');
+      setAlertMessage(`Error processing sprint: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setAlertType('error');
+      setAlertOpen(true);
+    } finally {
+      setProcessingSprintId(null);
+      setPendingSprintId(null);
+    }
+  };
 
   return (
     <section className="space-y-4">
@@ -110,12 +148,39 @@ export function SprintsView({
                   >
                     Edit
                   </button>
+                  <button
+                    type="button"
+                    disabled={processingSprintId === sprint.id}
+                    className="rounded border px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => handleProcessSprint(sprint.id)}
+                  >
+                    {processingSprintId === sprint.id ? 'Processing…' : 'Process'}
+                  </button>
                 </div>
               </div>
             )}
           </Card>
         ))}
       </div>
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        title="Process Sprint"
+        message="Are you sure you want to process this sprint?"
+        confirmText="Yes"
+        cancelText="Cancel"
+        onConfirm={handleConfirmProcess}
+        onCancel={() => {
+          setConfirmDialogOpen(false);
+          setPendingSprintId(null);
+        }}
+      />
+      <AlertDialog
+        isOpen={alertOpen}
+        title={alertTitle}
+        message={alertMessage}
+        type={alertType}
+        onClose={() => setAlertOpen(false)}
+      />
     </section>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from '@/app/lib/graphql/queries';
 import {
   ADD_PROJECT_MEMBERS,
+  ASSIGN_PROJECT_MEMBERS_TO_SPRINT,
   CREATE_QUESTION,
   CREATE_PROJECT,
   CREATE_ROLE,
@@ -18,6 +19,7 @@ import {
   DELETE_QUESTION,
   DELETE_ROLE,
   DELETE_USER,
+  GENERATE_PEER_RATINGS,
   REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
   TOGGLE_QUESTION_STATUS,
@@ -320,6 +322,21 @@ export async function requestRating(sprintId: string) {
   const client = createGraphqlClient();
   const data = await client.request<{ requestRating: boolean }>(REQUEST_RATING, { sprintId });
   return data.requestRating;
+}
+
+export async function assignProjectMembersToSprint(sprintId: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ assignProjectMembersToSprint: boolean }>(
+    ASSIGN_PROJECT_MEMBERS_TO_SPRINT,
+    { sprintId }
+  );
+  return data.assignProjectMembersToSprint;
+}
+
+export async function generatePeerRatings(sprintId: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ generatePeerRatings: boolean }>(GENERATE_PEER_RATINGS, { sprintId });
+  return data.generatePeerRatings;
 }
 
 async function getAuthHeaders() {
