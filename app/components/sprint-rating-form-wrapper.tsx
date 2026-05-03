@@ -1,6 +1,7 @@
 'use client';
 
 import { SprintRatingForm } from '@/app/components/sprint-rating-form';
+import { submitSprintRatingRequest } from '@/app/lib/api/public-api';
 import type { SprintRatingData } from '@/app/lib/api/types';
 
 export function SprintRatingFormWrapper({ data }: { data: SprintRatingData }) {
@@ -8,8 +9,7 @@ export function SprintRatingFormWrapper({ data }: { data: SprintRatingData }) {
     <SprintRatingForm
       data={data}
       onSubmit={async (formData) => {
-        // Do nothing on submit - ready for backend API integration
-        console.log('Form submitted:', formData);
+        await submitSprintRatingRequest(formData);
       }}
     />
   );

@@ -68,6 +68,7 @@ export type SprintRatingData = {
   spmId: string;
   questions: Array<{
     id: string;
+    spr_id: string;
     text: string;
     ratingByUserId: string;
     ratingByUserName: string;

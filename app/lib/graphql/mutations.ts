@@ -211,6 +211,15 @@ export const REQUEST_RATING = gql`
   }
 `;
 
+export const UPDATE_SPRINT_RATING_REQUESTS = gql`
+  mutation UpdateSprintRatingRequests($input: [UpdateSprintRatingItemInput!]!) {
+    updateSprintRatingRequests(input: $input) {
+      status
+      message
+    }
+  }
+`;
+
 export const SUBMIT_RATING = gql`
   mutation SubmitRating($input: SubmitRatingInput!) {
     submitRating(input: $input) {

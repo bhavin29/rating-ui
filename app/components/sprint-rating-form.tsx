@@ -4,12 +4,18 @@ import { useState } from 'react';
 import { Card } from '@/app/components/ui';
 import type { SprintRatingData } from '@/app/lib/api/types';
 
-export type RatingFormData = {
-  [key: string]: {
-    rating: number | '';
-    answer: string;
-  };
+export type RatingFormDataItem = {
+  spr_id: string;
+  rating: number | null;
+  answer: string;
 };
+
+export type RatingFormData = RatingFormDataItem[];
+export type RatingSubmissionData = Array<{
+  spr_id: string;
+  rating: number;
+  answer: string;
+}>;
 
 type UserGroupedQuestions = {
   [key: string]: {
@@ -17,6 +23,7 @@ type UserGroupedQuestions = {
     userRole: string;
     questions: Array<{
       id: string;
+      spr_id: string;
       text: string;
       ratingByUserId: string;
     }>;
@@ -28,16 +35,21 @@ export function SprintRatingForm({
   onSubmit
 }: {
   data: SprintRatingData;
-  onSubmit: (formData: RatingFormData) => Promise<void>;
+  onSubmit: (formData: RatingSubmissionData) => Promise<void>;
 }) {
-  const [formData, setFormData] = useState<RatingFormData>(() => {
-    const initial: RatingFormData = {};
-    data.questions.forEach((q) => {
-      const key = `${q.id}`;
-      initial[key] = { rating: '', answer: '' };
-    });
-    return initial;
+  const initialFormData = data.questions.map((q) => {
+    if (!q.spr_id) {
+      throw new Error(`Missing spr_id for question ${q.id}`);
+    }
+
+    return {
+      spr_id: q.spr_id,
+      rating: null,
+      answer: ''
+    };
   });
+
+  const [formData, setFormData] = useState<RatingFormData>(() => initialFormData);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -56,40 +68,48 @@ export function SprintRatingForm({
     }
     groupedQuestions[userKey].questions.push({
       id: q.id,
+      spr_id: q.spr_id,
       text: q.text,
       ratingByUserId: q.ratingByUserId
     });
   });
 
-  const handleRatingChange = (questionId: string, rating: number | '') => {
-    setFormData((prev) => ({
-      ...prev,
-      [questionId]: {
-        ...prev[questionId],
-        rating,
-        // Clear answer if rating is not in 1-3 or 9-10
-        answer: rating && [1, 2, 3, 9, 10].includes(Number(rating)) ? prev[questionId].answer : ''
-      }
-    }));
+  const isAnswerRequired = (rating: number | null) => {
+    return rating !== null && (rating <= 3 || rating >= 9);
   };
 
-  const handleAnswerChange = (questionId: string, answer: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [questionId]: {
-        ...prev[questionId],
-        answer
-      }
-    }));
+  const handleRatingChange = (sprId: string, rating: number | null) => {
+    setFormData((prev) =>
+      prev.map((item) =>
+        item.spr_id === sprId
+          ? {
+              ...item,
+              rating,
+              answer: isAnswerRequired(rating) ? item.answer : ''
+            }
+          : item
+      )
+    );
+  };
+
+  const handleAnswerChange = (sprId: string, answer: string) => {
+    setFormData((prev) =>
+      prev.map((item) =>
+        item.spr_id === sprId ? { ...item, answer } : item
+      )
+    );
   };
 
   const isAllFieldsFilled = () => {
-    return Object.entries(formData).every(([questionId, data]) => {
-      if (data.rating === '' || data.rating === 0) return false;
-      const rating = Number(data.rating);
-      if ([1, 2, 3, 9, 10].includes(rating)) {
-        return data.answer.trim().length > 0;
+    return formData.every((item) => {
+      if (item.rating === null) {
+        return false;
       }
+
+      if (isAnswerRequired(item.rating)) {
+        return item.answer.trim().length > 0;
+      }
+
       return true;
     });
   };
@@ -101,7 +121,13 @@ export function SprintRatingForm({
     setIsSubmitting(true);
     setError('');
     try {
-      await onSubmit(formData);
+      await onSubmit(
+        formData.map((item) => ({
+          spr_id: item.spr_id,
+          rating: Number(item.rating),
+          answer: item.answer.trim()
+        }))
+      );
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit ratings');
@@ -146,12 +172,14 @@ This feedback is completely confidential and will not be shared with anyone indi
 
             <div className="space-y-4 border-t pt-4">
               {userGroup.questions.map((question) => {
-                const rating = formData[question.id]?.rating;
-                const answer = formData[question.id]?.answer;
-                const shouldShowAnswer = rating && [1, 2, 3, 9, 10].includes(Number(rating));
+                const questionKey = question.spr_id;
+                const questionData = formData.find((item) => item.spr_id === questionKey);
+                const rating = questionData?.rating ?? null;
+                const answer = questionData?.answer ?? '';
+                const shouldShowAnswer = isAnswerRequired(rating);
 
                 return (
-                  <div key={question.id} className="space-y-3">
+                  <div key={questionKey} className="space-y-3">
                     {/* Question Label */}
                     <label className="block text-sm font-medium text-slate-700">
                       {question.text}
@@ -159,10 +187,10 @@ This feedback is completely confidential and will not be shared with anyone indi
 
                     {/* Rating Dropdown */}
                     <select
-                      value={rating === '' ? '' : rating}
+                      value={rating === null ? '' : rating}
                       onChange={(e) => {
                         const value = e.target.value;
-                        handleRatingChange(question.id, value === '' ? '' : parseInt(value));
+                        handleRatingChange(questionKey, value === '' ? null : parseInt(value));
                       }}
                       className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                     >
@@ -174,12 +202,11 @@ This feedback is completely confidential and will not be shared with anyone indi
                       ))}
                     </select>
 
-                    {/* Conditional Answer Field */}
                     {shouldShowAnswer && (
                       <textarea
                         value={answer}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                        placeholder="Please enter valid reason for this rating"
+                        onChange={(e) => handleAnswerChange(questionKey, e.target.value)}
+                        placeholder="Please enter a reason for this rating"
                         className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                         rows={3}
                       />
