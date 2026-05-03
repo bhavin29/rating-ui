@@ -19,6 +19,7 @@ This is a Next.js App Router frontend for a Sprint Rating System backed by a Nes
 ```txt
 app/
   (public)/rate/[token]/        Public magic-link rating flow
+  (public)/sprint/rating         Public sprint rating form
   api/admin/*/route.ts          Server API wrappers for admin mutations
   components/                   Shared UI and domain components
   dashboard/                    Admin dashboard pages and nested resource views
@@ -30,6 +31,16 @@ app/
 db/
   schema.sql                    Database schema reference
 ```
+
+## Sprint Rating Flow
+
+- The sprint rating page is rendered from `app/(public)/sprint/rating/page.tsx` and expects `spmId` or `spmid` in the query string.
+- Data is loaded through `app/lib/api/public-api.ts` using `getSprintRatingRequest()`.
+- The GraphQL query `GENERATE_SPRINT_RATING_REQUEST` in `app/lib/graphql/queries.ts` aliases backend `sprId` to `spr_id` for frontend state.
+- The public form currently supports prefilled `rating` and `answer` values and hides submission when all questions are already rated.
+- Submission uses `app/api/sprint-rating/submit/route.ts` as a same-origin proxy to the backend mutation `updateSprintRatingRequests`.
+- The backend expects `UpdateSprintRatingItemInput` with `spr_id`, `rating`, and `answer`.
+
 
 Important files:
 
