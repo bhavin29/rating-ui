@@ -51,6 +51,7 @@ export type TokenValidationResult = {
 
 export type SprintRatingQuestion = {
   id: string;
+  spr_id: string;
   text: string;
   questionId?: string;
   ratingByUserId: string;
@@ -66,12 +67,5 @@ export type SprintRatingData = {
   ratedUserName: string;
   ratedUserRole: string;
   spmId: string;
-  questions: Array<{
-    id: string;
-    spr_id: string;
-    text: string;
-    ratingByUserId: string;
-    ratingByUserName: string;
-    ratingByUserRole: string;
-  }>;
+  questions: SprintRatingQuestion[];
 };

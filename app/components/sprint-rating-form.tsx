@@ -44,8 +44,8 @@ export function SprintRatingForm({
 
     return {
       spr_id: q.spr_id,
-      rating: null,
-      answer: ''
+      rating: q.rating ?? null,
+      answer: q.answer ?? ''
     };
   });
 
@@ -54,6 +54,8 @@ export function SprintRatingForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const alreadySubmitted = data.questions.every((q) => q.rating !== undefined && q.rating !== null);
 
   // Group questions by rating user name
   const groupedQuestions: UserGroupedQuestions = {};
@@ -226,16 +228,24 @@ This feedback is completely confidential and will not be shared with anyone indi
         </Card>
       )}
 
-      {/* Submit Button */}
-      <div className="flex justify-center pt-4">
-        <button
-          type="submit"
-          disabled={!isAllFieldsFilled() || isSubmitting}
-          className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-        >
-          {isSubmitting ? 'Submitting...' : 'Submit Ratings'}
-        </button>
-      </div>
+      {/* Submission Notice or Button */}
+      {alreadySubmitted ? (
+        <Card className="border-blue-200 bg-blue-50 p-4">
+          <p className="text-sm font-medium text-blue-800">
+            You have already submitted the rating for this sprint.
+          </p>
+        </Card>
+      ) : (
+        <div className="flex justify-center pt-4">
+          <button
+            type="submit"
+            disabled={!isAllFieldsFilled() || isSubmitting}
+            className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Ratings'}
+          </button>
+        </div>
+      )}
     </form>
   );
 }

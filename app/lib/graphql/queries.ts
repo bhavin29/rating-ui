@@ -114,6 +114,8 @@ export const GENERATE_SPRINT_RATING_REQUEST = gql`
         ratingByUserId
         ratingByUserName
         ratingByUserRole
+        rating
+        answer
       }
     }
   }
