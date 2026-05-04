@@ -111,6 +111,7 @@ export const GENERATE_SPRINT_RATING_REQUEST = gql`
         id
         spr_id: sprId
         text
+        helpText: helperText
         ratingByUserId
         ratingByUserName
         ratingByUserRole

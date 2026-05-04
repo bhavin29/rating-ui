@@ -4,6 +4,71 @@ import { useState } from 'react';
 import { Card } from '@/app/components/ui';
 import type { SprintRatingData } from '@/app/lib/api/types';
 
+function StarRatingInput({
+  value,
+  onChange
+}: {
+  value: number | null;
+  onChange: (rating: number) => void;
+}) {
+  const stars = Array.from({ length: 10 }, (_, i) => i + 1);
+
+  const getStarFill = (star: number) => {
+    if (value === null) {
+      return 'empty';
+    }
+    if (value >= star) {
+      return 'full';
+    }
+    if (value >= star - 0.5) {
+      return 'half';
+    }
+    return 'empty';
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {stars.map((star) => {
+          const fill = getStarFill(star);
+          const filledWidth = fill === 'half' ? '50%' : fill === 'full' ? '100%' : '0%';
+
+          return (
+            <button
+              type="button"
+              key={star}
+              onClick={(event) => {
+                const target = event.currentTarget;
+                const rect = target.getBoundingClientRect();
+                let score = star - 1 + (event.clientX - rect.left < rect.width / 2 ? 0.5 : 1);
+                if (score < 1) score = 1;
+                onChange(Number(score.toFixed(1)));
+              }}
+              className="relative h-10 w-10 rounded-lg border border-slate-300 bg-white text-slate-400 transition hover:border-slate-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200"
+              aria-label={`Rate ${star - 1 + 0.5} to ${star} out of 10`}
+            >
+              <span className="absolute inset-0 flex items-center justify-center text-slate-300">
+                <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              </span>
+              <span
+                className="absolute inset-y-0 left-0 overflow-hidden text-amber-400"
+                style={{ width: filledWidth, pointerEvents: 'none' }}
+              >
+                <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="text-xs text-slate-500">Click the left or right half of a star for half-point ratings.</div>
+    </div>
+  );
+}
+
 export type RatingFormDataItem = {
   spr_id: string;
   rating: number | null;
@@ -25,6 +90,7 @@ type UserGroupedQuestions = {
       id: string;
       spr_id: string;
       text: string;
+      helpText?: string | null;
       ratingByUserId: string;
     }>;
   };
@@ -54,6 +120,7 @@ export function SprintRatingForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [helpOpen, setHelpOpen] = useState<Record<string, boolean>>({});
 
   const alreadySubmitted = data.questions.every((q) => q.rating !== undefined && q.rating !== null);
 
@@ -72,6 +139,7 @@ export function SprintRatingForm({
       id: q.id,
       spr_id: q.spr_id,
       text: q.text,
+      helpText: q.helpText,
       ratingByUserId: q.ratingByUserId
     });
   });
@@ -183,26 +251,53 @@ This feedback is completely confidential and will not be shared with anyone indi
                 return (
                   <div key={questionKey} className="space-y-3">
                     {/* Question Label */}
-                    <label className="block text-sm font-medium text-slate-700">
-                      {question.text}
-                    </label>
+                    <div className="flex items-start gap-2">
+                      <label className="block text-sm font-medium text-slate-700">
+                        {question.text}
+                      </label>
+                      {question.helpText && (
+                        <div
+                          className="relative"
+                          onMouseEnter={() =>
+                            setHelpOpen((prev) => ({ ...prev, [questionKey]: true }))
+                          }
+                          onMouseLeave={() =>
+                            setHelpOpen((prev) => ({ ...prev, [questionKey]: false }))
+                          }
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setHelpOpen((prev) => ({
+                                ...prev,
+                                [questionKey]: !prev[questionKey]
+                              }))
+                            }
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white text-xs font-semibold text-slate-600 transition hover:border-slate-400 hover:bg-slate-50"
+                            aria-label="Show question help"
+                          >
+                            i
+                          </button>
+                          <div
+                            className={`absolute left-1/2 top-full z-10 mt-2 w-[min(22rem,calc(100vw-1rem))] -translate-x-1/2 rounded-lg border border-slate-200 bg-slate-900 px-3 py-2 text-xs text-slate-100 shadow-lg transition-opacity duration-150 ${
+                              helpOpen[questionKey] ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                            }`}
+                          >
+                            {question.helpText}
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
-                    {/* Rating Dropdown */}
-                    <select
-                      value={rating === null ? '' : rating}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        handleRatingChange(questionKey, value === '' ? null : parseInt(value));
-                      }}
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                    >
-                      <option value="">Select rating (1-10)</option>
-                      {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                        <option key={num} value={num}>
-                          {num}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-slate-700">Rating</p>
+                        <p className="text-sm text-slate-500">
+                          {rating === null ? 'Not rated yet' : `${rating.toFixed(1)} / 10`}
+                        </p>
+                      </div>
+                      <StarRatingInput value={rating} onChange={(value) => handleRatingChange(questionKey, value)} />
+                    </div>
 
                     {shouldShowAnswer && (
                       <textarea

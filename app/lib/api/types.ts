@@ -53,6 +53,7 @@ export type SprintRatingQuestion = {
   id: string;
   spr_id: string;
   text: string;
+  helpText?: string | null;
   questionId?: string;
   ratingByUserId: string;
   ratingByUserName: string;
