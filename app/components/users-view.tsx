@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Card, Input, Select } from '@/app/components/ui';
 import { UserForm, type UserFormValues, userToFormValues } from '@/app/components/user-form';
-import { useCreateUser, useDeleteUser, useUpdateUser } from '@/app/hooks/use-admin-mutations';
+import {
+  useCreateUser,
+  useDeleteUser,
+  useSendSprintFeedbackEmail,
+  useUpdateUser
+} from '@/app/hooks/use-admin-mutations';
 import type { AdminUser, Role } from '@/app/lib/api/types';
 
 const PAGE_SIZE = 10;
@@ -21,9 +26,11 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
   const [currentPage, setCurrentPage] = useState(1);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
+  const [emailingUserId, setEmailingUserId] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notification | null>(null);
 
   const createUserMutation = useCreateUser();
+  const sendSprintFeedbackEmailMutation = useSendSprintFeedbackEmail();
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
@@ -101,6 +108,27 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
       });
     } catch {
       setNotification({ tone: 'error', message: 'Failed to update user status.' });
+    }
+  }
+
+  async function handleSendEmail(user: AdminUser) {
+    setNotification(null);
+    setEmailingUserId(user.id);
+
+    try {
+      await sendSprintFeedbackEmailMutation.mutateAsync({
+        userId: user.id,
+        email: user.email,
+        name: user.name
+      });
+      setNotification({ tone: 'success', message: 'Email sent successfully' });
+    } catch (err) {
+      setNotification({
+        tone: 'error',
+        message: err instanceof Error ? err.message : 'Failed to send email.'
+      });
+    } finally {
+      setEmailingUserId(null);
     }
   }
 
@@ -245,6 +273,14 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"
+                              onClick={() => handleSendEmail(user)}
+                              disabled={emailingUserId === user.id}
+                            >
+                              {emailingUserId === user.id ? 'Sending...' : 'Email'}
+                            </button>
                             <button
                               type="button"
                               className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"

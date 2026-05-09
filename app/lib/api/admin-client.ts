@@ -32,6 +32,9 @@ export const deleteRoleClient = (payload: { roleId: string }) =>
 export const createUserClient = (input: { name: string; email: string; roleId: string; isActive: boolean }) =>
   post('/api/admin/create-user', input);
 
+export const sendSprintFeedbackEmailClient = (input: { userId: string; email: string; name: string }) =>
+  post('/api/sprint-feedback/send-email', input);
+
 export const updateUserClient = (input: {
   userId: string;
   name: string;

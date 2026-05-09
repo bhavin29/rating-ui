@@ -13,6 +13,7 @@ import {
   processSprintClient,
   removeProjectMemberClient,
   requestRatingClient,
+  sendSprintFeedbackEmailClient,
   toggleQuestionStatusClient,
   updateProjectMemberStatusClient,
   updateProjectClient,
@@ -61,6 +62,7 @@ export const useCreateRole = () => useMutation({ mutationFn: createRoleClient })
 export const useUpdateRole = () => useMutation({ mutationFn: updateRoleClient });
 export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient });
 export const useCreateUser = () => useMutation({ mutationFn: createUserClient });
+export const useSendSprintFeedbackEmail = () => useMutation({ mutationFn: sendSprintFeedbackEmailClient });
 export const useUpdateUser = () => useMutation({ mutationFn: updateUserClient });
 export const useDeleteUser = () => useMutation({ mutationFn: deleteUserClient });
 export const useCreateQuestion = () => useMutation({ mutationFn: createQuestionClient });

@@ -37,7 +37,17 @@ app/
 NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:3001/graphql
 ADMIN_API_TOKEN=your-admin-service-token
 MOCK_ADMIN_AUTH=true
+SPRINT_FEEDBACK_EMAIL_ENDPOINT=http://localhost:3001/api/sprint-feedback/send-email
+SPRINT_FEEDBACK_VERIFY_PIN_ENDPOINT=http://localhost:3001/api/sprint-feedback/verify-pin
+VITE_PORTAL_URL=https://your-portal-url.com
+VITE_ORGANIZATION_NAME=Your Organization Name
 ```
+
+The sprint feedback email endpoint should accept `POST /api/sprint-feedback/send-email` with
+`userId` or `user_id` in the request body. The backend should generate or fetch the user's
+security PIN details server-side and send the user to `{{PortalURL}}/feedback-auth?user={{UserUUID}}`.
+The PIN verification endpoint should accept `POST /api/sprint-feedback/verify-pin` with `userId`
+and `pin`, then return `{ "success": true }` for a valid PIN.
 
 ## Run
 
