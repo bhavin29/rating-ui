@@ -70,3 +70,15 @@ export type SprintRatingData = {
   spmId: string;
   questions: SprintRatingQuestion[];
 };
+
+export type UserProjectSprintData = {
+  userId: string;
+  userName: string;
+  projectId: string;
+  projectName: string;
+  sprintId: string;
+  sprintStartDate?: string | null;
+  sprintEndDate?: string | null;
+  sprintName: string;
+  sprintProjectMemberId: string;
+};

@@ -1,7 +1,10 @@
 import { createPublicClient } from '@/app/lib/graphql/public-client';
 import { SUBMIT_RATING, UPDATE_SPRINT_RATING_REQUESTS, VALIDATE_TOKEN } from '@/app/lib/graphql/mutations';
-import { GENERATE_SPRINT_RATING_REQUEST } from '@/app/lib/graphql/queries';
-import type { SprintRatingData } from '@/app/lib/api/types';
+import {
+  GENERATE_SPRINT_RATING_REQUEST,
+  GET_USER_PROJECT_SPRINT_DATA
+} from '@/app/lib/graphql/queries';
+import type { SprintRatingData, UserProjectSprintData } from '@/app/lib/api/types';
 import type { TokenValidationResult } from '@/app/lib/api/types';
 
 export async function validateToken(token: string) {
@@ -56,4 +59,13 @@ export async function getSprintRatingRequest(spmId: string): Promise<SprintRatin
     { spmId }
   );
   return data.generateSprintRatingRequest;
+}
+
+export async function getUserProjectSprintData(userId: string): Promise<UserProjectSprintData[]> {
+  const client = createPublicClient();
+  const data = await client.request<{ getUserProjectSprintData: UserProjectSprintData[] }>(
+    GET_USER_PROJECT_SPRINT_DATA,
+    { userId }
+  );
+  return data.getUserProjectSprintData;
 }

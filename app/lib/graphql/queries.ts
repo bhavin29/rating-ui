@@ -122,6 +122,22 @@ export const GENERATE_SPRINT_RATING_REQUEST = gql`
   }
 `;
 
+export const GET_USER_PROJECT_SPRINT_DATA = gql`
+  query GetUserProjectSprintData($userId: String!) {
+    getUserProjectSprintData(userId: $userId) {
+      userId
+      userName
+      projectId
+      projectName
+      sprintId
+      sprintStartDate
+      sprintEndDate
+      sprintName
+      sprintProjectMemberId
+    }
+  }
+`;
+
 export const GET_SPRINT_RATINGS = gql`
   query GetSprintRatings($sprintId: String!) {
     getSprintRatings(sprintId: $sprintId) {

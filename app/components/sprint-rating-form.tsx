@@ -6,10 +6,12 @@ import type { SprintRatingData } from '@/app/lib/api/types';
 
 function StarRatingInput({
   value,
-  onChange
+  onChange,
+  disabled = false
 }: {
   value: number | null;
   onChange: (rating: number) => void;
+  disabled?: boolean;
 }) {
   const stars = Array.from({ length: 10 }, (_, i) => i + 1);
 
@@ -38,13 +40,16 @@ function StarRatingInput({
               type="button"
               key={star}
               onClick={(event) => {
+                if (disabled) return;
+
                 const target = event.currentTarget;
                 const rect = target.getBoundingClientRect();
                 let score = star - 1 + (event.clientX - rect.left < rect.width / 2 ? 0.5 : 1);
                 if (score < 1) score = 1;
                 onChange(Number(score.toFixed(1)));
               }}
-              className="relative h-10 w-10 rounded-lg border border-slate-300 bg-white text-slate-400 transition hover:border-slate-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200"
+              disabled={disabled}
+              className="relative h-10 w-10 rounded-lg border border-slate-300 bg-white text-slate-400 transition hover:border-slate-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:hover:border-slate-300 disabled:hover:text-slate-400"
               aria-label={`Rate ${star - 1 + 0.5} to ${star} out of 10`}
             >
               <span className="absolute inset-0 flex items-center justify-center text-slate-300">
@@ -296,15 +301,20 @@ This feedback is completely confidential and will not be shared with anyone indi
                           {rating === null ? 'Not rated yet' : `${rating.toFixed(1)} / 10`}
                         </p>
                       </div>
-                      <StarRatingInput value={rating} onChange={(value) => handleRatingChange(questionKey, value)} />
+                      <StarRatingInput
+                        value={rating}
+                        onChange={(value) => handleRatingChange(questionKey, value)}
+                        disabled={alreadySubmitted}
+                      />
                     </div>
 
                     {shouldShowAnswer && (
                       <textarea
                         value={answer}
                         onChange={(e) => handleAnswerChange(questionKey, e.target.value)}
+                        disabled={alreadySubmitted}
                         placeholder="Please enter a reason for this rating"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-600"
                         rows={3}
                       />
                     )}
