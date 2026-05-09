@@ -170,15 +170,16 @@ export async function createUser(input: { name: string; email: string; roleId: s
   const client = createGraphqlClient();
   const data = await client.request<{
     createUser: {
-      id: string;
-      fullName: string;
-      email: string;
-      isActive: boolean;
-      role: { id: string; name: string };
+      user: {
+        id: string;
+        fullName: string;
+        email: string;
+        isActive: boolean;
+        role: { id: string; name: string };
+      };
     };
   }>(CREATE_USER, {
     input: {
-      name: input.name,
       fullName: input.name,
       email: input.email,
       roleId: input.roleId,
@@ -186,7 +187,7 @@ export async function createUser(input: { name: string; email: string; roleId: s
     }
   });
 
-  return mapGraphqlUser(data.createUser);
+  return mapGraphqlUser(data.createUser.user);
 }
 
 export async function updateUser(input: {
@@ -208,7 +209,6 @@ export async function updateUser(input: {
   }>(UPDATE_USER, {
     input: {
       userId: input.userId,
-      name: input.name,
       fullName: input.name,
       email: input.email,
       roleId: input.roleId,

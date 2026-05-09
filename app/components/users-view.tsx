@@ -62,8 +62,11 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
       const created = await createUserMutation.mutateAsync(values);
       setUsers((current) => [created as AdminUser, ...current]);
       setNotification({ tone: 'success', message: 'User created successfully.' });
-    } catch {
-      setNotification({ tone: 'error', message: 'Failed to create user.' });
+    } catch (err) {
+      setNotification({
+        tone: 'error',
+        message: err instanceof Error ? err.message : 'Failed to create user.'
+      });
     }
   }
 

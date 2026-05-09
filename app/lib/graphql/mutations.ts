@@ -47,13 +47,15 @@ export const DELETE_ROLE = gql`
 export const CREATE_USER = gql`
   mutation CreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
-      id
-      fullName
-      email
-      isActive
-      role {
+      user {
         id
-        name
+        fullName
+        email
+        isActive
+        role {
+          id
+          name
+        }
       }
     }
   }
