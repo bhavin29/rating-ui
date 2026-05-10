@@ -26,6 +26,31 @@ function sortSprintsByLatest(sprints: UserProjectSprintData[]) {
   });
 }
 
+function formatSprintDate(value?: string | null) {
+  if (!value) return 'No date';
+
+  const normalizedValue = value.trim();
+  const date = /^\d+$/.test(normalizedValue)
+    ? new Date(Number(normalizedValue))
+    : new Date(normalizedValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const day = new Intl.DateTimeFormat('en-US', { day: '2-digit' }).format(date);
+  const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
+  const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(date);
+
+  return `${day}-${month}-${year}`;
+}
+
+function getSprintOptionLabel(sprint: UserProjectSprintData) {
+  return `${sprint.sprintName} (${formatSprintDate(sprint.sprintStartDate)} to ${formatSprintDate(
+    sprint.sprintEndDate
+  )})`;
+}
+
 function groupByProject(rows: UserProjectSprintData[]) {
   const groups = new Map<string, ProjectGroup>();
 
@@ -189,7 +214,7 @@ export function SprintFeedbackClient({ rows }: { rows: UserProjectSprintData[] }
                   key={sprint.sprintProjectMemberId}
                   value={sprint.sprintProjectMemberId}
                 >
-                  {sprint.sprintName}
+                  {getSprintOptionLabel(sprint)}
                 </option>
               ))}
             </Select>
