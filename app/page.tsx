@@ -9,10 +9,7 @@ export default function HomePage() {
       </p>
       <div className="flex gap-3">
         <Link className="rounded bg-slate-900 px-4 py-2 text-white" href="/dashboard">
-          Open Dashboard
-        </Link>
-        <Link className="rounded border border-slate-300 px-4 py-2" href="/rate/sample-token">
-          Open Rating Page
+          Login
         </Link>
       </div>
     </main>
