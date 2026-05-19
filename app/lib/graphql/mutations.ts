@@ -252,3 +252,17 @@ export const GENERATE_PEER_RATINGS = gql`
     generatePeerRatings(sprintId: $sprintId)
   }
 `;
+
+export const ADMIN_LOGIN = gql`
+  mutation AdminLogin($input: AdminLoginInput!) {
+    adminLogin(input: $input) {
+      token
+      adminUser {
+        id
+        email
+        fullName
+        isActive
+      }
+    }
+  }
+`;

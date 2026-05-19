@@ -31,6 +31,7 @@ import {
   UPDATE_USER
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
+import { getAdminToken } from '@/app/lib/utils/auth';
 import type { AdminQuestion, AdminUser, Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
 
 export async function getProjects() {
@@ -344,6 +345,8 @@ export async function generatePeerRatings(sprintId: string) {
 }
 
 async function getAuthHeaders() {
+  const token = await getAdminToken();
+  if (token) return { authorization: `Bearer ${token}` };
   const h = await headers();
   return {
     authorization: h.get('authorization') ?? `Bearer ${process.env.ADMIN_API_TOKEN ?? 'mock-admin-token'}`
