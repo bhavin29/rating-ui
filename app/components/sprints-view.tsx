@@ -159,7 +159,7 @@ export function SprintsView({
                     className="rounded border px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => handleProcessSprint(sprint.id)}
                   >
-                    {processingSprintId === sprint.id ? 'Processing…' : 'Process'}
+                    {processingSprintId === sprint.id ? 'Generating…' : 'Generate Rating Links'}
                   </button>
                 </div>
               </div>

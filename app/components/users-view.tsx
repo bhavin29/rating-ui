@@ -279,7 +279,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                               onClick={() => handleSendEmail(user)}
                               disabled={emailingUserId === user.id}
                             >
-                              {emailingUserId === user.id ? 'Sending...' : 'Email'}
+                              {emailingUserId === user.id ? 'Sending...' : 'Send Rating Email'}
                             </button>
                             <button
                               type="button"
