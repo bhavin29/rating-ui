@@ -83,8 +83,14 @@ export function RoleForm({
               setMessage('Role created successfully.');
               onCreated?.(saved);
             }
-          } catch {
-            setMessage(isEditMode ? 'Failed to update role.' : 'Failed to create role.');
+          } catch (err) {
+            setMessage(
+              err instanceof Error && err.message
+                ? err.message
+                : isEditMode
+                  ? 'Failed to update role.'
+                  : 'Failed to create role.'
+            );
           }
         })}
       >
