@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
+import { updateRole } from '@/app/lib/api/admin-api';
 import { requireAdmin } from '@/app/lib/utils/auth';
 
 export async function POST(req: Request) {
-  await requireAdmin();
-  await req.json();
-
-  return NextResponse.json(
-    {
-      error:
-        'Role rename is not supported by the current backend GraphQL schema. Ask backend to add updateRole mutation and UpdateRoleInput type.'
-    },
-    { status: 501 }
-  );
+  try {
+    await requireAdmin();
+    const body = await req.json();
+    const data = await updateRole(body);
+    return NextResponse.json(data);
+  } catch (err) {
+    return NextResponse.json(
+      { message: err instanceof Error ? err.message : 'Failed to update role' },
+      { status: 500 }
+    );
+  }
 }
