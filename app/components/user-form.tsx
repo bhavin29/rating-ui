@@ -42,7 +42,7 @@ export function UserForm({
       initialValues ?? {
         name: '',
         email: '',
-        roleId: roles[0]?.id ?? '',
+        roleId: '',
         isActive: true
       },
     [initialValues, roles]
@@ -72,7 +72,7 @@ export function UserForm({
           reset({
             name: '',
             email: '',
-            roleId: roles[0]?.id ?? '',
+            roleId: '',
             isActive: true
           });
         }

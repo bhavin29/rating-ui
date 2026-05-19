@@ -31,6 +31,7 @@ import {
   UPDATE_USER
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
+import { getAdminToken } from '@/app/lib/utils/auth';
 import type { AdminQuestion, AdminUser, Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
 
 export async function getProjects() {
@@ -114,7 +115,11 @@ export async function getProjectMembers(projectId: string) {
 export async function getSprints(projectId: string) {
   const client = createGraphqlClient(await getAuthHeaders());
   const data = await client.request<{ getSprints: Sprint[] }>(GET_SPRINTS, { projectId });
-  return data.getSprints;
+  return data.getSprints.map((sprint) => ({
+    ...sprint,
+    startDate: normalizeSprintDate(sprint.startDate),
+    endDate: normalizeSprintDate(sprint.endDate)
+  }));
 }
 
 export async function getAllSprints() {
@@ -340,6 +345,8 @@ export async function generatePeerRatings(sprintId: string) {
 }
 
 async function getAuthHeaders() {
+  const token = await getAdminToken();
+  if (token) return { authorization: `Bearer ${token}` };
   const h = await headers();
   return {
     authorization: h.get('authorization') ?? `Bearer ${process.env.ADMIN_API_TOKEN ?? 'mock-admin-token'}`
@@ -374,6 +381,17 @@ function mapGraphqlQuestion(question: AdminQuestion): AdminQuestion {
     sprint: question.sprint ?? null,
     isActive: Boolean(question.isActive)
   };
+}
+
+/** Converts a PostgreSQL date value (may come back as a ms-timestamp string) to YYYY-MM-DD. */
+function normalizeSprintDate(value: string | undefined | null): string {
+  if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const ms = Number(value);
+  if (!Number.isNaN(ms) && ms > 0) {
+    return new Date(ms).toISOString().slice(0, 10);
+  }
+  return value;
 }
 
 function normalizeQuestionInput(

@@ -2,11 +2,12 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function requireAdmin() {
-  if ((process.env.MOCK_ADMIN_AUTH ?? 'true') === 'true') return;
   const store = await cookies();
-  const role = store.get('role')?.value;
+  const token = store.get('admin_token')?.value;
+  if (!token) redirect('/');
+}
 
-  if (role !== 'admin') {
-    redirect('/');
-  }
+export async function getAdminToken(): Promise<string | undefined> {
+  const store = await cookies();
+  return store.get('admin_token')?.value;
 }

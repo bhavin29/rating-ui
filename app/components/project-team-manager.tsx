@@ -86,7 +86,7 @@ export function ProjectTeamManager({
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
           <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {assignedMembers.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Available users: {availableUsers.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Available team members: {availableUsers.length}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">
             Active: {assignedMembers.filter((member) => member.membershipIsActive !== false).length}
           </span>
