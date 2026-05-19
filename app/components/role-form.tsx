@@ -65,36 +65,33 @@ export function RoleForm({
                 id?: string;
                 name?: string;
               };
-              const returnedRole = result.updateRole;
-              const savedRole =
-                returnedRole ?? (result.id && result.name ? { id: result.id, name: result.name } : null);
-
-              if (!savedRole) throw new Error('Role was not returned');
-
+              const saved =
+                result.updateRole ?? (result.id && result.name ? { id: result.id, name: result.name } : null);
+              if (!saved) throw new Error('Role was not returned');
               setMessage('Role updated successfully.');
-              onUpdated?.(savedRole);
+              onUpdated?.(saved);
             } else {
               const result = (await createMutation.mutateAsync({ name: values.name })) as {
                 createRole?: RolePayload;
                 id?: string;
                 name?: string;
               };
-              const returnedRole = result.createRole;
-              const savedRole =
-                returnedRole ?? (result.id && result.name ? { id: result.id, name: result.name } : null);
-
-              if (!savedRole) throw new Error('Role was not returned');
-
+              const saved =
+                result.createRole ?? (result.id && result.name ? { id: result.id, name: result.name } : null);
+              if (!saved) throw new Error('Role was not returned');
               reset({ name: '' });
               setMessage('Role created successfully.');
-              onCreated?.(savedRole);
+              onCreated?.(saved);
             }
           } catch {
             setMessage(isEditMode ? 'Failed to update role.' : 'Failed to create role.');
           }
         })}
       >
-        <Input className="min-w-56 flex-1" placeholder="Role name" {...register('name')} />
+        <div className="min-w-56 flex-1 space-y-1">
+          <Input placeholder="Role name" {...register('name')} />
+          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
+        </div>
         <Button type="submit" disabled={activeMutation.isPending}>
           {activeMutation.isPending ? (isEditMode ? 'Saving...' : 'Creating...') : isEditMode ? 'Save' : 'Create'}
         </Button>
@@ -112,7 +109,6 @@ export function RoleForm({
           </button>
         ) : null}
       </form>
-      {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
       {message ? (
         <p className={`text-sm ${activeMutation.isError ? 'text-red-600' : 'text-emerald-700'}`}>{message}</p>
       ) : null}

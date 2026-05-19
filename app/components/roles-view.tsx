@@ -21,10 +21,7 @@ export function RolesView({ initialRoles }: { initialRoles: Role[] }) {
 
   const filteredRoles = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) {
-      return roles;
-    }
-
+    if (!term) return roles;
     return roles.filter((role) => role.name.toLowerCase().includes(term));
   }, [roles, search]);
 
@@ -150,7 +147,7 @@ export function RolesView({ initialRoles }: { initialRoles: Role[] }) {
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <h2 className="text-lg font-semibold text-slate-900">Delete role?</h2>
             <p className="mt-2 text-sm text-slate-600">
-              This will permanently remove the role{' '}
+              This will permanently remove{' '}
               <span className="font-medium text-slate-900">{deleteTarget.name}</span>. Users and questions assigned to
               this role will lose their role association.
             </p>
