@@ -153,11 +153,11 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">User Management</h1>
-          <p className="text-sm text-slate-500">Create, update, filter, and manage user access from one place.</p>
+          <h1 className="text-2xl font-bold">Team</h1>
+          <p className="text-sm text-slate-500">Create, update, filter, and manage team member access from one place.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-          <span className="rounded-full bg-slate-100 px-3 py-1">Users: {users.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Team: {users.length}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Active: {activeUserCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Roles: {roles.length}</span>
         </div>
@@ -177,8 +177,8 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
 
       <Card className="space-y-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Add user</h2>
-          <p className="text-sm text-slate-500">New users need a valid email, role, and active status.</p>
+          <h2 className="text-base font-semibold text-slate-900">Add team member</h2>
+          <p className="text-sm text-slate-500">New team members need a valid email, role, and active status.</p>
         </div>
         <UserForm
           roles={roles}
@@ -309,7 +309,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
           <p>
             Showing {filteredUsers.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1}-
-            {Math.min(safeCurrentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length} users
+            {Math.min(safeCurrentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length} team members
           </p>
           <div className="flex items-center gap-2">
             <button

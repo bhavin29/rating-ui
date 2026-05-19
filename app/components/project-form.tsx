@@ -64,7 +64,7 @@ export function ProjectForm({
         <p className="text-sm text-slate-500">
           {isEditMode
             ? 'Update the project title and status without affecting its sprint and rating history.'
-            : 'Add a project before assigning users, creating sprints, and tracking ratings.'}
+            : 'Add a project before assigning team members, creating sprints, and tracking ratings.'}
         </p>
       </div>
       <form

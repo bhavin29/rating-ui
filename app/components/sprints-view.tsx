@@ -74,8 +74,8 @@ export function SprintsView({
         <div className="flex flex-wrap gap-2 text-xs text-slate-600">
           <span className="rounded-full bg-slate-100 px-3 py-1">Projects: {projectCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1">Sprints: {sprintRows.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Project members: {assignedUserCount}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Users with ratings: {ratedUserCount}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Team members: {assignedUserCount}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">Team with ratings: {ratedUserCount}</span>
         </div>
       </div>
       <Card>
@@ -141,8 +141,8 @@ export function SprintsView({
                   <p className="font-semibold">{sprint.name}</p>
                   <p className="text-sm text-slate-500">{formatSprintMeta(sprint)}</p>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
-                    <span className="rounded-full bg-slate-100 px-2 py-1">Project members: {memberCount}</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-1">Users with ratings: {ratedUserCount}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1">Team members: {memberCount}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1">Team with ratings: {ratedUserCount}</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -191,7 +191,7 @@ export function SprintsView({
 }
 
 function formatSprintMeta(sprint: Sprint) {
-  const parts = [sprint.project?.name, formatDateRange(sprint.startDate, sprint.endDate)].filter(Boolean);
+  const parts = [formatDateRange(sprint.startDate, sprint.endDate)].filter(Boolean);
   return parts.join(' | ');
 }
 

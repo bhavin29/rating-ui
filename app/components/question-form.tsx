@@ -46,7 +46,7 @@ export function QuestionForm({
     () =>
       initialValues ?? {
         text: '',
-        roleId: roles[0]?.id ?? '',
+        roleId: '',
         projectId: '',
         sprintId: '',
         isActive: true
@@ -77,7 +77,7 @@ export function QuestionForm({
         if (resetOnSuccess) {
           reset({
             text: '',
-            roleId: roles[0]?.id ?? '',
+            roleId: '',
             projectId: '',
             sprintId: '',
             isActive: true
