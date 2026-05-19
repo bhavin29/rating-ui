@@ -114,7 +114,11 @@ export async function getProjectMembers(projectId: string) {
 export async function getSprints(projectId: string) {
   const client = createGraphqlClient(await getAuthHeaders());
   const data = await client.request<{ getSprints: Sprint[] }>(GET_SPRINTS, { projectId });
-  return data.getSprints;
+  return data.getSprints.map((sprint) => ({
+    ...sprint,
+    startDate: normalizeSprintDate(sprint.startDate),
+    endDate: normalizeSprintDate(sprint.endDate)
+  }));
 }
 
 export async function getAllSprints() {
@@ -374,6 +378,17 @@ function mapGraphqlQuestion(question: AdminQuestion): AdminQuestion {
     sprint: question.sprint ?? null,
     isActive: Boolean(question.isActive)
   };
+}
+
+/** Converts a PostgreSQL date value (may come back as a ms-timestamp string) to YYYY-MM-DD. */
+function normalizeSprintDate(value: string | undefined | null): string {
+  if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const ms = Number(value);
+  if (!Number.isNaN(ms) && ms > 0) {
+    return new Date(ms).toISOString().slice(0, 10);
+  }
+  return value;
 }
 
 function normalizeQuestionInput(

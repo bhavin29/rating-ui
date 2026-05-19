@@ -196,8 +196,13 @@ function formatSprintMeta(sprint: Sprint) {
 }
 
 function formatDateRange(startDate: string, endDate: string) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const parseLocal = (s: string) => {
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
+  const start = parseLocal(startDate);
+  const end = parseLocal(endDate);
 
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
     return undefined;
