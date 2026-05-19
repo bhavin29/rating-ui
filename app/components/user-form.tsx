@@ -108,7 +108,7 @@ export function UserForm({
           <input type="checkbox" className="h-4 w-4 rounded border-slate-300" {...register('isActive')} />
           <span>
             <span className="block text-sm font-medium text-slate-700">Active</span>
-            <span className="block text-xs text-slate-500">Inactive users stay visible but can be filtered easily.</span>
+            <span className="block text-xs text-slate-500">Inactive team members stay visible but can be filtered easily.</span>
           </span>
         </label>
       </div>
