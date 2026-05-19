@@ -70,6 +70,13 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
             </tr>
           </thead>
           <tbody>
+            {projectRows.length === 0 ? (
+              <tr className="border-t border-slate-100">
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                  No projects have been created yet.
+                </td>
+              </tr>
+            ) : null}
             {projectRows.map((project) => (
               <tr key={project.id} className="border-t border-slate-100">
                 <td className="px-4 py-3">

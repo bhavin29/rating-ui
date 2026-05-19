@@ -106,6 +106,11 @@ export function SprintsView({
         />
       </Card>
       <div className="space-y-3">
+        {sprintRows.length === 0 ? (
+          <Card>
+            <p className="text-sm text-slate-500">No sprints have been created yet. Add one above.</p>
+          </Card>
+        ) : null}
         {sprintRows.map(({ sprint, memberCount, ratedUserCount }) => (
           <Card key={sprint.id} className="space-y-3">
             {editingSprintId === sprint.id ? (
