@@ -3,8 +3,15 @@ import { createProject } from '@/app/lib/api/admin-api';
 import { requireAdmin } from '@/app/lib/utils/auth';
 
 export async function POST(req: Request) {
-  await requireAdmin();
-  const body = await req.json();
-  const data = await createProject(body);
-  return NextResponse.json(data);
+  try {
+    await requireAdmin();
+    const body = await req.json();
+    const data = await createProject(body);
+    return NextResponse.json(data);
+  } catch (err) {
+    return NextResponse.json(
+      { message: err instanceof Error ? err.message : 'Failed to create project' },
+      { status: 500 }
+    );
+  }
 }

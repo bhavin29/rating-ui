@@ -8,13 +8,18 @@ import { Button, Input } from '@/app/components/ui';
 import { useCreateSprint, useUpdateSprint } from '@/app/hooks/use-admin-mutations';
 import type { Sprint } from '@/app/lib/api/types';
 
-const schema = z.object({
-  projectId: z.string().min(1),
-  sprintId: z.string().optional(),
-  name: z.string().min(2),
-  startDate: z.string().min(1),
-  endDate: z.string().min(1)
-});
+const schema = z
+  .object({
+    projectId: z.string().min(1, 'Project is required'),
+    sprintId: z.string().optional(),
+    name: z.string().min(2, 'Sprint name must be at least 2 characters'),
+    startDate: z.string().min(1, 'Start date is required'),
+    endDate: z.string().min(1, 'End date is required')
+  })
+  .refine((data) => !data.startDate || !data.endDate || data.endDate >= data.startDate, {
+    message: 'End date must be on or after the start date',
+    path: ['endDate']
+  });
 
 type SprintFormValues = z.infer<typeof schema>;
 
@@ -44,7 +49,12 @@ export function SprintForm({
   const isEditMode = Boolean(sprint);
   const activeMutation = isEditMode ? updateMutation : createMutation;
   const [message, setMessage] = useState<string | null>(null);
-  const { register, handleSubmit, reset } = useForm<SprintFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<SprintFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       projectId: sprint?.project?.id ?? projectId ?? '',
@@ -151,9 +161,18 @@ export function SprintForm({
           }
         })}
       >
-        <Input placeholder="Sprint name" {...register('name')} />
-        <Input type="date" aria-label="Sprint start date" {...register('startDate')} />
-        <Input type="date" aria-label="Sprint end date" {...register('endDate')} />
+        <div className="space-y-1">
+          <Input placeholder="Sprint name" {...register('name')} />
+          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
+        </div>
+        <div className="space-y-1">
+          <Input type="date" aria-label="Sprint start date" {...register('startDate')} />
+          {errors.startDate ? <p className="text-xs text-red-600">{errors.startDate.message}</p> : null}
+        </div>
+        <div className="space-y-1">
+          <Input type="date" aria-label="Sprint end date" {...register('endDate')} />
+          {errors.endDate ? <p className="text-xs text-red-600">{errors.endDate.message}</p> : null}
+        </div>
         <div className="flex gap-2">
           <Button type="submit" disabled={activeMutation.isPending}>
             {activeMutation.isPending ? (isEditMode ? 'Saving...' : 'Creating...') : isEditMode ? 'Save sprint' : 'Create sprint'}

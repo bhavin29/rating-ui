@@ -34,7 +34,12 @@ export function ProjectForm({
   const isEditMode = Boolean(project);
   const activeMutation = isEditMode ? updateMutation : createMutation;
   const [message, setMessage] = useState<string | null>(null);
-  const { register, handleSubmit, reset } = useForm<ProjectFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<ProjectFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       projectId: project?.id,
@@ -118,7 +123,10 @@ export function ProjectForm({
           }
         })}
       >
-        <Input className="min-w-56 flex-1" placeholder="Project name" {...register('name')} />
+        <div className="min-w-56 flex-1 space-y-1">
+          <Input placeholder="Project name" {...register('name')} />
+          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
+        </div>
         {isEditMode ? (
           <select
             className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
