@@ -39,10 +39,19 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({
+    const json = NextResponse.json({
       success: Boolean(payload?.success),
       message: payload?.message
     });
+
+    json.cookies.set('sprint_auth', body.userId, {
+      httpOnly: true,
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60 * 8 // 8 hours
+    });
+
+    return json;
   } catch (err) {
     return NextResponse.json(
       {

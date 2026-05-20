@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { Card } from '@/app/components/ui';
 import { SprintFeedbackClient } from '@/app/components/sprint-feedback-client';
 import { getUserProjectSprintData } from '@/app/lib/api/public-api';
@@ -26,13 +28,14 @@ export default async function SprintFeedbackPage({
   const userId = typeof params.user === 'string' ? params.user : undefined;
 
   if (!userId?.trim()) {
-    return (
-      <PageShell>
-        <Card className="border-red-200 bg-red-50 p-6 text-center">
-          <p className="text-red-700">Missing user parameter</p>
-        </Card>
-      </PageShell>
-    );
+    notFound();
+  }
+
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get('sprint_auth')?.value;
+
+  if (authCookie !== userId) {
+    notFound();
   }
 
   try {
