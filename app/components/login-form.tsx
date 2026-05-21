@@ -46,16 +46,20 @@ export function LoginForm() {
       })}
     >
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700">Email</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
         <Input type="email" placeholder="admin@example.com" {...register('email')} />
-        {errors.email ? <p className="text-xs text-red-600">{errors.email.message}</p> : null}
+        {errors.email ? <p className="text-xs text-red-600 dark:text-red-400">{errors.email.message}</p> : null}
       </div>
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700">Password</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
         <Input type="password" placeholder="••••••••" {...register('password')} />
-        {errors.password ? <p className="text-xs text-red-600">{errors.password.message}</p> : null}
+        {errors.password ? <p className="text-xs text-red-600 dark:text-red-400">{errors.password.message}</p> : null}
       </div>
-      {error ? <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
+      {error ? (
+        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-400">
+          {error}
+        </p>
+      ) : null}
       <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? 'Signing in…' : 'Sign in'}
       </Button>

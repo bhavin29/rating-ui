@@ -60,8 +60,8 @@ export function ProjectForm({
   return (
     <div className="space-y-3">
       <div>
-        <h2 className="text-base font-semibold text-slate-900">{isEditMode ? 'Edit project' : 'Create project'}</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{isEditMode ? 'Edit project' : 'Create project'}</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {isEditMode
             ? 'Update the project title and status without affecting its sprint and rating history.'
             : 'Add a project before assigning team members, creating sprints, and tracking ratings.'}
@@ -125,11 +125,11 @@ export function ProjectForm({
       >
         <div className="min-w-56 flex-1 space-y-1">
           <Input placeholder="Project name" {...register('name')} />
-          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
+          {errors.name ? <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p> : null}
         </div>
         {isEditMode ? (
           <select
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-600"
             {...register('status')}
           >
             {PROJECT_STATUS_OPTIONS.map((status) => (
@@ -145,7 +145,7 @@ export function ProjectForm({
         {isEditMode ? (
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             onClick={() => {
               reset({
                 projectId: project?.id,
@@ -162,7 +162,7 @@ export function ProjectForm({
         <input type="hidden" {...register('projectId')} />
       </form>
       {message ? (
-        <p className={`text-sm ${activeMutation.isError ? 'text-red-600' : 'text-emerald-700'}`}>{message}</p>
+        <p className={`text-sm ${activeMutation.isError ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>{message}</p>
       ) : null}
     </div>
   );

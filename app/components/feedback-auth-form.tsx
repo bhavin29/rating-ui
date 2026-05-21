@@ -46,7 +46,7 @@ export function FeedbackAuthForm({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md animate-[fadeIn_240ms_ease-out] rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 sm:p-8">
+    <div className="mx-auto w-full max-w-md animate-[fadeIn_240ms_ease-out] rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 transition-colors duration-300 dark:border-slate-700 dark:bg-slate-800 dark:shadow-slate-900/70 sm:p-8">
       <style>
         {`
           @keyframes fadeIn {
@@ -61,7 +61,7 @@ export function FeedbackAuthForm({ userId }: { userId: string }) {
           }
         `}
       </style>
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg shadow-slate-300">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg shadow-slate-300 dark:bg-slate-700 dark:shadow-slate-900">
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -78,13 +78,13 @@ export function FeedbackAuthForm({ userId }: { userId: string }) {
       </div>
 
       <div className="mt-6 text-center">
-        <h1 className="text-2xl font-bold text-slate-950">Sprint Feedback Access</h1>
-        <p className="mt-2 text-sm text-slate-600">Please enter your Security PIN to continue</p>
+        <h1 className="text-2xl font-bold text-slate-950 dark:text-slate-100">Sprint Feedback Access</h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Please enter your Security PIN to continue</p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
         <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-700">Security PIN</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Security PIN</span>
           <div className="relative">
             <Input
               value={pin}
@@ -101,7 +101,7 @@ export function FeedbackAuthForm({ userId }: { userId: string }) {
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-2 my-auto h-8 rounded-md px-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+              className="absolute inset-y-0 right-2 my-auto h-8 rounded-md px-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-slate-200"
               onClick={() => setShowPin((current) => !current)}
               disabled={isVerifying}
             >
@@ -111,7 +111,7 @@ export function FeedbackAuthForm({ userId }: { userId: string }) {
         </label>
 
         {error ? (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400">
             {error}
           </div>
         ) : null}

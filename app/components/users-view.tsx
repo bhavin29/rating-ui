@@ -153,13 +153,13 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Team</h1>
-          <p className="text-sm text-slate-500">Create, update, filter, and manage team member access from one place.</p>
+          <h1 className="text-2xl font-bold dark:text-slate-100">Team</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Create, update, filter, and manage team member access from one place.</p>
         </div>
-        <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-          <span className="rounded-full bg-slate-100 px-3 py-1">Team: {users.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Active: {activeUserCount}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Roles: {roles.length}</span>
+        <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Team: {users.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Active: {activeUserCount}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Roles: {roles.length}</span>
         </div>
       </div>
 
@@ -167,8 +167,8 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
         <div
           className={`rounded-lg border px-4 py-3 text-sm ${
             notification.tone === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-              : 'border-red-200 bg-red-50 text-red-700'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
+              : 'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400'
           }`}
         >
           {notification.message}
@@ -177,8 +177,8 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
 
       <Card className="space-y-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Add team member</h2>
-          <p className="text-sm text-slate-500">New team members need a valid email, role, and active status.</p>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Add team member</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">New team members need a valid email, role, and active status.</p>
         </div>
         <UserForm
           roles={roles}
@@ -213,33 +213,33 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
           </Select>
         </div>
 
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/50">
           <table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 dark:bg-slate-900/50">
               <tr>
-                <th className="px-4 py-3 font-medium text-slate-600">Name</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Email</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Role</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Active</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Name</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Email</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Role</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Active</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedUsers.length === 0 ? (
-                <tr className="border-t border-slate-100">
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                <tr className="border-t border-slate-100 dark:border-slate-700">
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                     No users match the current search and filter settings.
                   </td>
                 </tr>
               ) : (
                 paginatedUsers.map((user) => (
-                  <tr key={user.id} className="border-t border-slate-100 align-top">
+                  <tr key={user.id} className="border-t border-slate-100 align-top dark:border-slate-700">
                     <td className="px-4 py-3" colSpan={editingUserId === user.id ? 5 : 1}>
                       {editingUserId === user.id ? (
                         <div className="min-w-[32rem]">
                           <div className="mb-3">
-                            <p className="font-medium text-slate-900">Edit user</p>
-                            <p className="text-xs text-slate-500">Update profile details, role, or active status.</p>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">Edit user</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">Update profile details, role, or active status.</p>
                           </div>
                           <UserForm
                             roles={roles}
@@ -252,18 +252,20 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                           />
                         </div>
                       ) : (
-                        <p className="font-medium text-slate-900">{user.name}</p>
+                        <p className="font-medium text-slate-900 dark:text-slate-100">{user.name}</p>
                       )}
                     </td>
                     {editingUserId === user.id ? null : (
                       <>
-                        <td className="px-4 py-3 text-slate-700">{user.email}</td>
-                        <td className="px-4 py-3 text-slate-700">{user.role}</td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{user.email}</td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{user.role}</td>
                         <td className="px-4 py-3">
                           <button
                             type="button"
-                            className={`rounded-full px-3 py-1 text-xs font-medium ${
-                              user.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                            className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                              user.isActive
+                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
+                                : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
                             }`}
                             onClick={() => handleToggleStatus(user)}
                             disabled={updateUserMutation.isPending}
@@ -275,7 +277,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                           <div className="flex flex-wrap gap-2">
                             <button
                               type="button"
-                              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"
+                              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                               onClick={() => handleSendEmail(user)}
                               disabled={emailingUserId === user.id}
                             >
@@ -283,14 +285,14 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                             </button>
                             <button
                               type="button"
-                              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"
+                              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                               onClick={() => setEditingUserId(user.id)}
                             >
                               Edit
                             </button>
                             <button
                               type="button"
-                              className="rounded border border-red-300 px-3 py-2 text-sm text-red-700"
+                              className="rounded border border-red-300 px-3 py-2 text-sm text-red-700 transition hover:bg-red-50 dark:border-red-700/60 dark:text-red-400 dark:hover:bg-red-900/20"
                               onClick={() => setDeleteTarget(user)}
                             >
                               Delete
@@ -306,7 +308,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
           </table>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600 dark:text-slate-400">
           <p>
             Showing {filteredUsers.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1}-
             {Math.min(safeCurrentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length} team members
@@ -314,7 +316,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="rounded border border-slate-300 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded border border-slate-300 px-3 py-2 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
               onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
               disabled={safeCurrentPage === 1}
             >
@@ -325,7 +327,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
             </span>
             <button
               type="button"
-              className="rounded border border-slate-300 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded border border-slate-300 px-3 py-2 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
               onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
               disabled={safeCurrentPage === totalPages}
             >
@@ -336,23 +338,23 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
       </Card>
 
       {deleteTarget ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-slate-900">Delete user?</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              This will permanently remove <span className="font-medium text-slate-900">{deleteTarget.name}</span>.
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Delete user?</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              This will permanently remove <span className="font-medium text-slate-900 dark:text-slate-100">{deleteTarget.name}</span>.
             </p>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                 onClick={() => setDeleteTarget(null)}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={handleDelete}
                 disabled={deleteUserMutation.isPending}
               >

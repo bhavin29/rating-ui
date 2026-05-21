@@ -121,24 +121,24 @@ function RatingLoader({ spmId }: { spmId: string }) {
   if (isLoading) {
     return (
       <Card className="p-8 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-slate-900" />
-        <p className="mt-4 text-sm text-slate-600">Loading rating data...</p>
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-slate-900 dark:border-slate-600 dark:border-t-slate-300" />
+        <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">Loading rating data...</p>
       </Card>
     );
   }
 
   if (error) {
     return (
-      <Card className="border-red-200 bg-red-50 p-6 text-center">
-        <p className="text-red-700">{error}</p>
+      <Card className="border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950/50">
+        <p className="text-red-700 dark:text-red-400">{error}</p>
       </Card>
     );
   }
 
   if (!data) {
     return (
-      <Card className="border-yellow-200 bg-yellow-50 p-6 text-center">
-        <p className="text-yellow-700">No rating data available for this sprint.</p>
+      <Card className="border-yellow-200 bg-yellow-50 p-6 text-center dark:border-yellow-800 dark:bg-yellow-950/50">
+        <p className="text-yellow-700 dark:text-yellow-400">No rating data available for this sprint.</p>
       </Card>
     );
   }
@@ -164,16 +164,16 @@ export function SprintFeedbackClient({ rows }: { rows: UserProjectSprintData[] }
 
   if (projects.length === 0) {
     return (
-      <Card className="border-yellow-200 bg-yellow-50 p-6 text-center">
-        <p className="font-medium text-yellow-800">No projects available.</p>
-        <p className="mt-2 text-sm text-yellow-700">There are no sprint feedback requests for this user.</p>
+      <Card className="border-yellow-200 bg-yellow-50 p-6 text-center dark:border-yellow-800 dark:bg-yellow-950/50">
+        <p className="font-medium text-yellow-800 dark:text-yellow-300">No projects available.</p>
+        <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-400">There are no sprint feedback requests for this user.</p>
       </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="overflow-x-auto border-b border-slate-200">
+      <div className="overflow-x-auto border-b border-slate-200 dark:border-slate-700">
         <div className="flex min-w-full gap-2">
           {projects.map((project) => (
             <button
@@ -183,8 +183,8 @@ export function SprintFeedbackClient({ rows }: { rows: UserProjectSprintData[] }
               className={cn(
                 'whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition',
                 activeProject?.projectId === project.projectId
-                  ? 'border-slate-900 text-slate-900'
-                  : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800'
+                  ? 'border-slate-900 text-slate-900 dark:border-slate-100 dark:text-slate-100'
+                  : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200'
               )}
             >
               {project.projectName}
@@ -196,7 +196,7 @@ export function SprintFeedbackClient({ rows }: { rows: UserProjectSprintData[] }
       {activeProject && activeProject.sprints.length > 0 ? (
         <>
           <div className="max-w-md space-y-2">
-            <label htmlFor="sprint-select" className="text-sm font-medium text-slate-700">
+            <label htmlFor="sprint-select" className="text-sm font-medium text-slate-700 dark:text-slate-300">
               Sprint
             </label>
             <Select
@@ -223,9 +223,9 @@ export function SprintFeedbackClient({ rows }: { rows: UserProjectSprintData[] }
           <RatingLoader spmId={selectedSprintProjectMemberId} />
         </>
       ) : (
-        <Card className="border-yellow-200 bg-yellow-50 p-6 text-center">
-          <p className="font-medium text-yellow-800">No sprints available.</p>
-          <p className="mt-2 text-sm text-yellow-700">This project does not have sprint feedback to complete.</p>
+        <Card className="border-yellow-200 bg-yellow-50 p-6 text-center dark:border-yellow-800 dark:bg-yellow-950/50">
+          <p className="font-medium text-yellow-800 dark:text-yellow-300">No sprints available.</p>
+          <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-400">This project does not have sprint feedback to complete.</p>
         </Card>
       )}
     </div>

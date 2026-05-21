@@ -17,8 +17,8 @@ export default async function DashboardPage() {
   return (
     <section className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <p className="text-sm text-slate-500">Live overview of projects, sprint coverage, and team member rating activity</p>
+        <h1 className="text-2xl font-bold dark:text-slate-100">Admin Dashboard</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Live overview of projects, sprint coverage, and team member rating activity</p>
       </div>
       <div className="grid gap-4 md:grid-cols-4">
         <DashboardCard title="Projects" value={projects.length} subtitle="Projects returned by GraphQL" />
@@ -27,19 +27,19 @@ export default async function DashboardPage() {
         <DashboardCard title="Assigned Team Members" value={assignedUserCount} subtitle="Project members across sprint projects" />
       </div>
       <div className="flex gap-2 text-sm">
-        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/projects">
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" href="/dashboard/projects">
           Manage Projects
         </Link>
-        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/users">
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" href="/dashboard/users">
           Manage Team
         </Link>
-        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/questions">
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" href="/dashboard/questions">
           Manage Questions
         </Link>
-        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/sprints">
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" href="/dashboard/sprints">
           Manage Sprints
         </Link>
-        <Link className="rounded border border-slate-300 bg-white px-3 py-2" href="/dashboard/roles">
+        <Link className="rounded border border-slate-300 bg-white px-3 py-2 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" href="/dashboard/roles">
           Manage Roles
         </Link>
       </div>

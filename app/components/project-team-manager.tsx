@@ -81,16 +81,16 @@ export function ProjectTeamManager({
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Project Team</h1>
-          <p className="text-sm text-slate-500">Add users to {projectName} so they can be organized under this project.</p>
+          <h1 className="text-2xl font-bold dark:text-slate-100">Project Team</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Add users to {projectName} so they can be organized under this project.</p>
         </div>
-        <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-          <span className="rounded-full bg-slate-100 px-3 py-1">Assigned users: {assignedMembers.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Available team members: {availableUsers.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">
+        <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Assigned users: {assignedMembers.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Available team members: {availableUsers.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">
             Active: {assignedMembers.filter((member) => member.membershipIsActive !== false).length}
           </span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">
             Inactive: {assignedMembers.filter((member) => member.membershipIsActive === false).length}
           </span>
         </div>
@@ -98,12 +98,12 @@ export function ProjectTeamManager({
 
       <Card className="space-y-4">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Add team members</h2>
-          <p className="text-sm text-slate-500">Search by first name, last name, email, or account role, then choose the project role.</p>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Add team members</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Search by first name, last name, email, or account role, then choose the project role.</p>
         </div>
 
         {availableUsers.length === 0 ? (
-          <p className="text-sm text-slate-500">All available users are already part of this project.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">All available users are already part of this project.</p>
         ) : (
           <>
             <div className="space-y-3">
@@ -122,7 +122,7 @@ export function ProjectTeamManager({
                   }}
                 />
                 <select
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-slate-500"
                   value={statusFilter}
                   onChange={(event) => {
                     setMessage(null);
@@ -139,9 +139,9 @@ export function ProjectTeamManager({
               </div>
 
               {isPickerOpen && searchTerm.trim() ? (
-                <div className="rounded-lg border border-slate-200">
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800">
                   {matchingUsers.length === 0 ? (
-                    <p className="px-3 py-3 text-sm text-slate-500">No matching users found.</p>
+                    <p className="px-3 py-3 text-sm text-slate-500 dark:text-slate-400">No matching users found.</p>
                   ) : (
                     matchingUsers.map((user) => {
                       const isSelected = selectedUserId === user.id;
@@ -151,7 +151,7 @@ export function ProjectTeamManager({
                           key={user.id}
                           type="button"
                           className={`flex w-full items-start justify-between gap-3 px-3 py-3 text-left transition ${
-                            isSelected ? 'bg-slate-100' : 'hover:bg-slate-50'
+                            isSelected ? 'bg-slate-100 dark:bg-slate-700' : 'hover:bg-slate-50 dark:hover:bg-slate-700/60'
                           }`}
                           onClick={() => {
                             setMessage(null);
@@ -162,18 +162,18 @@ export function ProjectTeamManager({
                           }}
                         >
                           <div className="min-w-0">
-                            <p className="font-medium text-slate-900">{user.name}</p>
-                            <p className="text-sm text-slate-500">{user.email}</p>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">{user.name}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium uppercase tracking-wide text-slate-600">
+                            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium uppercase tracking-wide text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                               {user.role}
                             </span>
                             <span
                               className={`rounded-full px-2 py-1 text-xs font-medium uppercase tracking-wide ${
                                 user.isActive === false
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : 'bg-emerald-100 text-emerald-700'
+                                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                                  : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
                               }`}
                             >
                               {user.isActive === false ? 'Inactive' : 'Active'}
@@ -187,12 +187,12 @@ export function ProjectTeamManager({
               ) : null}
 
               <div className="max-w-sm">
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500" htmlFor="project-member-role">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400" htmlFor="project-member-role">
                   Project role
                 </label>
                 <select
                   id="project-member-role"
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-slate-500"
                   value={selectedRoleId}
                   onChange={(event) => {
                     setMessage(null);
@@ -255,12 +255,12 @@ export function ProjectTeamManager({
                 {addMutation.isPending ? 'Adding...' : 'Add to project'}
               </Button>
               {selectedUser ? (
-                <p className="text-sm text-slate-500">
-                  Selected: <span className="font-medium text-slate-700">{selectedUser.name}</span>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Selected: <span className="font-medium text-slate-700 dark:text-slate-300">{selectedUser.name}</span>
                 </p>
               ) : null}
               {message ? (
-                <p className={`text-sm ${messageTone === 'error' ? 'text-red-600' : 'text-emerald-700'}`}>
+                <p className={`text-sm ${messageTone === 'error' ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
                   {message}
                 </p>
               ) : null}
@@ -272,7 +272,7 @@ export function ProjectTeamManager({
       <div className="space-y-3">
         {assignedMembers.length === 0 ? (
           <Card>
-            <p className="text-sm text-slate-500">No team members have been added to this project yet.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">No team members have been added to this project yet.</p>
           </Card>
         ) : (
           assignedMembers
@@ -285,12 +285,12 @@ export function ProjectTeamManager({
             <Card key={member.id} className="space-y-2">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="font-semibold text-slate-900">{member.name}</h2>
-                  <p className="text-sm text-slate-500">{member.email}</p>
+                  <h2 className="font-semibold text-slate-900 dark:text-slate-100">{member.name}</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{member.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <select
-                    className="rounded border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:focus:border-slate-500"
                     disabled={updateStatusMutation.isPending}
                     value={member.membershipRoleId ?? ''}
                     onChange={async (event) => {
@@ -330,14 +330,16 @@ export function ProjectTeamManager({
                   </select>
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide ${
-                      member.membershipIsActive === false ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                      member.membershipIsActive === false
+                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                        : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
                     }`}
                   >
                     {member.membershipIsActive === false ? 'Inactive' : 'Active'}
                   </span>
                   <button
                     type="button"
-                    className="rounded border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                     disabled={updateStatusMutation.isPending}
                     onClick={async () => {
                       setMessage(null);
@@ -362,7 +364,7 @@ export function ProjectTeamManager({
                   </button>
                   <button
                     type="button"
-                    className="rounded border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-700/60 dark:text-red-400 dark:hover:bg-red-900/20"
                     disabled={removeMutation.isPending || updateStatusMutation.isPending}
                     onClick={async () => {
                       setMessage(null);

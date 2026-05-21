@@ -49,10 +49,10 @@ function StarRatingInput({
                 onChange(Number(score.toFixed(1)));
               }}
               disabled={disabled}
-              className="relative h-10 w-10 rounded-lg border border-slate-300 bg-white text-slate-400 transition hover:border-slate-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:hover:border-slate-300 disabled:hover:text-slate-400"
+              className="relative h-10 w-10 rounded-lg border border-slate-300 bg-white text-slate-400 transition hover:border-slate-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:hover:border-slate-300 disabled:hover:text-slate-400 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500 dark:hover:border-slate-500 dark:hover:text-amber-400 dark:focus:ring-amber-900 dark:disabled:bg-slate-800 dark:disabled:hover:border-slate-600 dark:disabled:hover:text-slate-500"
               aria-label={`Rate ${star - 1 + 0.5} to ${star} out of 10`}
             >
-              <span className="absolute inset-0 flex items-center justify-center text-slate-300">
+              <span className="absolute inset-0 flex items-center justify-center text-slate-300 dark:text-slate-600">
                 <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current">
                   <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                 </svg>
@@ -69,7 +69,7 @@ function StarRatingInput({
           );
         })}
       </div>
-      <div className="text-xs text-slate-500">Click the left or right half of a star for half-point ratings.</div>
+      <div className="text-xs text-slate-500 dark:text-slate-400">Click the left or right half of a star for half-point ratings.</div>
     </div>
   );
 }
@@ -129,7 +129,6 @@ export function SprintRatingForm({
 
   const alreadySubmitted = data.questions.every((q) => q.rating !== undefined && q.rating !== null);
 
-  // Group questions by rating user name
   const groupedQuestions: UserGroupedQuestions = {};
   data.questions.forEach((q) => {
     const userKey = q.ratingByUserName || q.ratingByUserId;
@@ -214,8 +213,8 @@ export function SprintRatingForm({
   if (success) {
     return (
       <Card className="p-6 text-center">
-        <p className="text-lg font-semibold text-green-600">Thank you for your feedback!</p>
-        <p className="mt-2 text-sm text-slate-600">Your ratings have been submitted successfully.</p>
+        <p className="text-lg font-semibold text-green-600 dark:text-green-400">Thank you for your feedback!</p>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Your ratings have been submitted successfully.</p>
       </Card>
     );
   }
@@ -223,8 +222,8 @@ export function SprintRatingForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Intro Section */}
-      <Card className="p-6 bg-slate-50">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+      <Card className="p-6 bg-slate-50 dark:bg-slate-700/40">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           {`Hello ${data.ratedUserName},
 
 You contributed to the ${data.projectName} as a ${data.ratedUserRole}. We appreciate your contribution.
@@ -241,11 +240,11 @@ This feedback is completely confidential and will not be shared with anyone indi
       <div className="space-y-6">
         {Object.entries(groupedQuestions).map(([userKey, userGroup]) => (
           <Card key={userKey} className="p-6 space-y-4">
-            <h3 className="font-semibold text-slate-900">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">
               {userGroup.userName} ({userGroup.userRole})
             </h3>
 
-            <div className="space-y-4 border-t pt-4">
+            <div className="space-y-4 border-t border-slate-200 pt-4 dark:border-slate-700">
               {userGroup.questions.map((question) => {
                 const questionKey = question.spr_id;
                 const questionData = formData.find((item) => item.spr_id === questionKey);
@@ -257,7 +256,7 @@ This feedback is completely confidential and will not be shared with anyone indi
                   <div key={questionKey} className="space-y-3">
                     {/* Question Label */}
                     <div className="flex items-start gap-2">
-                      <label className="block text-sm font-medium text-slate-700">
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                         {question.text}
                       </label>
                       {question.helpText && (
@@ -278,13 +277,13 @@ This feedback is completely confidential and will not be shared with anyone indi
                                 [questionKey]: !prev[questionKey]
                               }))
                             }
-                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white text-xs font-semibold text-slate-600 transition hover:border-slate-400 hover:bg-slate-50"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white text-xs font-semibold text-slate-600 transition hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-600"
                             aria-label="Show question help"
                           >
                             i
                           </button>
                           <div
-                            className={`absolute left-1/2 top-full z-10 mt-2 w-[min(22rem,calc(100vw-1rem))] -translate-x-1/2 rounded-lg border border-slate-200 bg-slate-900 px-3 py-2 text-xs text-slate-100 shadow-lg transition-opacity duration-150 ${
+                            className={`absolute left-1/2 top-full z-10 mt-2 w-[min(22rem,calc(100vw-1rem))] -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 shadow-lg transition-opacity duration-150 dark:border-slate-600 dark:bg-slate-800 ${
                               helpOpen[questionKey] ? 'opacity-100' : 'opacity-0 pointer-events-none'
                             }`}
                           >
@@ -296,8 +295,8 @@ This feedback is completely confidential and will not be shared with anyone indi
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-medium text-slate-700">Rating</p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Rating</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
                           {rating === null ? 'Not rated yet' : `${rating.toFixed(1)} / 10`}
                         </p>
                       </div>
@@ -314,7 +313,7 @@ This feedback is completely confidential and will not be shared with anyone indi
                         onChange={(e) => handleAnswerChange(questionKey, e.target.value)}
                         disabled={alreadySubmitted}
                         placeholder="Please enter a reason for this rating"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-600"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500 dark:focus:ring-slate-600 dark:disabled:bg-slate-800 dark:disabled:text-slate-400"
                         rows={3}
                       />
                     )}
@@ -328,15 +327,15 @@ This feedback is completely confidential and will not be shared with anyone indi
 
       {/* Error Message */}
       {error && (
-        <Card className="border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-700">{error}</p>
+        <Card className="border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/50">
+          <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
         </Card>
       )}
 
       {/* Submission Notice or Button */}
       {alreadySubmitted ? (
-        <Card className="border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm font-medium text-blue-800">
+        <Card className="border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/50">
+          <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
             You have already submitted the rating for this sprint.
           </p>
         </Card>
@@ -345,7 +344,7 @@ This feedback is completely confidential and will not be shared with anyone indi
           <button
             type="submit"
             disabled={!isAllFieldsFilled() || isSubmitting}
-            className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+            className="rounded-lg bg-slate-900 px-8 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400 dark:bg-slate-700 dark:hover:bg-slate-600 dark:disabled:bg-slate-600"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Ratings'}
           </button>

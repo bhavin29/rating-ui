@@ -45,18 +45,18 @@ export function RolesView({ initialRoles }: { initialRoles: Role[] }) {
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Roles</h1>
-          <p className="text-sm text-slate-500">Manage roles by name with add, edit, delete, and search.</p>
+          <h1 className="text-2xl font-bold dark:text-slate-100">Roles</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Manage roles by name with add, edit, delete, and search.</p>
         </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">Roles: {roles.length}</span>
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">Roles: {roles.length}</span>
       </div>
 
       {notification ? (
         <div
           className={`rounded-lg border px-4 py-3 text-sm ${
             notification.tone === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-              : 'border-red-200 bg-red-50 text-red-700'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
+              : 'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400'
           }`}
         >
           {notification.message}
@@ -79,24 +79,24 @@ export function RolesView({ initialRoles }: { initialRoles: Role[] }) {
           placeholder="Search roles by name"
           className="max-w-sm"
         />
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/50">
           <table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 dark:bg-slate-900/50">
               <tr>
-                <th className="px-4 py-3 font-medium text-slate-600">Name</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Name</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredRoles.length === 0 ? (
-                <tr className="border-t border-slate-100">
-                  <td colSpan={2} className="px-4 py-8 text-center text-slate-500">
+                <tr className="border-t border-slate-100 dark:border-slate-700">
+                  <td colSpan={2} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                     {search.trim() ? 'No roles match the current search.' : 'No roles have been created yet.'}
                   </td>
                 </tr>
               ) : (
                 filteredRoles.map((role) => (
-                  <tr key={role.id} className="border-t border-slate-100 align-top">
+                  <tr key={role.id} className="border-t border-slate-100 align-top dark:border-slate-700">
                     <td className="px-4 py-3" colSpan={editingRoleId === role.id ? 2 : 1}>
                       {editingRoleId === role.id ? (
                         <RoleForm
@@ -111,22 +111,22 @@ export function RolesView({ initialRoles }: { initialRoles: Role[] }) {
                           onCancel={() => setEditingRoleId(null)}
                         />
                       ) : (
-                        <p className="font-medium text-slate-900">{role.name}</p>
+                        <p className="font-medium text-slate-900 dark:text-slate-100">{role.name}</p>
                       )}
                     </td>
                     {editingRoleId === role.id ? null : (
-                      <td className="px-4 py-3 text-slate-700">
+                      <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
                         <div className="flex gap-2">
                           <button
                             type="button"
-                            className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"
+                            className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                             onClick={() => setEditingRoleId(role.id)}
                           >
                             Edit
                           </button>
                           <button
                             type="button"
-                            className="rounded border border-red-300 px-3 py-2 text-sm text-red-700"
+                            className="rounded border border-red-300 px-3 py-2 text-sm text-red-700 transition hover:bg-red-50 dark:border-red-700/60 dark:text-red-400 dark:hover:bg-red-900/20"
                             onClick={() => setDeleteTarget(role)}
                           >
                             Delete
@@ -143,25 +143,25 @@ export function RolesView({ initialRoles }: { initialRoles: Role[] }) {
       </Card>
 
       {deleteTarget ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-slate-900">Delete role?</h2>
-            <p className="mt-2 text-sm text-slate-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Delete role?</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               This will permanently remove{' '}
-              <span className="font-medium text-slate-900">{deleteTarget.name}</span>. Users and questions assigned to
+              <span className="font-medium text-slate-900 dark:text-slate-100">{deleteTarget.name}</span>. Users and questions assigned to
               this role will lose their role association.
             </p>
             <div className="mt-6 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                 onClick={() => setDeleteTarget(null)}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={handleDelete}
                 disabled={deleteRoleMutation.isPending}
               >
