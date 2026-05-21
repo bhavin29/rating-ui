@@ -86,14 +86,14 @@ export function QuestionForm({
       })}
     >
       <label className="space-y-1">
-        <span className="text-sm font-medium text-slate-700">Question</span>
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Question</span>
         <Textarea rows={4} placeholder="Enter the question text" {...register('text')} />
-        {errors.text ? <p className="text-xs text-red-600">{errors.text.message}</p> : null}
+        {errors.text ? <p className="text-xs text-red-600 dark:text-red-400">{errors.text.message}</p> : null}
       </label>
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1">
-          <span className="text-sm font-medium text-slate-700">Role</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Role</span>
           <Select {...register('roleId')}>
             <option value="">Select a role</option>
             {roles.map((role) => (
@@ -102,11 +102,11 @@ export function QuestionForm({
               </option>
             ))}
           </Select>
-          {errors.roleId ? <p className="text-xs text-red-600">{errors.roleId.message}</p> : null}
+          {errors.roleId ? <p className="text-xs text-red-600 dark:text-red-400">{errors.roleId.message}</p> : null}
         </label>
 
         <label className="space-y-1">
-          <span className="text-sm font-medium text-slate-700">Project</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Project</span>
           <Select {...register('projectId')}>
             <option value="">Not assigned</option>
             {projects.map((project) => (
@@ -118,7 +118,7 @@ export function QuestionForm({
         </label>
 
         <label className="space-y-1">
-          <span className="text-sm font-medium text-slate-700">Sprint</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Sprint</span>
           <Select {...register('sprintId')}>
             <option value="">Not assigned</option>
             {sprints.map((sprint) => (
@@ -129,11 +129,11 @@ export function QuestionForm({
           </Select>
         </label>
 
-        <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-          <input type="checkbox" className="h-4 w-4 rounded border-slate-300" {...register('isActive')} />
+        <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-700/30">
+          <input type="checkbox" className="h-4 w-4 rounded border-slate-300 dark:border-slate-600" {...register('isActive')} />
           <span>
-            <span className="block text-sm font-medium text-slate-700">Active</span>
-            <span className="block text-xs text-slate-500">Inactive questions stay available for history and review.</span>
+            <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">Active</span>
+            <span className="block text-xs text-slate-500 dark:text-slate-400">Inactive questions stay available for history and review.</span>
           </span>
         </label>
       </div>
@@ -142,7 +142,7 @@ export function QuestionForm({
         {onCancel ? (
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             onClick={onCancel}
           >
             Cancel

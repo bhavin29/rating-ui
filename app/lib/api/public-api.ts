@@ -61,8 +61,8 @@ export async function getSprintRatingRequest(spmId: string): Promise<SprintRatin
   return data.generateSprintRatingRequest;
 }
 
-export async function getUserProjectSprintData(userId: string): Promise<UserProjectSprintData[]> {
-  const client = createPublicClient();
+export async function getUserProjectSprintData(userId: string, cookieHeader?: string): Promise<UserProjectSprintData[]> {
+  const client = createPublicClient(cookieHeader ? { Cookie: cookieHeader } : undefined);
   const data = await client.request<{ getUserProjectSprintData: UserProjectSprintData[] }>(
     GET_USER_PROJECT_SPRINT_DATA,
     { userId }

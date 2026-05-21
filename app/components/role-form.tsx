@@ -49,8 +49,8 @@ export function RoleForm({
     <div className="space-y-3">
       {!isEditMode ? (
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Create role</h2>
-          <p className="text-sm text-slate-500">Add a role with a single name field.</p>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Create role</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Add a role with a single name field.</p>
         </div>
       ) : null}
       <form
@@ -96,7 +96,7 @@ export function RoleForm({
       >
         <div className="min-w-56 flex-1 space-y-1">
           <Input placeholder="Role name" {...register('name')} />
-          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
+          {errors.name ? <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p> : null}
         </div>
         <Button type="submit" disabled={activeMutation.isPending}>
           {activeMutation.isPending ? (isEditMode ? 'Saving...' : 'Creating...') : isEditMode ? 'Save' : 'Create'}
@@ -104,7 +104,7 @@ export function RoleForm({
         {isEditMode ? (
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             onClick={() => {
               reset({ name: role?.name ?? '' });
               setMessage(null);
@@ -116,7 +116,7 @@ export function RoleForm({
         ) : null}
       </form>
       {message ? (
-        <p className={`text-sm ${activeMutation.isError ? 'text-red-600' : 'text-emerald-700'}`}>{message}</p>
+        <p className={`text-sm ${activeMutation.isError ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>{message}</p>
       ) : null}
     </div>
   );

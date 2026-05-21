@@ -25,13 +25,13 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Projects</h1>
-          <p className="text-sm text-slate-500">Project-level view of sprint volume, team members, and rating coverage</p>
+          <h1 className="text-2xl font-bold dark:text-slate-100">Projects</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Project-level view of sprint volume, team members, and rating coverage</p>
         </div>
-        <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-          <span className="rounded-full bg-slate-100 px-3 py-1">Projects: {projectRows.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Team members: {totalAssignedUsers}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">Team with ratings: {totalRatedUsers}</span>
+        <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Projects: {projectRows.length}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Team members: {totalAssignedUsers}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Team with ratings: {totalRatedUsers}</span>
         </div>
       </div>
       <Card>
@@ -57,28 +57,28 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
           }}
         />
       </Card>
-      <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/50">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-slate-50">
+          <thead className="bg-slate-50 dark:bg-slate-900/50">
             <tr>
-              <th className="px-4 py-3 font-medium text-slate-600">Project</th>
-              <th className="px-4 py-3 font-medium text-slate-600">Status</th>
-              <th className="px-4 py-3 font-medium text-slate-600">Sprints</th>
-              <th className="px-4 py-3 font-medium text-slate-600">Team members</th>
-              <th className="px-4 py-3 font-medium text-slate-600">Team with ratings</th>
-              <th className="px-4 py-3 font-medium text-slate-600">Actions</th>
+              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Project</th>
+              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Status</th>
+              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Sprints</th>
+              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Team members</th>
+              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Team with ratings</th>
+              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Actions</th>
             </tr>
           </thead>
           <tbody>
             {projectRows.length === 0 ? (
-              <tr className="border-t border-slate-100">
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+              <tr className="border-t border-slate-100 dark:border-slate-700">
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                   No projects have been created yet.
                 </td>
               </tr>
             ) : null}
             {projectRows.map((project) => (
-              <tr key={project.id} className="border-t border-slate-100">
+              <tr key={project.id} className="border-t border-slate-100 dark:border-slate-700">
                 <td className="px-4 py-3">
                   {editingProjectId === project.id ? (
                     <ProjectForm
@@ -101,25 +101,28 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
                     />
                   ) : (
                     <div>
-                      <p className="font-medium text-slate-900">{project.name}</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100">{project.name}</p>
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-slate-700">{project.status ?? 'UNKNOWN'}</td>
-                <td className="px-4 py-3 text-slate-700">{project.sprintCount}</td>
-                <td className="px-4 py-3 text-slate-700">{project.assignedUserCount}</td>
-                <td className="px-4 py-3 text-slate-700">{project.ratedUserCount}</td>
-                <td className="px-4 py-3 text-slate-700">
+                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.status ?? 'UNKNOWN'}</td>
+                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.sprintCount}</td>
+                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.assignedUserCount}</td>
+                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.ratedUserCount}</td>
+                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
                   {editingProjectId === project.id ? null : (
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        className="rounded border px-3 py-2 text-sm"
+                        className="rounded border border-slate-300 px-3 py-2 text-sm transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                         onClick={() => setEditingProjectId(project.id)}
                       >
                         Edit
                       </button>
-                      <Link className="rounded border px-3 py-2 text-sm" href={`/dashboard/projects/${project.id}`}>
+                      <Link
+                        className="rounded border border-slate-300 px-3 py-2 text-sm transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                        href={`/dashboard/projects/${project.id}`}
+                      >
                         Team
                       </Link>
                     </div>

@@ -79,8 +79,8 @@ export function SprintForm({
   return (
     <div className="space-y-3">
       <div>
-        <h2 className="text-base font-semibold text-slate-900">{isEditMode ? 'Edit sprint' : 'Create sprint'}</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{isEditMode ? 'Edit sprint' : 'Create sprint'}</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {isEditMode
             ? 'Update the sprint details while keeping rating requests and summaries intact.'
             : 'New sprints use their project team for rating requests and score summaries.'}
@@ -163,15 +163,15 @@ export function SprintForm({
       >
         <div className="space-y-1">
           <Input placeholder="Sprint name" {...register('name')} />
-          {errors.name ? <p className="text-xs text-red-600">{errors.name.message}</p> : null}
+          {errors.name ? <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p> : null}
         </div>
         <div className="space-y-1">
           <Input type="date" aria-label="Sprint start date" {...register('startDate')} />
-          {errors.startDate ? <p className="text-xs text-red-600">{errors.startDate.message}</p> : null}
+          {errors.startDate ? <p className="text-xs text-red-600 dark:text-red-400">{errors.startDate.message}</p> : null}
         </div>
         <div className="space-y-1">
           <Input type="date" aria-label="Sprint end date" {...register('endDate')} />
-          {errors.endDate ? <p className="text-xs text-red-600">{errors.endDate.message}</p> : null}
+          {errors.endDate ? <p className="text-xs text-red-600 dark:text-red-400">{errors.endDate.message}</p> : null}
         </div>
         <div className="flex gap-2">
           <Button type="submit" disabled={activeMutation.isPending}>
@@ -180,7 +180,7 @@ export function SprintForm({
           {isEditMode ? (
             <button
               type="button"
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
               onClick={() => {
                 reset({
                   projectId: sprint?.project?.id ?? projectId ?? '',
@@ -201,7 +201,7 @@ export function SprintForm({
         <input type="hidden" {...register('sprintId')} />
       </form>
       {message ? (
-        <p className={`text-sm ${activeMutation.isError ? 'text-red-600' : 'text-emerald-700'}`}>{message}</p>
+        <p className={`text-sm ${activeMutation.isError ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>{message}</p>
       ) : null}
     </div>
   );
