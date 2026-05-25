@@ -1,3 +1,20 @@
+import type { Skill } from '@/app/lib/api/types';
+
+export type UserRoleInputPayload = {
+  roleId: string;
+  skillId?: string;
+  level?: string;
+};
+
+async function get<T>(url: string): Promise<T> {
+  const res = await fetch(url, { method: 'GET' });
+  if (!res.ok) {
+    const payload = await res.json().catch(() => null);
+    throw new Error(payload?.message ?? `Request failed: ${res.status}`);
+  }
+  return res.json();
+}
+
 async function post<T>(url: string, body: unknown): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
@@ -29,8 +46,16 @@ export const updateRoleClient = (input: { roleId: string; name: string }) =>
 export const deleteRoleClient = (payload: { roleId: string }) =>
   post('/api/admin/delete-role', payload);
 
-export const createUserClient = (input: { name: string; email: string; roleId: string; isActive: boolean }) =>
-  post('/api/admin/create-user', input);
+export const getSkillsClient = (): Promise<{ skills: Skill[] }> =>
+  get('/api/admin/get-skills');
+
+export const createUserClient = (input: {
+  name: string;
+  email: string;
+  roleId: string;
+  isActive: boolean;
+  userRoles?: UserRoleInputPayload[];
+}) => post('/api/admin/create-user', input);
 
 export const sendSprintFeedbackEmailClient = (input: { userId: string; email: string; name: string }) =>
   post('/api/sprint-feedback/send-email', input);
@@ -41,6 +66,7 @@ export const updateUserClient = (input: {
   email: string;
   roleId: string;
   isActive: boolean;
+  userRoles?: UserRoleInputPayload[];
 }) => post('/api/admin/update-user', input);
 
 export const deleteUserClient = (payload: { userId: string }) =>

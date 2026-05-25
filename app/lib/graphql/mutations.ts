@@ -52,11 +52,15 @@ export const CREATE_USER = gql`
         fullName
         email
         isActive
-        role {
+        role { id name }
+        userRoles {
           id
-          name
+          role { id name }
+          skill { id name }
+          level
         }
       }
+      plainPin
     }
   }
 `;
@@ -68,9 +72,12 @@ export const UPDATE_USER = gql`
       fullName
       email
       isActive
-      role {
+      role { id name }
+      userRoles {
         id
-        name
+        role { id name }
+        skill { id name }
+        level
       }
     }
   }

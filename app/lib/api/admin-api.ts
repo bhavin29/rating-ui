@@ -4,6 +4,7 @@ import {
   GET_PROJECT_MEMBERS,
   GET_PROJECTS,
   GET_ROLES,
+  GET_SKILLS,
   GET_SPRINT_RATINGS,
   GET_SPRINTS,
   GET_USERS
@@ -32,7 +33,7 @@ import {
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
 import { getAdminToken } from '@/app/lib/utils/auth';
-import type { AdminQuestion, AdminUser, Member, Project, Role, Sprint, SprintRatingSummary } from '@/app/lib/api/types';
+import type { AdminQuestion, AdminUser, Member, Project, Role, Skill, Sprint, SprintRatingSummary, UserRoleEntry } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -49,19 +50,24 @@ export async function getUsers() {
       email: string;
       isActive?: boolean;
       role: { id: string; name: string };
+      userRoles?: Array<{
+        id: string;
+        role: { id: string; name: string };
+        skill: { id: string; name: string } | null;
+        level: string | null;
+      }>;
     }>;
   }>(GET_USERS);
 
-  return data.getUsers.map(
-    (user): AdminUser => ({
-      id: user.id,
-      name: user.fullName,
-      email: user.email,
-      role: user.role.name,
-      roleId: user.role.id,
-      isActive: Boolean(user.isActive)
-    })
+  return data.getUsers.map((user): AdminUser =>
+    mapGraphqlUser({ ...user, isActive: Boolean(user.isActive) })
   );
+}
+
+export async function getSkills() {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ getSkills: Skill[] }>(GET_SKILLS);
+  return data.getSkills;
 }
 
 export async function getRoles() {
@@ -171,26 +177,41 @@ export async function deleteRole(roleId: string) {
   return data.deleteRole;
 }
 
-export async function createUser(input: { name: string; email: string; roleId: string; isActive: boolean }) {
+type UserRoleInputPayload = { roleId: string; skillId?: string | null; level?: string | null };
+type GraphqlUserPayload = {
+  id: string;
+  fullName: string;
+  email: string;
+  isActive: boolean;
+  role: { id: string; name: string };
+  userRoles?: Array<{
+    id: string;
+    role: { id: string; name: string };
+    skill: { id: string; name: string } | null;
+    level: string | null;
+  }>;
+};
+
+export async function createUser(input: {
+  name: string;
+  email: string;
+  roleId: string;
+  isActive: boolean;
+  userRoles?: UserRoleInputPayload[];
+}) {
   const client = createGraphqlClient();
-  const data = await client.request<{
-    createUser: {
-      user: {
-        id: string;
-        fullName: string;
-        email: string;
-        isActive: boolean;
-        role: { id: string; name: string };
-      };
-    };
-  }>(CREATE_USER, {
-    input: {
-      fullName: input.name,
-      email: input.email,
-      roleId: input.roleId,
-      isActive: input.isActive
+  const data = await client.request<{ createUser: { user: GraphqlUserPayload; plainPin?: string | null } }>(
+    CREATE_USER,
+    {
+      input: {
+        fullName: input.name,
+        email: input.email,
+        roleId: input.roleId,
+        isActive: input.isActive,
+        ...(input.userRoles ? { userRoles: normalizeUserRolesInput(input.userRoles) } : {})
+      }
     }
-  });
+  );
 
   return mapGraphqlUser(data.createUser.user);
 }
@@ -201,23 +222,17 @@ export async function updateUser(input: {
   email: string;
   roleId: string;
   isActive: boolean;
+  userRoles?: UserRoleInputPayload[];
 }) {
   const client = createGraphqlClient();
-  const data = await client.request<{
-    updateUser: {
-      id: string;
-      fullName: string;
-      email: string;
-      isActive: boolean;
-      role: { id: string; name: string };
-    };
-  }>(UPDATE_USER, {
+  const data = await client.request<{ updateUser: GraphqlUserPayload }>(UPDATE_USER, {
     input: {
       userId: input.userId,
       fullName: input.name,
       email: input.email,
       roleId: input.roleId,
-      isActive: input.isActive
+      isActive: input.isActive,
+      ...(input.userRoles ? { userRoles: normalizeUserRolesInput(input.userRoles) } : {})
     }
   });
 
@@ -359,6 +374,12 @@ function mapGraphqlUser(user: {
   email: string;
   isActive: boolean;
   role: { id: string; name: string };
+  userRoles?: Array<{
+    id: string;
+    role: { id: string; name: string };
+    skill: { id: string; name: string } | null;
+    level: string | null;
+  }>;
 }): AdminUser {
   return {
     id: user.id,
@@ -366,8 +387,24 @@ function mapGraphqlUser(user: {
     email: user.email,
     role: user.role.name,
     roleId: user.role.id,
-    isActive: Boolean(user.isActive)
+    isActive: Boolean(user.isActive),
+    userRoles: (user.userRoles ?? []).map(
+      (ur): UserRoleEntry => ({
+        id: ur.id,
+        role: ur.role,
+        skill: ur.skill,
+        level: ur.level
+      })
+    )
   };
+}
+
+function normalizeUserRolesInput(userRoles: UserRoleInputPayload[]) {
+  return userRoles.map((ur) => ({
+    roleId: ur.roleId,
+    ...(ur.skillId ? { skillId: ur.skillId } : {}),
+    ...(ur.level ? { level: ur.level } : {})
+  }));
 }
 
 function mapGraphqlQuestion(question: AdminQuestion): AdminQuestion {

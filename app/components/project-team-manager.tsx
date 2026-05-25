@@ -81,8 +81,9 @@ export function ProjectTeamManager({
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold dark:text-slate-100">Project Team</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Add users to {projectName} so they can be organized under this project.</p>
+          <p className="mb-0.5 text-xs font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">Project</p>
+          <h1 className="text-2xl font-bold dark:text-slate-100">{projectName}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Manage team membership for this project.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
           <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Assigned users: {assignedMembers.length}</span>
@@ -98,8 +99,13 @@ export function ProjectTeamManager({
 
       <Card className="space-y-4">
         <div>
-          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Add team members</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Search by first name, last name, email, or account role, then choose the project role.</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Add team members to</h2>
+            <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-sm font-semibold text-indigo-700 dark:border-indigo-700/60 dark:bg-indigo-900/30 dark:text-indigo-300">
+              {projectName}
+            </span>
+          </div>
+          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Search by first name, last name, email, or account role, then choose the project role.</p>
         </div>
 
         {availableUsers.length === 0 ? (

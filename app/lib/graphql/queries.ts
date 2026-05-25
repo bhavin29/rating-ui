@@ -21,6 +21,21 @@ export const GET_USERS = gql`
         id
         name
       }
+      userRoles {
+        id
+        role { id name }
+        skill { id name }
+        level
+      }
+    }
+  }
+`;
+
+export const GET_SKILLS = gql`
+  query GetSkills {
+    getSkills {
+      id
+      name
     }
   }
 `;

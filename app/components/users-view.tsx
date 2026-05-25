@@ -9,7 +9,8 @@ import {
   useSendSprintFeedbackEmail,
   useUpdateUser
 } from '@/app/hooks/use-admin-mutations';
-import type { AdminUser, Role } from '@/app/lib/api/types';
+import type { AdminUser, MemberLevel, Role, Skill } from '@/app/lib/api/types';
+import { LEVEL_LABELS, MEMBER_LEVELS } from '@/app/lib/api/types';
 
 const PAGE_SIZE = 10;
 
@@ -18,10 +19,20 @@ type Notification = {
   message: string;
 };
 
-export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; roles: Role[] }) {
+export function UsersView({
+  initialUsers,
+  roles,
+  skills
+}: {
+  initialUsers: AdminUser[];
+  roles: Role[];
+  skills: Skill[];
+}) {
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [skillFilter, setSkillFilter] = useState('all');
+  const [levelFilter, setLevelFilter] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -36,7 +47,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, roleFilter, activeFilter]);
+  }, [search, roleFilter, skillFilter, levelFilter, activeFilter]);
 
   const filteredUsers = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -48,14 +59,20 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
         user.email.toLowerCase().includes(term) ||
         user.role.toLowerCase().includes(term);
       const matchesRole = roleFilter === 'all' || user.roleId === roleFilter;
+      const matchesSkill =
+        skillFilter === 'all' ||
+        user.userRoles.some((ur) => ur.skill?.id === skillFilter);
+      const matchesLevel =
+        levelFilter === 'all' ||
+        user.userRoles.some((ur) => ur.level === levelFilter);
       const matchesActive =
         activeFilter === 'all' ||
         (activeFilter === 'active' && user.isActive) ||
         (activeFilter === 'inactive' && !user.isActive);
 
-      return matchesSearch && matchesRole && matchesActive;
+      return matchesSearch && matchesRole && matchesSkill && matchesLevel && matchesActive;
     });
-  }, [activeFilter, roleFilter, search, users]);
+  }, [activeFilter, levelFilter, roleFilter, search, skillFilter, users]);
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -66,7 +83,13 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
     setNotification(null);
 
     try {
-      const created = await createUserMutation.mutateAsync(values);
+      const created = await createUserMutation.mutateAsync({
+        name: values.name,
+        email: values.email,
+        roleId: values.roleId,
+        isActive: values.isActive,
+        userRoles: values.userRoles
+      });
       setUsers((current) => [created as AdminUser, ...current]);
       setNotification({ tone: 'success', message: 'User created successfully.' });
     } catch (err) {
@@ -81,7 +104,14 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
     setNotification(null);
 
     try {
-      const updated = (await updateUserMutation.mutateAsync({ userId, ...values })) as AdminUser;
+      const updated = (await updateUserMutation.mutateAsync({
+        userId,
+        name: values.name,
+        email: values.email,
+        roleId: values.roleId,
+        isActive: values.isActive,
+        userRoles: values.userRoles
+      })) as AdminUser;
       setUsers((current) => current.map((user) => (user.id === userId ? updated : user)));
       setEditingUserId(null);
       setNotification({ tone: 'success', message: 'User updated successfully.' });
@@ -182,6 +212,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
         </div>
         <UserForm
           roles={roles}
+          skills={skills}
           submitLabel="Create user"
           submittingLabel="Creating..."
           onSubmit={handleCreate}
@@ -191,18 +222,34 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
       </Card>
 
       <Card className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-6">
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by name, email, or role"
-            className="md:col-span-2"
+            placeholder="Search by name or email"
+            className="col-span-2 md:col-span-2"
           />
           <Select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
             <option value="all">All roles</option>
             {roles.map((role) => (
               <option key={role.id} value={role.id}>
                 {role.name}
+              </option>
+            ))}
+          </Select>
+          <Select value={skillFilter} onChange={(event) => setSkillFilter(event.target.value)}>
+            <option value="all">All skills</option>
+            {skills.map((skill) => (
+              <option key={skill.id} value={skill.id}>
+                {skill.name}
+              </option>
+            ))}
+          </Select>
+          <Select value={levelFilter} onChange={(event) => setLevelFilter(event.target.value)}>
+            <option value="all">All levels</option>
+            {MEMBER_LEVELS.map((lvl) => (
+              <option key={lvl} value={lvl}>
+                {LEVEL_LABELS[lvl]}
               </option>
             ))}
           </Select>
@@ -220,6 +267,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Name</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Email</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Role</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Assignments</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Active</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Actions</th>
               </tr>
@@ -227,14 +275,14 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
             <tbody>
               {paginatedUsers.length === 0 ? (
                 <tr className="border-t border-slate-100 dark:border-slate-700">
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                     No users match the current search and filter settings.
                   </td>
                 </tr>
               ) : (
                 paginatedUsers.map((user) => (
                   <tr key={user.id} className="border-t border-slate-100 align-top dark:border-slate-700">
-                    <td className="px-4 py-3" colSpan={editingUserId === user.id ? 5 : 1}>
+                    <td className="px-4 py-3" colSpan={editingUserId === user.id ? 6 : 1}>
                       {editingUserId === user.id ? (
                         <div className="min-w-[32rem]">
                           <div className="mb-3">
@@ -243,6 +291,7 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                           </div>
                           <UserForm
                             roles={roles}
+                            skills={skills}
                             initialValues={userToFormValues(user)}
                             submitLabel="Save changes"
                             submittingLabel="Saving..."
@@ -259,6 +308,24 @@ export function UsersView({ initialUsers, roles }: { initialUsers: AdminUser[]; 
                       <>
                         <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{user.email}</td>
                         <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{user.role}</td>
+                        <td className="px-4 py-3">
+                          {user.userRoles.length === 0 ? (
+                            <span className="text-slate-400 dark:text-slate-500">—</span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {user.userRoles.map((ur) => (
+                                <span
+                                  key={ur.id}
+                                  className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+                                >
+                                  {ur.role.name}
+                                  {ur.skill ? ` / ${ur.skill.name}` : ''}
+                                  {ur.level ? ` / ${LEVEL_LABELS[ur.level as MemberLevel] ?? ur.level}` : ''}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </td>
                         <td className="px-4 py-3">
                           <button
                             type="button"

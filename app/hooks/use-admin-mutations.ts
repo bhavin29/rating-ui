@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   assignProjectMembersClient,
   createQuestionClient,
@@ -10,6 +10,7 @@ import {
   createUserClient,
   deleteQuestionClient,
   deleteUserClient,
+  getSkillsClient,
   processSprintClient,
   removeProjectMemberClient,
   requestRatingClient,
@@ -58,6 +59,7 @@ export const useProcessSprint = () =>
   useMutation({ mutationFn: (sprintId: string) => processSprintClient({ sprintId }) });
 
 
+export const useGetSkills = () => useQuery({ queryKey: ['skills'], queryFn: getSkillsClient });
 export const useCreateRole = () => useMutation({ mutationFn: createRoleClient });
 export const useUpdateRole = () => useMutation({ mutationFn: updateRoleClient });
 export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient });
