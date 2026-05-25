@@ -98,6 +98,7 @@ export async function getProjectMembers(projectId: string) {
       id: string;
       isActive?: boolean;
       roleId?: string | null;
+      allocationPercentage?: number | null;
       role?: { id: string; name: string } | null;
       user: { id: string; fullName: string; email: string; isActive?: boolean; role: { id: string; name: string } };
     }>;
@@ -106,6 +107,7 @@ export async function getProjectMembers(projectId: string) {
   return data.getProjectMembers.map(
     (member): Member => ({
       id: member.user.id,
+      membershipId: member.id,
       name: member.user.fullName,
       email: member.user.email,
       role: member.user.role.name,
@@ -113,7 +115,8 @@ export async function getProjectMembers(projectId: string) {
       membershipRole: member.role?.name ?? null,
       membershipRoleId: member.roleId ?? member.role?.id ?? null,
       isActive: member.user.isActive,
-      membershipIsActive: member.isActive
+      membershipIsActive: member.isActive,
+      allocationPercentage: member.allocationPercentage ?? 0
     })
   );
 }
@@ -308,33 +311,47 @@ export async function updateSprint(input: {
   return client.request(UPDATE_SPRINT, { input });
 }
 
-export async function addProjectMembers(projectId: string, userIds: string[], roleId?: string) {
+export async function addProjectMembers(
+  projectId: string,
+  userIds: string[],
+  roleId?: string,
+  allocationPercentage?: number
+) {
   const client = createGraphqlClient();
-  return client.request(ADD_PROJECT_MEMBERS, { input: { projectId, userIds, roleId } });
+  return client.request(ADD_PROJECT_MEMBERS, {
+    input: {
+      projectId,
+      userIds,
+      roleId,
+      ...(typeof allocationPercentage === 'number' ? { allocationPercentage } : {})
+    }
+  });
 }
 
-export async function removeProjectMember(projectId: string, userId: string) {
+export async function removeProjectMember(membershipId: string) {
   const client = createGraphqlClient();
   const data = await client.request<{ removeProjectMember: boolean }>(REMOVE_PROJECT_MEMBER, {
-    input: { projectId, userId }
+    input: { membershipId }
   });
   return data.removeProjectMember;
 }
 
-export async function updateProjectMemberStatus(projectId: string, userId: string, isActive?: boolean, roleId?: string) {
+export async function updateProjectMemberStatus(
+  membershipId: string,
+  isActive?: boolean,
+  roleId?: string | null,
+  allocationPercentage?: number
+) {
   const client = createGraphqlClient();
   const input = {
-    projectId,
-    userId,
+    membershipId,
     ...(typeof isActive === 'boolean' ? { isActive } : {}),
-    ...(roleId ? { roleId } : {})
+    ...(roleId !== undefined ? { roleId } : {}),
+    ...(typeof allocationPercentage === 'number' ? { allocationPercentage } : {})
   };
   const data = await client.request<{
-    updateProjectMemberStatus: { id: string; isActive: boolean; roleId?: string | null; role?: Role | null };
-  }>(
-    UPDATE_PROJECT_MEMBER_STATUS,
-    { input }
-  );
+    updateProjectMemberStatus: { id: string; isActive: boolean; roleId?: string | null; allocationPercentage?: number | null; role?: Role | null };
+  }>(UPDATE_PROJECT_MEMBER_STATUS, { input });
   return data.updateProjectMemberStatus;
 }
 

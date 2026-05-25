@@ -55,19 +55,14 @@ export const GET_PROJECT_MEMBERS = gql`
       id
       isActive
       roleId
-      role {
-        id
-        name
-      }
+      allocationPercentage
+      role { id name }
       user {
         id
         fullName
         email
         isActive
-        role {
-          id
-          name
-        }
+        role { id name }
       }
     }
   }

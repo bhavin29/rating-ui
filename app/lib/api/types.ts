@@ -43,7 +43,8 @@ export type AdminQuestion = {
 };
 
 export type Member = {
-  id: string;
+  id: string;             // userId
+  membershipId: string;   // ProjectMember.id — use for update/remove
   name: string;
   email: string;
   role: string;
@@ -52,6 +53,7 @@ export type Member = {
   membershipRoleId?: string | null;
   isActive?: boolean;
   membershipIsActive?: boolean;
+  allocationPercentage: number;
 };
 export type Project = { id: string; name: string; status?: string | null };
 export type Sprint = {

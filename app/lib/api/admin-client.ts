@@ -111,19 +111,22 @@ export const updateSprintClient = (input: {
   endDate: string;
 }) => post('/api/admin/update-sprint', input);
 
-export const assignProjectMembersClient = (payload: { projectId: string; memberIds: string[]; roleId: string }) =>
-  post('/api/admin/assign-project-members', payload);
+export const assignProjectMembersClient = (payload: {
+  projectId: string;
+  memberIds: string[];
+  roleId: string;
+  allocationPercentage?: number;
+}) => post('/api/admin/assign-project-members', payload);
 
-export const removeProjectMemberClient = (payload: { projectId: string; userId: string }) =>
+export const removeProjectMemberClient = (payload: { membershipId: string }) =>
   post('/api/admin/remove-project-member', payload);
 
 export const updateProjectMemberStatusClient = (payload: {
-  projectId: string;
-  userId: string;
+  membershipId: string;
   isActive?: boolean;
-  roleId?: string;
-}) =>
-  post('/api/admin/update-project-member-status', payload);
+  roleId?: string | null;
+  allocationPercentage?: number;
+}) => post('/api/admin/update-project-member-status', payload);
 
 export const requestRatingClient = (payload: { sprintId: string }) =>
   post('/api/admin/request-rating', payload);

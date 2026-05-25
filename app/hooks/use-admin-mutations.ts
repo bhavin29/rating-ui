@@ -31,27 +31,36 @@ export const useCreateSprint = () => useMutation({ mutationFn: createSprintClien
 export const useUpdateSprint = () => useMutation({ mutationFn: updateSprintClient });
 export const useAssignProjectMembers = () =>
   useMutation({
-    mutationFn: ({ projectId, memberIds, roleId }: { projectId: string; memberIds: string[]; roleId: string }) =>
-      assignProjectMembersClient({ projectId, memberIds, roleId })
+    mutationFn: ({
+      projectId,
+      memberIds,
+      roleId,
+      allocationPercentage
+    }: {
+      projectId: string;
+      memberIds: string[];
+      roleId: string;
+      allocationPercentage?: number;
+    }) => assignProjectMembersClient({ projectId, memberIds, roleId, allocationPercentage })
   });
 export const useRemoveProjectMember = () =>
   useMutation({
-    mutationFn: ({ projectId, userId }: { projectId: string; userId: string }) =>
-      removeProjectMemberClient({ projectId, userId })
+    mutationFn: ({ membershipId }: { membershipId: string }) =>
+      removeProjectMemberClient({ membershipId })
   });
 export const useUpdateProjectMemberStatus = () =>
   useMutation({
     mutationFn: ({
-      projectId,
-      userId,
+      membershipId,
       isActive,
-      roleId
+      roleId,
+      allocationPercentage
     }: {
-      projectId: string;
-      userId: string;
+      membershipId: string;
       isActive?: boolean;
-      roleId?: string;
-    }) => updateProjectMemberStatusClient({ projectId, userId, isActive, roleId })
+      roleId?: string | null;
+      allocationPercentage?: number;
+    }) => updateProjectMemberStatusClient({ membershipId, isActive, roleId, allocationPercentage })
   });
 export const useRequestRating = () =>
   useMutation({ mutationFn: (sprintId: string) => requestRatingClient({ sprintId }) });
