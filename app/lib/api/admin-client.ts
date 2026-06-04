@@ -1,4 +1,4 @@
-import type { Skill } from '@/app/lib/api/types';
+import type { AvailableQuestion, QuestionAssignment, Skill } from '@/app/lib/api/types';
 
 export type UserRoleInputPayload = {
   roleId: string;
@@ -152,6 +152,32 @@ export const deleteQuestionCategoryClient = (payload: { id: string }) =>
 
 export const toggleQuestionCategoryStatusClient = (payload: { id: string; isActive: boolean }) =>
   post('/api/admin/toggle-question-category-status', payload);
+
+export const getAvailableQuestionsClient = (params: {
+  roleId: string;
+  search?: string;
+  categoryId?: string;
+}): Promise<AvailableQuestion[]> => {
+  const qs = new URLSearchParams({ roleId: params.roleId });
+  if (params.search) qs.set('search', params.search);
+  if (params.categoryId) qs.set('categoryId', params.categoryId);
+  return get(`/api/admin/available-questions?${qs.toString()}`);
+};
+
+export const getAssignedQuestionsClient = (roleId: string): Promise<QuestionAssignment[]> =>
+  get(`/api/admin/assigned-questions?roleId=${encodeURIComponent(roleId)}`);
+
+export const assignQuestionsToRoleClient = (input: {
+  roleId: string;
+  questionIds: string[];
+}): Promise<boolean> =>
+  post('/api/admin/assign-questions-to-role', input);
+
+export const removeQuestionFromRoleClient = (input: {
+  roleId: string;
+  questionId: string;
+}): Promise<boolean> =>
+  post('/api/admin/remove-question-from-role', input);
 
 function normalizeQuestionPayload<T extends { projectId?: string | null; sprintId?: string | null }>(
   input: T,

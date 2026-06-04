@@ -1,5 +1,20 @@
 export type Role = { id: string; name: string };
 
+export type AvailableQuestion = {
+  id: string;
+  text: string;
+  category: { id: string; name: string } | null;
+};
+
+export type QuestionAssignment = {
+  id: string;
+  question: {
+    id: string;
+    text: string;
+    category: { id: string; name: string } | null;
+  };
+};
+
 export type QuestionCategory = {
   id: string;
   name: string;

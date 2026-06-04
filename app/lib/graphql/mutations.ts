@@ -254,6 +254,18 @@ export const GENERATE_PEER_RATINGS = gql`
   }
 `;
 
+export const ASSIGN_QUESTIONS_TO_ROLE = gql`
+  mutation AssignQuestionsToRole($input: AssignQuestionsToRoleInput!) {
+    assignQuestionsToRole(input: $input)
+  }
+`;
+
+export const REMOVE_QUESTION_FROM_ROLE = gql`
+  mutation RemoveQuestionFromRole($input: RemoveQuestionFromRoleInput!) {
+    removeQuestionFromRole(input: $input)
+  }
+`;
+
 export const CREATE_QUESTION_CATEGORY = gql`
   mutation CreateQuestionCategory($input: CreateQuestionCategoryInput!) {
     createQuestionCategory(input: $input) {

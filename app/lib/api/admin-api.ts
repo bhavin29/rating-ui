@@ -1,6 +1,8 @@
 import { createGraphqlClient } from '@/app/lib/graphql/client';
 import {
   GET_ALL_QUESTIONS,
+  GET_ASSIGNED_QUESTIONS,
+  GET_AVAILABLE_QUESTIONS,
   GET_PROJECT_MEMBERS,
   GET_PROJECTS,
   GET_QUESTION_CATEGORIES,
@@ -13,6 +15,7 @@ import {
 import {
   ADD_PROJECT_MEMBERS,
   ASSIGN_PROJECT_MEMBERS_TO_SPRINT,
+  ASSIGN_QUESTIONS_TO_ROLE,
   CREATE_QUESTION,
   CREATE_PROJECT,
   CREATE_QUESTION_CATEGORY,
@@ -25,6 +28,7 @@ import {
   DELETE_USER,
   GENERATE_PEER_RATINGS,
   REMOVE_PROJECT_MEMBER,
+  REMOVE_QUESTION_FROM_ROLE,
   REQUEST_RATING,
   TOGGLE_QUESTION_CATEGORY_STATUS,
   TOGGLE_QUESTION_STATUS,
@@ -38,7 +42,7 @@ import {
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
 import { getAdminToken } from '@/app/lib/utils/auth';
-import type { AdminQuestion, AdminUser, Member, Project, QuestionCategory, Role, Skill, Sprint, SprintRatingSummary, UserRoleEntry } from '@/app/lib/api/types';
+import type { AdminQuestion, AdminUser, AvailableQuestion, Member, Project, QuestionAssignment, QuestionCategory, Role, Skill, Sprint, SprintRatingSummary, UserRoleEntry } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -539,4 +543,50 @@ export async function toggleQuestionCategoryStatus(id: string, isActive: boolean
     { input: { id, isActive } }
   );
   return data.toggleQuestionCategoryStatus;
+}
+
+export async function getAvailableQuestions(
+  roleId: string,
+  search?: string,
+  categoryId?: string
+): Promise<AvailableQuestion[]> {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ getAvailableQuestions: AvailableQuestion[] }>(
+    GET_AVAILABLE_QUESTIONS,
+    { roleId, ...(search ? { search } : {}), ...(categoryId ? { categoryId } : {}) }
+  );
+  return data.getAvailableQuestions;
+}
+
+export async function getAssignedQuestions(roleId: string): Promise<QuestionAssignment[]> {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ getAssignedQuestions: QuestionAssignment[] }>(
+    GET_ASSIGNED_QUESTIONS,
+    { roleId }
+  );
+  return data.getAssignedQuestions;
+}
+
+export async function assignQuestionsToRole(input: {
+  roleId: string;
+  questionIds: string[];
+}): Promise<boolean> {
+  const client = createGraphqlClient();
+  const data = await client.request<{ assignQuestionsToRole: boolean }>(
+    ASSIGN_QUESTIONS_TO_ROLE,
+    { input }
+  );
+  return data.assignQuestionsToRole;
+}
+
+export async function removeQuestionFromRole(input: {
+  roleId: string;
+  questionId: string;
+}): Promise<boolean> {
+  const client = createGraphqlClient();
+  const data = await client.request<{ removeQuestionFromRole: boolean }>(
+    REMOVE_QUESTION_FROM_ROLE,
+    { input }
+  );
+  return data.removeQuestionFromRole;
 }

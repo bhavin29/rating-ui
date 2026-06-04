@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   assignProjectMembersClient,
+  assignQuestionsToRoleClient,
   createQuestionCategoryClient,
   createQuestionClient,
   createProjectClient,
@@ -12,9 +13,12 @@ import {
   deleteQuestionCategoryClient,
   deleteQuestionClient,
   deleteUserClient,
+  getAssignedQuestionsClient,
+  getAvailableQuestionsClient,
   getSkillsClient,
   processSprintClient,
   removeProjectMemberClient,
+  removeQuestionFromRoleClient,
   requestRatingClient,
   sendSprintFeedbackEmailClient,
   toggleQuestionCategoryStatusClient,
@@ -73,6 +77,30 @@ export const useProcessSprint = () =>
 
 
 export const useGetSkills = () => useQuery({ queryKey: ['skills'], queryFn: getSkillsClient });
+
+export const useAvailableQuestions = (
+  params: { roleId: string; search?: string; categoryId?: string } | null
+) =>
+  useQuery({
+    queryKey: ['available-questions', params?.roleId, params?.search ?? '', params?.categoryId ?? ''],
+    queryFn: () => getAvailableQuestionsClient(params!),
+    enabled: !!params?.roleId,
+    staleTime: 0,
+  });
+
+export const useAssignedQuestions = (roleId: string | null) =>
+  useQuery({
+    queryKey: ['assigned-questions', roleId],
+    queryFn: () => getAssignedQuestionsClient(roleId!),
+    enabled: !!roleId,
+    staleTime: 0,
+  });
+
+export const useAssignQuestionsToRole = () =>
+  useMutation({ mutationFn: assignQuestionsToRoleClient });
+
+export const useRemoveQuestionFromRole = () =>
+  useMutation({ mutationFn: removeQuestionFromRoleClient });
 export const useCreateRole = () => useMutation({ mutationFn: createRoleClient });
 export const useUpdateRole = () => useMutation({ mutationFn: updateRoleClient });
 export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient });

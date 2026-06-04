@@ -79,6 +79,35 @@ export const GET_SPRINTS = gql`
   }
 `;
 
+export const GET_AVAILABLE_QUESTIONS = gql`
+  query GetAvailableQuestions($roleId: ID!, $search: String, $categoryId: ID) {
+    getAvailableQuestions(roleId: $roleId, search: $search, categoryId: $categoryId) {
+      id
+      text
+      category {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_ASSIGNED_QUESTIONS = gql`
+  query GetAssignedQuestions($roleId: String!) {
+    getAssignedQuestions(roleId: $roleId) {
+      id
+      question {
+        id
+        text
+        category {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 export const GET_QUESTION_CATEGORIES = gql`
   query QuestionCategories($search: String, $isActive: Boolean, $skip: Int, $take: Int) {
     questionCategories(search: $search, isActive: $isActive, skip: $skip, take: $take) {
