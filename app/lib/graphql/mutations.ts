@@ -94,7 +94,8 @@ export const CREATE_QUESTION = gql`
     createQuestion(input: $input) {
       id
       text
-      roleId
+      categoryId
+      category { id name }
       projectId
       project {
         id
@@ -115,7 +116,8 @@ export const UPDATE_QUESTION = gql`
     updateQuestion(input: $input) {
       id
       text
-      roleId
+      categoryId
+      category { id name }
       projectId
       project {
         id
@@ -142,7 +144,6 @@ export const TOGGLE_QUESTION_STATUS = gql`
     toggleQuestionStatus(input: $input) {
       id
       text
-      roleId
       isActive
     }
   }
@@ -250,6 +251,43 @@ export const ASSIGN_PROJECT_MEMBERS_TO_SPRINT = gql`
 export const GENERATE_PEER_RATINGS = gql`
   mutation GeneratePeerRatings($sprintId: String!) {
     generatePeerRatings(sprintId: $sprintId)
+  }
+`;
+
+export const CREATE_QUESTION_CATEGORY = gql`
+  mutation CreateQuestionCategory($input: CreateQuestionCategoryInput!) {
+    createQuestionCategory(input: $input) {
+      id
+      name
+      description
+      isActive
+    }
+  }
+`;
+
+export const UPDATE_QUESTION_CATEGORY = gql`
+  mutation UpdateQuestionCategory($input: UpdateQuestionCategoryInput!) {
+    updateQuestionCategory(input: $input) {
+      id
+      name
+      description
+      isActive
+    }
+  }
+`;
+
+export const DELETE_QUESTION_CATEGORY = gql`
+  mutation DeleteQuestionCategory($id: String!) {
+    deleteQuestionCategory(id: $id)
+  }
+`;
+
+export const TOGGLE_QUESTION_CATEGORY_STATUS = gql`
+  mutation ToggleQuestionCategoryStatus($input: ToggleQuestionCategoryStatusInput!) {
+    toggleQuestionCategoryStatus(input: $input) {
+      id
+      isActive
+    }
   }
 `;
 

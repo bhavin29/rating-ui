@@ -7,6 +7,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const data = await updateQuestion({
     ...body,
+    categoryId: body.categoryId || null,
     projectId: body.projectId || null,
     sprintId: body.sprintId || null
   });

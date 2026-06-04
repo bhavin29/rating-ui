@@ -3,11 +3,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   assignProjectMembersClient,
+  createQuestionCategoryClient,
   createQuestionClient,
   createProjectClient,
   createRoleClient,
   createSprintClient,
   createUserClient,
+  deleteQuestionCategoryClient,
   deleteQuestionClient,
   deleteUserClient,
   getSkillsClient,
@@ -15,9 +17,11 @@ import {
   removeProjectMemberClient,
   requestRatingClient,
   sendSprintFeedbackEmailClient,
+  toggleQuestionCategoryStatusClient,
   toggleQuestionStatusClient,
   updateProjectMemberStatusClient,
   updateProjectClient,
+  updateQuestionCategoryClient,
   updateQuestionClient,
   updateRoleClient,
   updateSprintClient,
@@ -80,3 +84,7 @@ export const useCreateQuestion = () => useMutation({ mutationFn: createQuestionC
 export const useUpdateQuestion = () => useMutation({ mutationFn: updateQuestionClient });
 export const useDeleteQuestion = () => useMutation({ mutationFn: deleteQuestionClient });
 export const useToggleQuestionStatus = () => useMutation({ mutationFn: toggleQuestionStatusClient });
+export const useCreateQuestionCategory = () => useMutation({ mutationFn: createQuestionCategoryClient });
+export const useUpdateQuestionCategory = () => useMutation({ mutationFn: updateQuestionCategoryClient });
+export const useDeleteQuestionCategory = () => useMutation({ mutationFn: deleteQuestionCategoryClient });
+export const useToggleQuestionCategoryStatus = () => useMutation({ mutationFn: toggleQuestionCategoryStatusClient });

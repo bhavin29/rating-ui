@@ -1,5 +1,12 @@
 export type Role = { id: string; name: string };
 
+export type QuestionCategory = {
+  id: string;
+  name: string;
+  description?: string | null;
+  isActive: boolean;
+};
+
 export type Skill = { id: string; name: string };
 
 export type UserRoleEntry = {
@@ -34,7 +41,8 @@ export type AdminUser = {
 export type AdminQuestion = {
   id: string;
   text: string;
-  roleId: string;
+  categoryId?: string | null;
+  category?: { id: string; name: string } | null;
   projectId?: string | null;
   project?: Project | null;
   sprintId?: string | null;

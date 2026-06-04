@@ -79,21 +79,27 @@ export const GET_SPRINTS = gql`
   }
 `;
 
-export const GET_QUESTIONS_BY_ROLE = gql`
-  query GetQuestionsByRole($roleId: String!) {
-    getQuestionsByRole(roleId: $roleId) {
+export const GET_QUESTION_CATEGORIES = gql`
+  query QuestionCategories($search: String, $isActive: Boolean, $skip: Int, $take: Int) {
+    questionCategories(search: $search, isActive: $isActive, skip: $skip, take: $take) {
       id
-      text
+      name
+      description
+      isActive
     }
   }
 `;
 
 export const GET_ALL_QUESTIONS = gql`
-  query GetAllQuestions {
-    questions {
+  query Questions($search: String, $categoryId: String, $projectId: String, $sprintId: String, $isActive: Boolean, $skip: Int, $take: Int) {
+    questions(search: $search, categoryId: $categoryId, projectId: $projectId, sprintId: $sprintId, isActive: $isActive, skip: $skip, take: $take) {
       id
       text
-      roleId
+      categoryId
+      category {
+        id
+        name
+      }
       projectId
       project {
         id

@@ -22,6 +22,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             <Link href="/dashboard/questions" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">Questions</Link>
             <Link href="/dashboard/sprints" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">Sprints</Link>
             <Link href="/dashboard/roles" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">Roles</Link>
+            <Link href="/dashboard/question-categories" className="transition-colors hover:text-slate-900 dark:hover:text-slate-100">Categories</Link>
             <LogoutButton />
             <ThemeToggle variant="inline" />
           </nav>

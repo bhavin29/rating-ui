@@ -3,6 +3,7 @@ import {
   GET_ALL_QUESTIONS,
   GET_PROJECT_MEMBERS,
   GET_PROJECTS,
+  GET_QUESTION_CATEGORIES,
   GET_ROLES,
   GET_SKILLS,
   GET_SPRINT_RATINGS,
@@ -14,26 +15,30 @@ import {
   ASSIGN_PROJECT_MEMBERS_TO_SPRINT,
   CREATE_QUESTION,
   CREATE_PROJECT,
+  CREATE_QUESTION_CATEGORY,
   CREATE_ROLE,
   CREATE_SPRINT,
   CREATE_USER,
   DELETE_QUESTION,
+  DELETE_QUESTION_CATEGORY,
   DELETE_ROLE,
   DELETE_USER,
   GENERATE_PEER_RATINGS,
   REMOVE_PROJECT_MEMBER,
   REQUEST_RATING,
+  TOGGLE_QUESTION_CATEGORY_STATUS,
   TOGGLE_QUESTION_STATUS,
   UPDATE_PROJECT_MEMBER_STATUS,
   UPDATE_PROJECT,
   UPDATE_QUESTION,
+  UPDATE_QUESTION_CATEGORY,
   UPDATE_ROLE,
   UPDATE_SPRINT,
   UPDATE_USER
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
 import { getAdminToken } from '@/app/lib/utils/auth';
-import type { AdminQuestion, AdminUser, Member, Project, Role, Skill, Sprint, SprintRatingSummary, UserRoleEntry } from '@/app/lib/api/types';
+import type { AdminQuestion, AdminUser, Member, Project, QuestionCategory, Role, Skill, Sprint, SprintRatingSummary, UserRoleEntry } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -82,7 +87,8 @@ export async function getQuestions() {
   return data.questions.map((question) => ({
     id: question.id,
     text: question.text,
-    roleId: question.roleId,
+    categoryId: question.categoryId ?? null,
+    category: question.category ?? null,
     projectId: question.projectId ?? null,
     project: question.project ?? null,
     sprintId: question.sprintId ?? null,
@@ -250,7 +256,7 @@ export async function deleteUser(userId: string) {
 
 export async function createQuestion(input: {
   text: string;
-  roleId: string;
+  categoryId?: string | null;
   projectId?: string | null;
   sprintId?: string | null;
   isActive: boolean;
@@ -265,7 +271,7 @@ export async function createQuestion(input: {
 export async function updateQuestion(input: {
   id: string;
   text: string;
-  roleId: string;
+  categoryId?: string | null;
   projectId?: string | null;
   sprintId?: string | null;
   isActive: boolean;
@@ -318,7 +324,16 @@ export async function addProjectMembers(
   allocationPercentage?: number
 ) {
   const client = createGraphqlClient();
-  return client.request(ADD_PROJECT_MEMBERS, {
+  const data = await client.request<{
+    addProjectMembers: Array<{
+      id: string;
+      isActive?: boolean;
+      roleId?: string | null;
+      allocationPercentage?: number | null;
+      role?: { id: string; name: string } | null;
+      user?: { id: string; fullName: string; email: string; isActive?: boolean; role: { id: string; name: string } };
+    }>;
+  }>(ADD_PROJECT_MEMBERS, {
     input: {
       projectId,
       userIds,
@@ -326,6 +341,7 @@ export async function addProjectMembers(
       ...(typeof allocationPercentage === 'number' ? { allocationPercentage } : {})
     }
   });
+  return data.addProjectMembers;
 }
 
 export async function removeProjectMember(membershipId: string) {
@@ -428,7 +444,8 @@ function mapGraphqlQuestion(question: AdminQuestion): AdminQuestion {
   return {
     id: question.id,
     text: question.text,
-    roleId: question.roleId,
+    categoryId: question.categoryId ?? null,
+    category: question.category ?? null,
     projectId: question.projectId ?? null,
     project: question.project ?? null,
     sprintId: question.sprintId ?? null,
@@ -452,18 +469,22 @@ function normalizeQuestionInput(
   input: {
     id?: string;
     text: string;
-    roleId: string;
+    categoryId?: string | null;
     projectId?: string | null;
     sprintId?: string | null;
     isActive: boolean;
   },
   includeNulls: boolean
 ) {
-  const { projectId, sprintId, ...baseInput } = input;
+  const { categoryId, projectId, sprintId, ...baseInput } = input;
+  const normalizedCategoryId = categoryId || null;
+  const normalizedProjectId = projectId || null;
+  const normalizedSprintId = sprintId || null;
   const normalized = {
     ...baseInput,
-    projectId: projectId || null,
-    sprintId: sprintId || null
+    categoryId: normalizedCategoryId,
+    projectId: normalizedProjectId,
+    sprintId: normalizedSprintId
   };
 
   if (includeNulls) {
@@ -472,7 +493,50 @@ function normalizeQuestionInput(
 
   return {
     ...baseInput,
-    ...(normalized.projectId ? { projectId: normalized.projectId } : {}),
-    ...(normalized.sprintId ? { sprintId: normalized.sprintId } : {})
+    ...(normalizedCategoryId ? { categoryId: normalizedCategoryId } : {}),
+    ...(normalizedProjectId ? { projectId: normalizedProjectId } : {}),
+    ...(normalizedSprintId ? { sprintId: normalizedSprintId } : {})
   };
+}
+
+export async function getQuestionCategories() {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ questionCategories: QuestionCategory[] }>(GET_QUESTION_CATEGORIES, {});
+  return data.questionCategories;
+}
+
+export async function createQuestionCategory(input: {
+  name: string;
+  description?: string | null;
+  isActive?: boolean;
+}) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ createQuestionCategory: QuestionCategory }>(CREATE_QUESTION_CATEGORY, { input });
+  return data.createQuestionCategory;
+}
+
+export async function updateQuestionCategory(input: {
+  id: string;
+  name?: string;
+  description?: string | null;
+  isActive?: boolean;
+}) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ updateQuestionCategory: QuestionCategory }>(UPDATE_QUESTION_CATEGORY, { input });
+  return data.updateQuestionCategory;
+}
+
+export async function deleteQuestionCategory(id: string) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ deleteQuestionCategory: boolean }>(DELETE_QUESTION_CATEGORY, { id });
+  return data.deleteQuestionCategory;
+}
+
+export async function toggleQuestionCategoryStatus(id: string, isActive: boolean) {
+  const client = createGraphqlClient();
+  const data = await client.request<{ toggleQuestionCategoryStatus: { id: string; isActive: boolean } }>(
+    TOGGLE_QUESTION_CATEGORY_STATUS,
+    { input: { id, isActive } }
+  );
+  return data.toggleQuestionCategoryStatus;
 }

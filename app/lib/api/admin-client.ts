@@ -74,7 +74,7 @@ export const deleteUserClient = (payload: { userId: string }) =>
 
 export const createQuestionClient = (input: {
   text: string;
-  roleId: string;
+  categoryId?: string | null;
   projectId?: string | null;
   sprintId?: string | null;
   isActive: boolean;
@@ -84,7 +84,7 @@ export const createQuestionClient = (input: {
 export const updateQuestionClient = (input: {
   id: string;
   text: string;
-  roleId: string;
+  categoryId?: string | null;
   projectId?: string | null;
   sprintId?: string | null;
   isActive: boolean;
@@ -133,6 +133,25 @@ export const requestRatingClient = (payload: { sprintId: string }) =>
 
 export const processSprintClient = (payload: { sprintId: string }) =>
   post('/api/admin/process-sprint', payload);
+
+export const createQuestionCategoryClient = (input: {
+  name: string;
+  description?: string | null;
+  isActive?: boolean;
+}) => post('/api/admin/create-question-category', input);
+
+export const updateQuestionCategoryClient = (input: {
+  id: string;
+  name?: string;
+  description?: string | null;
+  isActive?: boolean;
+}) => post('/api/admin/update-question-category', input);
+
+export const deleteQuestionCategoryClient = (payload: { id: string }) =>
+  post('/api/admin/delete-question-category', payload);
+
+export const toggleQuestionCategoryStatusClient = (payload: { id: string; isActive: boolean }) =>
+  post('/api/admin/toggle-question-category-status', payload);
 
 function normalizeQuestionPayload<T extends { projectId?: string | null; sprintId?: string | null }>(
   input: T,
