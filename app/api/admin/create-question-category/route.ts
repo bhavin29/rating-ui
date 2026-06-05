@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createQuestionCategory } from '@/app/lib/api/admin-api';
 import { requireAdmin } from '@/app/lib/utils/auth';
+import { getGqlErrorMessage, getGqlErrorStatus } from '@/app/lib/utils/gql-error';
 
 export async function POST(req: Request) {
   try {
@@ -10,8 +11,8 @@ export async function POST(req: Request) {
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : 'Failed to create question category.' },
-      { status: 400 }
+      { message: getGqlErrorMessage(error, 'Failed to create question category.') },
+      { status: getGqlErrorStatus(error, 400) }
     );
   }
 }
