@@ -112,6 +112,7 @@ export type SprintRatingQuestion = {
 export type SprintRatingData = {
   projectName: string;
   sprintName: string;
+  status?: 'DRAFT' | 'SUBMITTED' | null;
   ratedUserName: string;
   ratedUserRole: string;
   spmId: string;

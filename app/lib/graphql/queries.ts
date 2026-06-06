@@ -152,6 +152,7 @@ export const GENERATE_SPRINT_RATING_REQUEST = gql`
       sprintName
       ratedUserName
       ratedUserRole
+      status
       questions {
         id
         spr_id: sprId

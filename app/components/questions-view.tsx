@@ -182,7 +182,10 @@ export function QuestionsView({
     const categoryId = values.categoryId;
     const projectId = values.projectId;
     const sprintId = values.sprintId;
-    const category = categoryId ? (categories.find((c) => c.id === categoryId) ?? null) : null;
+    // Prefer the category the API already returned (it's the source of truth).
+    // Fall back to the local categories list only when the API didn't return one.
+    const category = question.category
+      ?? (categoryId ? (categories.find((c) => c.id === categoryId) ?? null) : null);
     const project = projectId ? projects.find((entry) => entry.id === projectId) ?? null : null;
     const sprint = sprintId ? sprints.find((entry) => entry.id === sprintId) ?? null : null;
 

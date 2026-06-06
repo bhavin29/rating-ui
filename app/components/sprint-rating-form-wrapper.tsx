@@ -11,6 +11,9 @@ export function SprintRatingFormWrapper({ data }: { data: SprintRatingData }) {
       onSubmit={async (formData) => {
         await submitSprintRatingRequest(formData);
       }}
+      onSaveDraft={async (draftData) => {
+        await submitSprintRatingRequest(draftData);
+      }}
     />
   );
 }
