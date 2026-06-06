@@ -1,6 +1,7 @@
 import { createGraphqlClient } from '@/app/lib/graphql/client';
 import {
   GET_ALL_QUESTIONS,
+  GET_ALL_SPRINTS,
   GET_ASSIGNED_QUESTIONS,
   GET_AVAILABLE_QUESTIONS,
   GET_PROJECT_MEMBERS,
@@ -9,7 +10,6 @@ import {
   GET_ROLES,
   GET_SKILLS,
   GET_SPRINT_RATINGS,
-  GET_SPRINTS,
   GET_USERS
 } from '@/app/lib/graphql/queries';
 import {
@@ -131,30 +131,15 @@ export async function getProjectMembers(projectId: string) {
   );
 }
 
-export async function getSprints(projectId: string) {
-  const client = createGraphqlClient(await getAuthHeaders());
-  const data = await client.request<{ getSprints: Sprint[] }>(GET_SPRINTS, { projectId });
-  return data.getSprints.map((sprint) => ({
-    ...sprint,
-    startDate: normalizeSprintDate(sprint.startDate),
-    endDate: normalizeSprintDate(sprint.endDate)
-  }));
-}
-
 export async function getAllSprints() {
-  const projects = await getProjects();
-  const sprintGroups = await Promise.all(
-    projects.map(async (project) => {
-      const sprints = await getSprints(project.id);
-      return sprints.map((sprint) => ({
-        ...sprint,
-        project: { id: project.id, name: project.name }
-      }));
-    })
-  );
-
-  return sprintGroups
-    .flat()
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ getSprints: Sprint[] }>(GET_ALL_SPRINTS);
+  return data.getSprints
+    .map((sprint) => ({
+      ...sprint,
+      startDate: normalizeSprintDate(sprint.startDate),
+      endDate: normalizeSprintDate(sprint.endDate)
+    }))
     .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 }
 
@@ -302,7 +287,6 @@ export async function toggleQuestionStatus(id: string, isActive: boolean) {
 }
 
 export async function createSprint(input: {
-  projectId: string;
   name: string;
   startDate: string;
   endDate: string;

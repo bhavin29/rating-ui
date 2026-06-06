@@ -68,9 +68,9 @@ export const GET_PROJECT_MEMBERS = gql`
   }
 `;
 
-export const GET_SPRINTS = gql`
-  query GetSprints($projectId: String!) {
-    getSprints(projectId: $projectId) {
+export const GET_ALL_SPRINTS = gql`
+  query GetAllSprints {
+    getSprints {
       id
       name
       startDate

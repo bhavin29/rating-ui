@@ -8,18 +8,13 @@ import { useProcessSprint } from '@/app/hooks/use-admin-mutations';
 
 type SprintRow = {
   sprint: Sprint;
-  memberCount: number;
   ratedUserCount: number;
 };
 
 export function SprintsView({
-  initialSprints,
-  firstProjectId,
-  projectCount
+  initialSprints
 }: {
   initialSprints: SprintRow[];
-  firstProjectId?: string;
-  projectCount: number;
 }) {
   const [sprintRows, setSprintRows] = useState(initialSprints);
   const [editingSprintId, setEditingSprintId] = useState<string | null>(null);
@@ -32,7 +27,6 @@ export function SprintsView({
   const [alertType, setAlertType] = useState<'success' | 'error' | 'info'>('info');
   const processSprintMutation = useProcessSprint();
 
-  const assignedUserCount = sprintRows.reduce((total, item) => total + item.memberCount, 0);
   const ratedUserCount = sprintRows.reduce((total, item) => total + item.ratedUserCount, 0);
 
   const handleProcessSprint = async (sprintId: string) => {
@@ -72,33 +66,17 @@ export function SprintsView({
           <p className="text-sm text-slate-500 dark:text-slate-400">Sprint planning, project members, and rating progress at a glance</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
-          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Projects: {projectCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Sprints: {sprintRows.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Team members: {assignedUserCount}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Team with ratings: {ratedUserCount}</span>
         </div>
       </div>
       <Card>
         <SprintForm
-          projectId={firstProjectId}
           onCreated={(sprint) => {
             setSprintRows((current) => {
-              if (current.some((item) => item.sprint.id === sprint.id)) {
-                return current;
-              }
-
+              if (current.some((item) => item.sprint.id === sprint.id)) return current;
               return [
-                {
-                  sprint: {
-                    id: sprint.id,
-                    name: sprint.name,
-                    startDate: sprint.startDate,
-                    endDate: sprint.endDate,
-                    project: sprint.project
-                  },
-                  memberCount: 0,
-                  ratedUserCount: 0
-                },
+                { sprint: { id: sprint.id, name: sprint.name, startDate: sprint.startDate, endDate: sprint.endDate }, ratedUserCount: 0 },
                 ...current
               ];
             });
@@ -111,11 +89,10 @@ export function SprintsView({
             <p className="text-sm text-slate-500">No sprints have been created yet. Add one above.</p>
           </Card>
         ) : null}
-        {sprintRows.map(({ sprint, memberCount, ratedUserCount }) => (
+        {sprintRows.map(({ sprint, ratedUserCount }) => (
           <Card key={sprint.id} className="space-y-3">
             {editingSprintId === sprint.id ? (
               <SprintForm
-                projectId={sprint.project?.id}
                 sprint={sprint}
                 onUpdated={(updatedSprint) => {
                   setSprintRows((current) =>
@@ -140,10 +117,6 @@ export function SprintsView({
                 <div>
                   <p className="font-semibold dark:text-slate-100">{sprint.name}</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400">{formatSprintMeta(sprint)}</p>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
-                    <span className="rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-700">Team members: {memberCount}</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-700">Team with ratings: {ratedUserCount}</span>
-                  </div>
                 </div>
                 <div className="flex gap-2">
                   <button

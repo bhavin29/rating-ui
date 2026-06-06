@@ -98,7 +98,6 @@ export const toggleQuestionStatusClient = (payload: { id: string; isActive: bool
   post('/api/admin/toggle-question-status', payload);
 
 export const createSprintClient = (input: {
-  projectId: string;
   name: string;
   startDate: string;
   endDate: string;
