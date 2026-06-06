@@ -9,14 +9,16 @@ export async function POST(req: Request) {
     const data = await createUser(body);
     return NextResponse.json(data);
   } catch (err) {
-    return NextResponse.json({ message: getErrorMessage(err) }, { status: 500 });
+    return NextResponse.json({ message: extractErrorMessage(err, 'Failed to create user') }, { status: 500 });
   }
 }
 
-function getErrorMessage(err: unknown) {
-  if (err instanceof Error) {
-    return err.message;
+function extractErrorMessage(err: unknown, fallback: string): string {
+  if (err && typeof err === 'object' && 'response' in err) {
+    const first = (err as { response?: { errors?: Array<{ message?: string }> } })
+      .response?.errors?.[0]?.message;
+    if (first) return first;
   }
-
-  return 'Failed to create user';
+  if (err instanceof Error) return err.message;
+  return fallback;
 }

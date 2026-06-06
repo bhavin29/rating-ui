@@ -21,6 +21,21 @@ export const GET_USERS = gql`
         id
         name
       }
+      userRoles {
+        id
+        role { id name }
+        skill { id name }
+        level
+      }
+    }
+  }
+`;
+
+export const GET_SKILLS = gql`
+  query GetSkills {
+    getSkills {
+      id
+      name
     }
   }
 `;
@@ -40,27 +55,56 @@ export const GET_PROJECT_MEMBERS = gql`
       id
       isActive
       roleId
-      role {
-        id
-        name
-      }
+      allocationPercentage
+      role { id name }
       user {
         id
         fullName
         email
         isActive
-        role {
-          id
-          name
-        }
+        role { id name }
       }
     }
   }
 `;
 
-export const GET_SPRINTS = gql`
-  query GetSprints($projectId: String!) {
-    getSprints(projectId: $projectId) {
+export const GET_MY_SPRINT_RATING_SUMMARY = gql`
+  query GetMySprintRatingSummary($projectId: String, $sprintId: String, $categoryId: String) {
+    getMySprintRatingSummary(projectId: $projectId, sprintId: $sprintId, categoryId: $categoryId) {
+      sprintId
+      sprintName
+      projectId
+      projectName
+      overallRating
+      categories {
+        categoryId
+        categoryName
+        averageRating
+      }
+    }
+  }
+`;
+
+export const GET_SPRINT_RATING_SUMMARY = gql`
+  query GetSprintRatingSummary($userId: String!, $projectId: String, $sprintId: String, $categoryId: String) {
+    getSprintRatingSummary(userId: $userId, projectId: $projectId, sprintId: $sprintId, categoryId: $categoryId) {
+      sprintId
+      sprintName
+      projectId
+      projectName
+      overallRating
+      categories {
+        categoryId
+        categoryName
+        averageRating
+      }
+    }
+  }
+`;
+
+export const GET_ALL_SPRINTS = gql`
+  query GetAllSprints {
+    getSprints {
       id
       name
       startDate
@@ -69,21 +113,56 @@ export const GET_SPRINTS = gql`
   }
 `;
 
-export const GET_QUESTIONS_BY_ROLE = gql`
-  query GetQuestionsByRole($roleId: String!) {
-    getQuestionsByRole(roleId: $roleId) {
+export const GET_AVAILABLE_QUESTIONS = gql`
+  query GetAvailableQuestions($roleId: ID!, $search: String, $categoryId: ID) {
+    getAvailableQuestions(roleId: $roleId, search: $search, categoryId: $categoryId) {
       id
       text
+      category {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_ASSIGNED_QUESTIONS = gql`
+  query GetAssignedQuestions($roleId: String!) {
+    getAssignedQuestions(roleId: $roleId) {
+      id
+      question {
+        id
+        text
+        category {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const GET_QUESTION_CATEGORIES = gql`
+  query QuestionCategories($search: String, $isActive: Boolean, $skip: Int, $take: Int) {
+    questionCategories(search: $search, isActive: $isActive, skip: $skip, take: $take) {
+      id
+      name
+      description
+      isActive
     }
   }
 `;
 
 export const GET_ALL_QUESTIONS = gql`
-  query GetAllQuestions {
-    questions {
+  query Questions($search: String, $categoryId: String, $projectId: String, $sprintId: String, $isActive: Boolean, $skip: Int, $take: Int) {
+    questions(search: $search, categoryId: $categoryId, projectId: $projectId, sprintId: $sprintId, isActive: $isActive, skip: $skip, take: $take) {
       id
       text
-      roleId
+      categoryId
+      category {
+        id
+        name
+      }
       projectId
       project {
         id
@@ -107,6 +186,7 @@ export const GENERATE_SPRINT_RATING_REQUEST = gql`
       sprintName
       ratedUserName
       ratedUserRole
+      status
       questions {
         id
         spr_id: sprId

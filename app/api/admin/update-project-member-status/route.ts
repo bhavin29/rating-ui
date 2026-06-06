@@ -6,7 +6,12 @@ export async function POST(req: Request) {
   try {
     await requireAdmin();
     const body = await req.json();
-    const data = await updateProjectMemberStatus(body.projectId, body.userId, body.isActive, body.roleId);
+    const data = await updateProjectMemberStatus(
+      body.membershipId,
+      body.isActive,
+      body.roleId,
+      body.allocationPercentage
+    );
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(

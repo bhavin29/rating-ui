@@ -52,11 +52,15 @@ export const CREATE_USER = gql`
         fullName
         email
         isActive
-        role {
+        role { id name }
+        userRoles {
           id
-          name
+          role { id name }
+          skill { id name }
+          level
         }
       }
+      plainPin
     }
   }
 `;
@@ -68,9 +72,12 @@ export const UPDATE_USER = gql`
       fullName
       email
       isActive
-      role {
+      role { id name }
+      userRoles {
         id
-        name
+        role { id name }
+        skill { id name }
+        level
       }
     }
   }
@@ -87,7 +94,8 @@ export const CREATE_QUESTION = gql`
     createQuestion(input: $input) {
       id
       text
-      roleId
+      categoryId
+      category { id name }
       projectId
       project {
         id
@@ -108,7 +116,8 @@ export const UPDATE_QUESTION = gql`
     updateQuestion(input: $input) {
       id
       text
-      roleId
+      categoryId
+      category { id name }
       projectId
       project {
         id
@@ -135,7 +144,6 @@ export const TOGGLE_QUESTION_STATUS = gql`
     toggleQuestionStatus(input: $input) {
       id
       text
-      roleId
       isActive
     }
   }
@@ -169,19 +177,14 @@ export const ADD_PROJECT_MEMBERS = gql`
       id
       isActive
       roleId
-      role {
-        id
-        name
-      }
+      allocationPercentage
+      role { id name }
       user {
         id
         fullName
         email
         isActive
-        role {
-          id
-          name
-        }
+        role { id name }
       }
     }
   }
@@ -199,10 +202,8 @@ export const UPDATE_PROJECT_MEMBER_STATUS = gql`
       id
       isActive
       roleId
-      role {
-        id
-        name
-      }
+      allocationPercentage
+      role { id name }
     }
   }
 `;
@@ -250,6 +251,55 @@ export const ASSIGN_PROJECT_MEMBERS_TO_SPRINT = gql`
 export const GENERATE_PEER_RATINGS = gql`
   mutation GeneratePeerRatings($sprintId: String!) {
     generatePeerRatings(sprintId: $sprintId)
+  }
+`;
+
+export const ASSIGN_QUESTIONS_TO_ROLE = gql`
+  mutation AssignQuestionsToRole($input: AssignQuestionsToRoleInput!) {
+    assignQuestionsToRole(input: $input)
+  }
+`;
+
+export const REMOVE_QUESTION_FROM_ROLE = gql`
+  mutation RemoveQuestionFromRole($input: RemoveQuestionFromRoleInput!) {
+    removeQuestionFromRole(input: $input)
+  }
+`;
+
+export const CREATE_QUESTION_CATEGORY = gql`
+  mutation CreateQuestionCategory($input: CreateQuestionCategoryInput!) {
+    createQuestionCategory(input: $input) {
+      id
+      name
+      description
+      isActive
+    }
+  }
+`;
+
+export const UPDATE_QUESTION_CATEGORY = gql`
+  mutation UpdateQuestionCategory($input: UpdateQuestionCategoryInput!) {
+    updateQuestionCategory(input: $input) {
+      id
+      name
+      description
+      isActive
+    }
+  }
+`;
+
+export const DELETE_QUESTION_CATEGORY = gql`
+  mutation DeleteQuestionCategory($id: String!) {
+    deleteQuestionCategory(id: $id)
+  }
+`;
+
+export const TOGGLE_QUESTION_CATEGORY_STATUS = gql`
+  mutation ToggleQuestionCategoryStatus($input: ToggleQuestionCategoryStatusInput!) {
+    toggleQuestionCategoryStatus(input: $input) {
+      id
+      isActive
+    }
   }
 `;
 

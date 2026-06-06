@@ -9,7 +9,7 @@ import {
   useToggleQuestionStatus,
   useUpdateQuestion
 } from '@/app/hooks/use-admin-mutations';
-import type { AdminQuestion, Project, Role, Sprint } from '@/app/lib/api/types';
+import type { AdminQuestion, Project, Sprint } from '@/app/lib/api/types';
 
 const PAGE_SIZE = 10;
 
@@ -18,30 +18,33 @@ type Notification = {
   message: string;
 };
 
-type QuestionPayload = Omit<QuestionFormValues, 'projectId' | 'sprintId'> & {
+type QuestionPayload = Omit<QuestionFormValues, 'categoryId' | 'projectId' | 'sprintId'> & {
+  categoryId: string | null;
   projectId: string | null;
   sprintId: string | null;
 };
 
 export function QuestionsView({
   initialQuestions,
-  roles,
+  categories,
   projects,
   sprints
 }: {
   initialQuestions: AdminQuestion[];
-  roles: Role[];
+  categories: { id: string; name: string }[];
   projects: Project[];
   sprints: Sprint[];
 }) {
   const [questions, setQuestions] = useState(initialQuestions);
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminQuestion | null>(null);
   const [notification, setNotification] = useState<Notification | null>(null);
+  const [createCategoryError, setCreateCategoryError] = useState<string | null>(null);
+  const [editCategoryError, setEditCategoryError] = useState<string | null>(null);
 
   const createQuestionMutation = useCreateQuestion();
   const updateQuestionMutation = useUpdateQuestion();
@@ -54,9 +57,8 @@ export function QuestionsView({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, roleFilter, activeFilter]);
+  }, [search, categoryFilter, activeFilter]);
 
-  const roleNameById = useMemo(() => Object.fromEntries(roles.map((role) => [role.id, role.name])), [roles]);
   const projectNameById = useMemo(
     () => Object.fromEntries(projects.map((project) => [project.id, project.name])),
     [projects]
@@ -71,23 +73,30 @@ export function QuestionsView({
 
     return questions.filter((question) => {
       const matchesSearch = !term || question.text.toLowerCase().includes(term);
-      const matchesRole = roleFilter === 'all' || question.roleId === roleFilter;
+      const matchesCategory =
+        categoryFilter === 'all' || question.categoryId === categoryFilter;
       const matchesActive =
         activeFilter === 'all' ||
         (activeFilter === 'active' && question.isActive) ||
         (activeFilter === 'inactive' && !question.isActive);
 
-      return matchesSearch && matchesRole && matchesActive;
+      return matchesSearch && matchesCategory && matchesActive;
     });
-  }, [activeFilter, questions, roleFilter, search]);
+  }, [activeFilter, categoryFilter, questions, search]);
 
   const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedQuestions = filteredQuestions.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
   const activeQuestionCount = questions.filter((question) => question.isActive).length;
 
+  function isCategoryError(err: unknown): boolean {
+    const msg = err instanceof Error ? err.message.toLowerCase() : '';
+    return msg.includes('category');
+  }
+
   async function handleCreate(values: QuestionFormValues) {
     setNotification(null);
+    setCreateCategoryError(null);
 
     try {
       const payload = toQuestionPayload(values);
@@ -95,13 +104,18 @@ export function QuestionsView({
       setQuestions((current) => [created, ...current]);
       setCurrentPage(1);
       setNotification({ tone: 'success', message: 'Question created successfully.' });
-    } catch {
-      setNotification({ tone: 'error', message: 'Failed to create question.' });
+    } catch (err) {
+      if (isCategoryError(err)) {
+        setCreateCategoryError(err instanceof Error ? err.message : 'Invalid category.');
+      } else {
+        setNotification({ tone: 'error', message: 'Failed to create question.' });
+      }
     }
   }
 
   async function handleUpdate(questionId: string, values: QuestionFormValues) {
     setNotification(null);
+    setEditCategoryError(null);
 
     try {
       const payload = toQuestionPayload(values);
@@ -109,8 +123,12 @@ export function QuestionsView({
       setQuestions((current) => current.map((question) => (question.id === questionId ? updated : question)));
       setEditingQuestionId(null);
       setNotification({ tone: 'success', message: 'Question updated successfully.' });
-    } catch {
-      setNotification({ tone: 'error', message: 'Failed to update question.' });
+    } catch (err) {
+      if (isCategoryError(err)) {
+        setEditCategoryError(err instanceof Error ? err.message : 'Invalid category.');
+      } else {
+        setNotification({ tone: 'error', message: 'Failed to update question.' });
+      }
     }
   }
 
@@ -118,14 +136,16 @@ export function QuestionsView({
     setNotification(null);
 
     try {
-      const updated = (await toggleQuestionStatusMutation.mutateAsync({
+      const result = (await toggleQuestionStatusMutation.mutateAsync({
         id: question.id,
         isActive: !question.isActive
-      })) as AdminQuestion;
-      setQuestions((current) => current.map((item) => (item.id === question.id ? updated : item)));
+      })) as { id: string; isActive: boolean };
+      setQuestions((current) =>
+        current.map((item) => (item.id === result.id ? { ...item, isActive: result.isActive } : item))
+      );
       setNotification({
         tone: 'success',
-        message: `Question marked as ${updated.isActive ? 'active' : 'inactive'}.`
+        message: `Question marked as ${result.isActive ? 'active' : 'inactive'}.`
       });
     } catch {
       setNotification({ tone: 'error', message: 'Failed to update question status.' });
@@ -152,19 +172,27 @@ export function QuestionsView({
   function toQuestionPayload(values: QuestionFormValues): QuestionPayload {
     return {
       ...values,
+      categoryId: values.categoryId || null,
       projectId: values.projectId || null,
       sprintId: values.sprintId || null
     };
   }
 
   function hydrateQuestion(question: AdminQuestion, values: QuestionPayload): AdminQuestion {
+    const categoryId = values.categoryId;
     const projectId = values.projectId;
     const sprintId = values.sprintId;
+    // Prefer the category the API already returned (it's the source of truth).
+    // Fall back to the local categories list only when the API didn't return one.
+    const category = question.category
+      ?? (categoryId ? (categories.find((c) => c.id === categoryId) ?? null) : null);
     const project = projectId ? projects.find((entry) => entry.id === projectId) ?? null : null;
     const sprint = sprintId ? sprints.find((entry) => entry.id === sprintId) ?? null : null;
 
     return {
       ...question,
+      categoryId,
+      category,
       projectId,
       project,
       sprintId,
@@ -177,12 +205,11 @@ export function QuestionsView({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold dark:text-slate-100">Questions</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Manage role-based questions with filters, status control, and CRUD actions.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Manage questions with category, project, and sprint assignments.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
           <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Questions: {questions.length}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Active: {activeQuestionCount}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Roles: {roles.length}</span>
         </div>
       </div>
 
@@ -201,10 +228,10 @@ export function QuestionsView({
       <Card className="space-y-3">
         <div>
           <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Add question</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Assign each question to a role and control whether it is currently active.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Assign a category, project, and sprint, then control active status.</p>
         </div>
         <QuestionForm
-          roles={roles}
+          categories={categories}
           projects={projects}
           sprints={sprints}
           submitLabel="Create question"
@@ -212,6 +239,7 @@ export function QuestionsView({
           onSubmit={handleCreate}
           isSubmitting={createQuestionMutation.isPending}
           resetOnSuccess
+          categoryError={createCategoryError}
         />
       </Card>
 
@@ -223,11 +251,11 @@ export function QuestionsView({
             placeholder="Search questions by text"
             className="md:col-span-2"
           />
-          <Select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
-            <option value="all">All roles</option>
-            {roles.map((role) => (
-              <option key={role.id} value={role.id}>
-                {role.name}
+          <Select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}>
+            <option value="all">All categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
               </option>
             ))}
           </Select>
@@ -243,7 +271,7 @@ export function QuestionsView({
             <thead className="bg-slate-50 dark:bg-slate-900/50">
               <tr>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Text</th>
-                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Role</th>
+                <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Category</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Project</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Sprint</th>
                 <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Active</th>
@@ -265,18 +293,19 @@ export function QuestionsView({
                         <div className="min-w-[32rem]">
                           <div className="mb-3">
                             <p className="font-medium text-slate-900 dark:text-slate-100">Edit question</p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">Refine the wording, role assignment, or active status.</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">Update the category, wording, or active status.</p>
                           </div>
                           <QuestionForm
-                            roles={roles}
+                            categories={categories}
                             projects={projects}
                             sprints={sprints}
                             initialValues={questionToFormValues(question)}
                             submitLabel="Save changes"
                             submittingLabel="Saving..."
                             onSubmit={(values) => handleUpdate(question.id, values)}
-                            onCancel={() => setEditingQuestionId(null)}
+                            onCancel={() => { setEditingQuestionId(null); setEditCategoryError(null); }}
                             isSubmitting={updateQuestionMutation.isPending}
+                            categoryError={editCategoryError}
                           />
                         </div>
                       ) : (
@@ -285,7 +314,11 @@ export function QuestionsView({
                     </td>
                     {editingQuestionId === question.id ? null : (
                       <>
-                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{roleNameById[question.roleId] ?? 'Unknown role'}</td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {question.category?.name ?? (
+                            <span className="text-slate-400 dark:text-slate-500">&mdash;</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
                           {question.project?.name ?? (question.projectId ? projectNameById[question.projectId] : null) ?? 'Not Assigned'}
                         </td>
@@ -311,7 +344,7 @@ export function QuestionsView({
                             <button
                               type="button"
                               className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-                              onClick={() => setEditingQuestionId(question.id)}
+                              onClick={() => { setEditingQuestionId(question.id); setEditCategoryError(null); }}
                             >
                               Edit
                             </button>

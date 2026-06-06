@@ -1,22 +1,33 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   assignProjectMembersClient,
+  assignQuestionsToRoleClient,
+  createQuestionCategoryClient,
+  getAdminSprintRatingSummaryClient,
+  getSelfSprintRatingSummaryClient,
   createQuestionClient,
   createProjectClient,
   createRoleClient,
   createSprintClient,
   createUserClient,
+  deleteQuestionCategoryClient,
   deleteQuestionClient,
   deleteUserClient,
+  getAssignedQuestionsClient,
+  getAvailableQuestionsClient,
+  getSkillsClient,
   processSprintClient,
   removeProjectMemberClient,
+  removeQuestionFromRoleClient,
   requestRatingClient,
   sendSprintFeedbackEmailClient,
+  toggleQuestionCategoryStatusClient,
   toggleQuestionStatusClient,
   updateProjectMemberStatusClient,
   updateProjectClient,
+  updateQuestionCategoryClient,
   updateQuestionClient,
   updateRoleClient,
   updateSprintClient,
@@ -30,27 +41,36 @@ export const useCreateSprint = () => useMutation({ mutationFn: createSprintClien
 export const useUpdateSprint = () => useMutation({ mutationFn: updateSprintClient });
 export const useAssignProjectMembers = () =>
   useMutation({
-    mutationFn: ({ projectId, memberIds, roleId }: { projectId: string; memberIds: string[]; roleId: string }) =>
-      assignProjectMembersClient({ projectId, memberIds, roleId })
+    mutationFn: ({
+      projectId,
+      memberIds,
+      roleId,
+      allocationPercentage
+    }: {
+      projectId: string;
+      memberIds: string[];
+      roleId: string;
+      allocationPercentage?: number;
+    }) => assignProjectMembersClient({ projectId, memberIds, roleId, allocationPercentage })
   });
 export const useRemoveProjectMember = () =>
   useMutation({
-    mutationFn: ({ projectId, userId }: { projectId: string; userId: string }) =>
-      removeProjectMemberClient({ projectId, userId })
+    mutationFn: ({ membershipId }: { membershipId: string }) =>
+      removeProjectMemberClient({ membershipId })
   });
 export const useUpdateProjectMemberStatus = () =>
   useMutation({
     mutationFn: ({
-      projectId,
-      userId,
+      membershipId,
       isActive,
-      roleId
+      roleId,
+      allocationPercentage
     }: {
-      projectId: string;
-      userId: string;
+      membershipId: string;
       isActive?: boolean;
-      roleId?: string;
-    }) => updateProjectMemberStatusClient({ projectId, userId, isActive, roleId })
+      roleId?: string | null;
+      allocationPercentage?: number;
+    }) => updateProjectMemberStatusClient({ membershipId, isActive, roleId, allocationPercentage })
   });
 export const useRequestRating = () =>
   useMutation({ mutationFn: (sprintId: string) => requestRatingClient({ sprintId }) });
@@ -58,6 +78,65 @@ export const useProcessSprint = () =>
   useMutation({ mutationFn: (sprintId: string) => processSprintClient({ sprintId }) });
 
 
+export const useGetSkills = () => useQuery({ queryKey: ['skills'], queryFn: getSkillsClient });
+
+export const useAvailableQuestions = (
+  params: { roleId: string; search?: string; categoryId?: string } | null
+) =>
+  useQuery({
+    queryKey: ['available-questions', params?.roleId, params?.search ?? '', params?.categoryId ?? ''],
+    queryFn: () => getAvailableQuestionsClient(params!),
+    enabled: !!params?.roleId,
+    staleTime: 0,
+  });
+
+export const useAssignedQuestions = (roleId: string | null) =>
+  useQuery({
+    queryKey: ['assigned-questions', roleId],
+    queryFn: () => getAssignedQuestionsClient(roleId!),
+    enabled: !!roleId,
+    staleTime: 0,
+  });
+
+export const useAssignQuestionsToRole = () =>
+  useMutation({ mutationFn: assignQuestionsToRoleClient });
+
+export const useRemoveQuestionFromRole = () =>
+  useMutation({ mutationFn: removeQuestionFromRoleClient });
+
+export const useSprintRatingSummary = (params: {
+  mode: 'self' | 'admin';
+  userId?: string;
+  projectId?: string;
+  sprintId?: string;
+  categoryId?: string;
+}) =>
+  useQuery({
+    queryKey: [
+      'sprint-rating-summary',
+      params.mode,
+      params.userId,
+      params.projectId ?? '',
+      params.sprintId ?? '',
+      params.categoryId ?? ''
+    ],
+    queryFn: () =>
+      params.mode === 'self'
+        ? getSelfSprintRatingSummaryClient({
+            userId: params.userId!,
+            projectId: params.projectId,
+            sprintId: params.sprintId,
+            categoryId: params.categoryId
+          })
+        : getAdminSprintRatingSummaryClient({
+            userId: params.userId!,
+            projectId: params.projectId,
+            sprintId: params.sprintId,
+            categoryId: params.categoryId
+          }),
+    enabled: params.mode === 'self' || !!params.userId,
+    staleTime: 30_000
+  });
 export const useCreateRole = () => useMutation({ mutationFn: createRoleClient });
 export const useUpdateRole = () => useMutation({ mutationFn: updateRoleClient });
 export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient });
@@ -69,3 +148,7 @@ export const useCreateQuestion = () => useMutation({ mutationFn: createQuestionC
 export const useUpdateQuestion = () => useMutation({ mutationFn: updateQuestionClient });
 export const useDeleteQuestion = () => useMutation({ mutationFn: deleteQuestionClient });
 export const useToggleQuestionStatus = () => useMutation({ mutationFn: toggleQuestionStatusClient });
+export const useCreateQuestionCategory = () => useMutation({ mutationFn: createQuestionCategoryClient });
+export const useUpdateQuestionCategory = () => useMutation({ mutationFn: updateQuestionCategoryClient });
+export const useDeleteQuestionCategory = () => useMutation({ mutationFn: deleteQuestionCategoryClient });
+export const useToggleQuestionCategoryStatus = () => useMutation({ mutationFn: toggleQuestionCategoryStatusClient });

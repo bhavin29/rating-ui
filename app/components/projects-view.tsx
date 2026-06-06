@@ -9,7 +9,6 @@ type ProjectRow = {
   id: string;
   name: string;
   status?: string | null;
-  sprintCount: number;
   assignedUserCount: number;
   ratedUserCount: number;
 };
@@ -63,7 +62,6 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
             <tr>
               <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Project</th>
               <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Status</th>
-              <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Sprints</th>
               <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Team members</th>
               <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Team with ratings</th>
               <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Actions</th>
@@ -72,7 +70,7 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
           <tbody>
             {projectRows.length === 0 ? (
               <tr className="border-t border-slate-100 dark:border-slate-700">
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                   No projects have been created yet.
                 </td>
               </tr>
@@ -106,7 +104,6 @@ export function ProjectsView({ initialProjects }: { initialProjects: ProjectRow[
                   )}
                 </td>
                 <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.status ?? 'UNKNOWN'}</td>
-                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.sprintCount}</td>
                 <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.assignedUserCount}</td>
                 <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{project.ratedUserCount}</td>
                 <td className="px-4 py-3 text-slate-700 dark:text-slate-300">

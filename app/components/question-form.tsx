@@ -5,11 +5,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Select, Textarea } from '@/app/components/ui';
-import type { AdminQuestion, Project, Role, Sprint } from '@/app/lib/api/types';
+import type { AdminQuestion, Project, Sprint } from '@/app/lib/api/types';
 
 const schema = z.object({
   text: z.string().trim().min(5, 'Question text must be at least 5 characters'),
-  roleId: z.string().min(1, 'Role is required'),
+  categoryId: z.string().min(1, 'Category is required'),
   projectId: z.string().optional(),
   sprintId: z.string().optional(),
   isActive: z.boolean()
@@ -18,7 +18,7 @@ const schema = z.object({
 export type QuestionFormValues = z.infer<typeof schema>;
 
 type QuestionFormProps = {
-  roles: Role[];
+  categories: { id: string; name: string }[];
   projects: Project[];
   sprints: Sprint[];
   initialValues?: QuestionFormValues;
@@ -28,10 +28,11 @@ type QuestionFormProps = {
   onCancel?: () => void;
   isSubmitting?: boolean;
   resetOnSuccess?: boolean;
+  categoryError?: string | null;
 };
 
 export function QuestionForm({
-  roles,
+  categories,
   projects,
   sprints,
   initialValues,
@@ -40,18 +41,19 @@ export function QuestionForm({
   onSubmit,
   onCancel,
   isSubmitting = false,
-  resetOnSuccess = false
+  resetOnSuccess = false,
+  categoryError
 }: QuestionFormProps) {
   const emptyValues = useMemo(
     () =>
       initialValues ?? {
         text: '',
-        roleId: '',
+        categoryId: '',
         projectId: '',
         sprintId: '',
         isActive: true
       },
-    [initialValues, roles]
+    [initialValues]
   );
 
   const {
@@ -66,7 +68,7 @@ export function QuestionForm({
 
   useEffect(() => {
     reset(emptyValues);
-  }, [emptyValues, reset, roles]);
+  }, [emptyValues, reset]);
 
   return (
     <form
@@ -77,7 +79,7 @@ export function QuestionForm({
         if (resetOnSuccess) {
           reset({
             text: '',
-            roleId: '',
+            categoryId: '',
             projectId: '',
             sprintId: '',
             isActive: true
@@ -93,16 +95,20 @@ export function QuestionForm({
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Role</span>
-          <Select {...register('roleId')}>
-            <option value="">Select a role</option>
-            {roles.map((role) => (
-              <option key={role.id} value={role.id}>
-                {role.name}
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Category</span>
+          <Select {...register('categoryId')}>
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
               </option>
             ))}
           </Select>
-          {errors.roleId ? <p className="text-xs text-red-600 dark:text-red-400">{errors.roleId.message}</p> : null}
+          {errors.categoryId ? (
+            <p className="text-xs text-red-600 dark:text-red-400">{errors.categoryId.message}</p>
+          ) : categoryError ? (
+            <p className="text-xs text-red-600 dark:text-red-400">{categoryError}</p>
+          ) : null}
         </label>
 
         <label className="space-y-1">
@@ -159,7 +165,7 @@ export function QuestionForm({
 export function questionToFormValues(question: AdminQuestion): QuestionFormValues {
   return {
     text: question.text,
-    roleId: question.roleId,
+    categoryId: question.categoryId ?? '',
     projectId: question.projectId ?? '',
     sprintId: question.sprintId ?? '',
     isActive: question.isActive

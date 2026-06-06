@@ -11,7 +11,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Select a role before adding project members.' }, { status: 400 });
     }
 
-    const data = await addProjectMembers(body.projectId, body.memberIds, body.roleId);
+    const data = await addProjectMembers(
+      body.projectId,
+      body.memberIds,
+      body.roleId,
+      body.allocationPercentage
+    );
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(

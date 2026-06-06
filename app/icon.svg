@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- rounded square background matching slate-900/dark theme -->
+  <rect width="32" height="32" rx="7" fill="#1e3a8a"/>
+  <!-- 5-pointed star centred at 16,16 -->
+  <path d="M16 7 L18.23 12.93 L24.56 13.22 L19.61 17.17 L21.29 23.28 L16 19.8 L10.71 23.28 L12.39 17.17 L7.44 13.22 L13.77 12.93 Z" fill="#fbbf24"/>
+</svg>

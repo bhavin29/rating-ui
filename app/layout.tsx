@@ -6,7 +6,11 @@ import { ThemeProvider } from '@/app/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Sprint Rating System',
-  description: 'Frontend for Sprint Rating System'
+  description: 'Frontend for Sprint Rating System',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg'
+  }
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
