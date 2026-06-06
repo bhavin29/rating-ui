@@ -8,7 +8,6 @@ import { useProcessSprint } from '@/app/hooks/use-admin-mutations';
 
 type SprintRow = {
   sprint: Sprint;
-  ratedUserCount: number;
 };
 
 export function SprintsView({
@@ -27,7 +26,6 @@ export function SprintsView({
   const [alertType, setAlertType] = useState<'success' | 'error' | 'info'>('info');
   const processSprintMutation = useProcessSprint();
 
-  const ratedUserCount = sprintRows.reduce((total, item) => total + item.ratedUserCount, 0);
 
   const handleProcessSprint = async (sprintId: string) => {
     setPendingSprintId(sprintId);
@@ -67,7 +65,6 @@ export function SprintsView({
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
           <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Sprints: {sprintRows.length}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-700">Team with ratings: {ratedUserCount}</span>
         </div>
       </div>
       <Card>
@@ -89,7 +86,7 @@ export function SprintsView({
             <p className="text-sm text-slate-500">No sprints have been created yet. Add one above.</p>
           </Card>
         ) : null}
-        {sprintRows.map(({ sprint, ratedUserCount }) => (
+        {sprintRows.map(({ sprint }) => (
           <Card key={sprint.id} className="space-y-3">
             {editingSprintId === sprint.id ? (
               <SprintForm

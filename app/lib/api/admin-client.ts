@@ -152,6 +152,32 @@ export const deleteQuestionCategoryClient = (payload: { id: string }) =>
 export const toggleQuestionCategoryStatusClient = (payload: { id: string; isActive: boolean }) =>
   post('/api/admin/toggle-question-category-status', payload);
 
+export const getSelfSprintRatingSummaryClient = (params: {
+  userId: string;
+  projectId?: string;
+  sprintId?: string;
+  categoryId?: string;
+}): Promise<import('@/app/lib/api/types').SprintRatingSummaryItem[]> => {
+  const qs = new URLSearchParams({ userId: params.userId });
+  if (params.projectId) qs.set('projectId', params.projectId);
+  if (params.sprintId) qs.set('sprintId', params.sprintId);
+  if (params.categoryId) qs.set('categoryId', params.categoryId);
+  return get(`/api/sprint-summary/self?${qs.toString()}`);
+};
+
+export const getAdminSprintRatingSummaryClient = (params: {
+  userId: string;
+  projectId?: string;
+  sprintId?: string;
+  categoryId?: string;
+}): Promise<import('@/app/lib/api/types').SprintRatingSummaryItem[]> => {
+  const qs = new URLSearchParams({ userId: params.userId });
+  if (params.projectId) qs.set('projectId', params.projectId);
+  if (params.sprintId) qs.set('sprintId', params.sprintId);
+  if (params.categoryId) qs.set('categoryId', params.categoryId);
+  return get(`/api/admin/sprint-summary?${qs.toString()}`);
+};
+
 export const getAvailableQuestionsClient = (params: {
   roleId: string;
   search?: string;

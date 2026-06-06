@@ -88,6 +88,21 @@ export type Sprint = {
 };
 
 export type Question = { id: string; text: string };
+
+export type SprintRatingSummaryCategory = {
+  categoryId: string | null;
+  categoryName: string | null;
+  averageRating: number;
+};
+
+export type SprintRatingSummaryItem = {
+  sprintId: string;
+  sprintName: string;
+  projectId: string;
+  projectName: string;
+  overallRating: number;
+  categories: SprintRatingSummaryCategory[];
+};
 export type SprintRatingSummary = { userId: string; userName: string; averageScore: number };
 
 export type TokenValidationResult = {

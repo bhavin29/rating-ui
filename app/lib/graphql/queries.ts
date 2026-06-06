@@ -68,6 +68,40 @@ export const GET_PROJECT_MEMBERS = gql`
   }
 `;
 
+export const GET_MY_SPRINT_RATING_SUMMARY = gql`
+  query GetMySprintRatingSummary($projectId: String, $sprintId: String, $categoryId: String) {
+    getMySprintRatingSummary(projectId: $projectId, sprintId: $sprintId, categoryId: $categoryId) {
+      sprintId
+      sprintName
+      projectId
+      projectName
+      overallRating
+      categories {
+        categoryId
+        categoryName
+        averageRating
+      }
+    }
+  }
+`;
+
+export const GET_SPRINT_RATING_SUMMARY = gql`
+  query GetSprintRatingSummary($userId: String!, $projectId: String, $sprintId: String, $categoryId: String) {
+    getSprintRatingSummary(userId: $userId, projectId: $projectId, sprintId: $sprintId, categoryId: $categoryId) {
+      sprintId
+      sprintName
+      projectId
+      projectName
+      overallRating
+      categories {
+        categoryId
+        categoryName
+        averageRating
+      }
+    }
+  }
+`;
+
 export const GET_ALL_SPRINTS = gql`
   query GetAllSprints {
     getSprints {

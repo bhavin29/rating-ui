@@ -273,11 +273,15 @@ export function SprintRatingForm({
         <span className="text-slate-600 dark:text-slate-400">
           Progress: <span className="font-semibold text-slate-900 dark:text-slate-100">{completedGroups} / {totalGroups}</span> team members rated
         </span>
-        {data.status === 'DRAFT' && (
+        {completedGroups === totalGroups && totalGroups > 0 ? (
+          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+            Done
+          </span>
+        ) : data.status === 'DRAFT' ? (
           <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
             Draft
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* User groups — incomplete (draft) at top */}

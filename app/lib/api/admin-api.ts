@@ -9,6 +9,7 @@ import {
   GET_QUESTION_CATEGORIES,
   GET_ROLES,
   GET_SKILLS,
+  GET_SPRINT_RATING_SUMMARY,
   GET_SPRINT_RATINGS,
   GET_USERS
 } from '@/app/lib/graphql/queries';
@@ -42,7 +43,7 @@ import {
 } from '@/app/lib/graphql/mutations';
 import { headers } from 'next/headers';
 import { getAdminToken } from '@/app/lib/utils/auth';
-import type { AdminQuestion, AdminUser, AvailableQuestion, Member, Project, QuestionAssignment, QuestionCategory, Role, Skill, Sprint, SprintRatingSummary, UserRoleEntry } from '@/app/lib/api/types';
+import type { AdminQuestion, AdminUser, AvailableQuestion, Member, Project, QuestionAssignment, QuestionCategory, Role, Skill, Sprint, SprintRatingSummary, SprintRatingSummaryItem, UserRoleEntry } from '@/app/lib/api/types';
 
 export async function getProjects() {
   const client = createGraphqlClient(await getAuthHeaders());
@@ -573,4 +574,21 @@ export async function removeQuestionFromRole(input: {
     { input }
   );
   return data.removeQuestionFromRole;
+}
+
+export async function getAdminSprintRatingSummary(
+  userId: string,
+  filters: { projectId?: string; sprintId?: string; categoryId?: string }
+): Promise<SprintRatingSummaryItem[]> {
+  const client = createGraphqlClient(await getAuthHeaders());
+  const data = await client.request<{ getSprintRatingSummary: SprintRatingSummaryItem[] }>(
+    GET_SPRINT_RATING_SUMMARY,
+    {
+      userId,
+      ...(filters.projectId ? { projectId: filters.projectId } : {}),
+      ...(filters.sprintId ? { sprintId: filters.sprintId } : {}),
+      ...(filters.categoryId ? { categoryId: filters.categoryId } : {})
+    }
+  );
+  return data.getSprintRatingSummary;
 }

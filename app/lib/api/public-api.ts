@@ -2,9 +2,11 @@ import { createPublicClient } from '@/app/lib/graphql/public-client';
 import { SUBMIT_RATING, UPDATE_SPRINT_RATING_REQUESTS, VALIDATE_TOKEN } from '@/app/lib/graphql/mutations';
 import {
   GENERATE_SPRINT_RATING_REQUEST,
+  GET_MY_SPRINT_RATING_SUMMARY,
+  GET_QUESTION_CATEGORIES,
   GET_USER_PROJECT_SPRINT_DATA
 } from '@/app/lib/graphql/queries';
-import type { SprintRatingData, UserProjectSprintData } from '@/app/lib/api/types';
+import type { QuestionCategory, SprintRatingData, SprintRatingSummaryItem, UserProjectSprintData } from '@/app/lib/api/types';
 import type { TokenValidationResult } from '@/app/lib/api/types';
 
 export async function validateToken(token: string) {
@@ -59,6 +61,31 @@ export async function getSprintRatingRequest(spmId: string): Promise<SprintRatin
     { spmId }
   );
   return data.generateSprintRatingRequest;
+}
+
+export async function getPublicCategories(): Promise<Pick<QuestionCategory, 'id' | 'name'>[]> {
+  const client = createPublicClient();
+  const data = await client.request<{ questionCategories: QuestionCategory[] }>(
+    GET_QUESTION_CATEGORIES,
+    { isActive: true, skip: 0, take: 100 }
+  );
+  return data.questionCategories.map(({ id, name }) => ({ id, name }));
+}
+
+export async function getMySprintRatingSummary(
+  filters: { projectId?: string; sprintId?: string; categoryId?: string },
+  cookieHeader?: string
+): Promise<SprintRatingSummaryItem[]> {
+  const client = createPublicClient(cookieHeader ? { Cookie: cookieHeader } : undefined);
+  const data = await client.request<{ getMySprintRatingSummary: SprintRatingSummaryItem[] }>(
+    GET_MY_SPRINT_RATING_SUMMARY,
+    {
+      ...(filters.projectId ? { projectId: filters.projectId } : {}),
+      ...(filters.sprintId ? { sprintId: filters.sprintId } : {}),
+      ...(filters.categoryId ? { categoryId: filters.categoryId } : {})
+    }
+  );
+  return data.getMySprintRatingSummary;
 }
 
 export async function getUserProjectSprintData(userId: string, cookieHeader?: string): Promise<UserProjectSprintData[]> {

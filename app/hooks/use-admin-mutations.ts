@@ -5,6 +5,8 @@ import {
   assignProjectMembersClient,
   assignQuestionsToRoleClient,
   createQuestionCategoryClient,
+  getAdminSprintRatingSummaryClient,
+  getSelfSprintRatingSummaryClient,
   createQuestionClient,
   createProjectClient,
   createRoleClient,
@@ -101,6 +103,40 @@ export const useAssignQuestionsToRole = () =>
 
 export const useRemoveQuestionFromRole = () =>
   useMutation({ mutationFn: removeQuestionFromRoleClient });
+
+export const useSprintRatingSummary = (params: {
+  mode: 'self' | 'admin';
+  userId?: string;
+  projectId?: string;
+  sprintId?: string;
+  categoryId?: string;
+}) =>
+  useQuery({
+    queryKey: [
+      'sprint-rating-summary',
+      params.mode,
+      params.userId,
+      params.projectId ?? '',
+      params.sprintId ?? '',
+      params.categoryId ?? ''
+    ],
+    queryFn: () =>
+      params.mode === 'self'
+        ? getSelfSprintRatingSummaryClient({
+            userId: params.userId!,
+            projectId: params.projectId,
+            sprintId: params.sprintId,
+            categoryId: params.categoryId
+          })
+        : getAdminSprintRatingSummaryClient({
+            userId: params.userId!,
+            projectId: params.projectId,
+            sprintId: params.sprintId,
+            categoryId: params.categoryId
+          }),
+    enabled: params.mode === 'self' || !!params.userId,
+    staleTime: 30_000
+  });
 export const useCreateRole = () => useMutation({ mutationFn: createRoleClient });
 export const useUpdateRole = () => useMutation({ mutationFn: updateRoleClient });
 export const useDeleteRole = () => useMutation({ mutationFn: deleteRoleClient });
